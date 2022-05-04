@@ -12,4 +12,6 @@ The end training takes so long ... what if we gave the user where their model wa
 
 output ids off by 1 (original: 178, output: 177)
 
+transfer to group github
+
 update doesn't show prev rows in group
