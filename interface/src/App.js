@@ -6,7 +6,6 @@ import states from './Constants/States';
 import Introduction from './Pages/Introduction/Introduction'
 import OpenCoding from './Pages/OpenCoding/OpenCoding';
 import AssistedGrouping from './Pages/AssistedGrouping/AssistedGrouping';
-// import Labeling from './Pages/Labeling/Labeling';
 import Verification from './Pages/Verification/Verification';
 import Results from './Pages/Results/Results';
 

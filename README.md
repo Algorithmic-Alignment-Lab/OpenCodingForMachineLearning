@@ -1,10 +1,14 @@
 # Open Coding for Machine Learning
 
-An annotation interface that allows a single annotator to efficiently and effectively devise labels and descriptions for a large, unlabeled dataset. The interface follows the coding techniques listed in Constructing Grounded Theory, while scaling the techniques with DistilBERT classifiers.
+Open Coding for Machine Learning is an annotation interface that allows a single annotator to efficiently and effectively devise labels and descriptions for a large, unlabeled dataset. 
 
-This interface requires the installation of npm [MacOS example](https://changelog.com/posts/install-node-js-with-homebrew-on-os-x). 
+More information about this project can be found at [TODO: paper link](google.com).
 
-This interface also requires the installation of [Flask](https://flask.palletsprojects.com/en/2.0.x/installation/#virtual-environments).
+---
+
+This interface requires the installation of npm ([MacOS example](https://changelog.com/posts/install-node-js-with-homebrew-on-os-x)). This interface also requires the installation of [Flask](https://flask.palletsprojects.com/en/2.0.x/installation/#virtual-environments), and [Hugging Face Transformers](https://huggingface.co/docs/transformers/installation).
+
+[Homebrew](https://docs.brew.sh/Installation) is recommended for MacOS users. 
 
 ## How to Get Started
 
@@ -59,8 +63,3 @@ All classification models and any model training code exist here.
 ### Results
 
 This is where your final, labeled csv file will be saved
-
-## Server Setup
-
-ssh into lab server, start [tmux](https://github.com/tmux/tmux/wiki), create necessary terminals + start run of localhost:3000/8000
-if ssh connection closes processes still run
