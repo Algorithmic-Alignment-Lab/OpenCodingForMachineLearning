@@ -8,7 +8,9 @@ This interface also requires the installation of [Flask](https://flask.palletspr
 
 ## How to Get Started
 
-Get started by running the executable file
+To get started, complete the **Development Instructions** within the `server` and `interface` directory's `README.md` files. 
+
+<!-- Get started by running the executable file
 
 ```
 $ ./open_coding
@@ -16,7 +18,7 @@ $ ./open_coding
 
 Then, navigate to [http://localhost:3000/](http://localhost:3000/). Note that you may have to replace 'localhost' with your computer's IP address.
 
-HappyDB is already available for annotation and label creation. If you would like to upload your own dataset, please see **Using Personal Data**.
+HappyDB is already available for annotation and label creation. If you would like to upload your own dataset, please see **Using Personal Data**. -->
 
 ## About this Repository
 
@@ -60,5 +62,5 @@ This is where your final, labeled csv file will be saved
 
 ## Server Setup
 
-ssh into lab server, start [tmux](https://github.com/tmux/tmux/wiki), create necessary terminals + start run of localhost:3000/5000
+ssh into lab server, start [tmux](https://github.com/tmux/tmux/wiki), create necessary terminals + start run of localhost:3000/8000
 if ssh connection closes processes still run

@@ -65,6 +65,8 @@ Server requests not working? Try
 `rm -r package-lock.json node_dules`
 `npm install`
 
+Then, the following command runs the interface in the browser ([http://localhost:3000](http://localhost:3000))
+### `npm start`
 
 ## Available Scripts for Development
 

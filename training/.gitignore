@@ -1,4 +1,7 @@
-/results
+/results/*
 /outputs
 /__pycache__
-/models
+/models/*
+
+!/models/.gitkeep
+!/results/.gitkeep

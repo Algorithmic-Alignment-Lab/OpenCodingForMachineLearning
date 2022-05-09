@@ -14,17 +14,24 @@ from training.finetune_model import open_coding_finetune_model
 
 from training.predict_labels import call_predict
 
-
-
-@app.route('/data/happydb', methods=['GET'])
-def happy_db():
-    print("happy db")
+@app.route('/', methods=['GET'])
+def test():
     response = {
-        "body": "inside happy db"
+        "body": "welcome to the OpenCodingForMachineLearning Flask Server"
     }
 
     add_options(response)
     return json.jsonify(response)
+
+# @app.route('/data/happydb', methods=['GET'])
+# def happy_db():
+#     print("happy db")
+#     response = {
+#         "body": "inside happy db"
+#     }
+
+#     add_options(response)
+#     return json.jsonify(response)
 
 @app.route('/data/prep_data', methods=['GET'])
 def prep_data():
