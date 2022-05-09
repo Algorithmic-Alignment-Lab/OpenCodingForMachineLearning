@@ -1,47 +1,39 @@
-Run the following command in the server directory to activate the training server
-```
-$ . venv/bin/activate
-```
+# Training
 
-Install the following packages within the virtual environment
-```
-$ pip install torch
-$ pip install simpletransformers
-```
+Within this directory are the files related to pre-training and fine-tuning OpenCodingModels, both for the OpenCodingForMachineLearning interface and for personal development tasks.
 
-For M1 machines, make sure to have conda installed, and then
+`finetune_model.py` is a good place to look for understanding how the the given model is finetuned for the interface. Thos interested in pretraining their own models should look towards `generate_pretrained_model.py`. 
 
-```
-$ conda activate st
-```
+The [HappyDB](https://www.kaggle.com/competitions/fake-news/data), [UCI SMS Spambase](https://archive-beta.ics.uci.edu/ml/datasets/sms+spam+collection), and [Fake News (Kaggle Competition)](https://www.kaggle.com/competitions/fake-news/data) datasets are all provided under `/data` and `/labeled_data` for pre-training and fine-tuning purposes.
 
-If running on an M1 machine and facing import issues, try the steps listed [here](https://github.com/google/sentencepiece/issues/608)
+## Pretraining Models
 
-https://towardsdatascience.com/installing-tensorflow-on-the-m1-mac-410bb36b776
-https://developer.apple.com/forums/thread/693931
-https://stackoverflow.com/questions/70670205/failed-to-build-h5py-on-mac-m1
-https://github.com/google/sentencepiece/issues/608
-
-Desired models should be saved and loaded from the /models directory.
-
-Run generate_pretrained_model.py to pre-train a Distilbert model on unlabeled data.
+In order to generate your own pre-trained model to use for the interface, run 
 
 ```
-python3 generate_pretrained_model.py model_output_filename data_csv_filename num_epochs percent_mask percent_use
+$ python3 generate_pretrained_model.py [csv_filename] [batch_size] [num_epochs]
 ```
 
-OR
+Note that [csv_filename] must be an unlabeled csv file within `/data/`. Use the already-existing csv files as an example, if needed.
+
+This will save your pretrained model in models/{csv_filename}\_pretrained\_{batch_size}\_{percent_train}
+
+## Finetuning Models
+
+Run finetune_model.py to fine-tune an already a model on labeled data. Note that [csv_filename] must be a labeled csv file within `/labeled_data/`.
 
 ```
-python3 generate_pretrained_model.py csv_filename batch_size num_epochs
+$ python3 finetune_model.py [model_filename] [csv_filename] [num_epochs] [percent_train]
 ```
 
-The latter saves the pretrained model in models/{csv_filename}\_pretrained\_{batch_size}\_{percent_train}
+The HappyDB, SMS Spambase, and Fake News (Kaggle Competition) (labeled) datasets are all provided under data and labeled data.
 
-Run finetune_model.py to fine_tune an already pre-trained model on labeled data.
+## Development Instructions
+
+On your local machine or server, please run the following commaned within `/training` to create a pretrained OpenCodingModel for running the HappyDB OpenCodingForMachineLearning interface. 
+
+This will require a fair amount of computre power, and it may take a significant amount of time.
 
 ```
-python3 finetune_model.py model_filename labelend_data_csv num_epochs percent_train percent_use
+$ python3 generate_pretrained_model.py happy_db 50 5
 ```
-
-In order to enable pretraining and validation runs, the HappyDB, SMS Spambase, and Fake News (Kaggle Competition) (labeled) datasets are all provided under data and labeled data.

@@ -4,4 +4,4 @@ In this section you'll find your results in the form of a csv file with the foll
 ID | TEXT | LABEL
 ```
 
-result_parser provides a script that can convert csv outputs to Figures (see __main__).
+result_parser provides a script that can convert csv outputs to Figures (see `__main__`).

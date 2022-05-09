@@ -12,7 +12,7 @@ This interface requires the installation of npm ([MacOS example](https://changel
 
 ## How to Get Started
 
-To get started, complete the **Development Instructions** within the `server` and `interface` directory's `README.md` files. 
+To get started, complete the **Development Instructions** within the `training`, `server`, and `interface` directories' `README.md` files (**in order**). 
 
 <!-- Get started by running the executable file
 

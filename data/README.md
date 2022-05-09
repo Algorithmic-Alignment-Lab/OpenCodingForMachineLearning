@@ -10,5 +10,5 @@ ID,TEXT,
 N,TEXT_N,
 ```
 
-After quitting and re-starting the executable, the drop down on the Introduction page will now include your new datasets as options.
+After quitting and re-running the Flask server, the drop down on the Introduction page will now include your new datasets as options.
 

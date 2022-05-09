@@ -7,16 +7,14 @@ import torch
 
 from transformers import DistilBertTokenizer, DistilBertModel, DistilBertConfig
 
+# uncomment these imports for local running
 # from open_coding_utils import get_model
-
 # from open_coding_constants import model_options
-
 # from finetune import classification_finetune, get_data_rows, get_label_id_mappings, open_coding_classification_finetune
 
+# import style required by FLASK
 from .open_coding_utils import get_model
-
 from .open_coding_constants import model_options
-
 from .finetune import classification_finetune, get_data_rows, get_label_id_mappings, open_coding_classification_finetune
 
 os.environ["CUDA_VISIBLE_DEVICES"]="0"

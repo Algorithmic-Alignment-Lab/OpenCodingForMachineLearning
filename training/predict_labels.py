@@ -9,14 +9,15 @@ import sys
 
 import os
 
-# from predict import predict_labels
-
-from .predict import predict_labels
-
 from transformers import DistilBertTokenizer, DistilBertModel, DistilBertConfig
+
+# uncomment these import for local running
+# from predict import predict_labels
 # from open_coding_utils import get_model
 # from open_coding_constants import model_options
 
+# these import styles are required by FLASK
+from .predict import predict_labels
 from .open_coding_utils import get_model
 from .open_coding_constants import model_options
 

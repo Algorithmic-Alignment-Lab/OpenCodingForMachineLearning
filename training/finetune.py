@@ -13,8 +13,10 @@ import numpy as np
 from transformers import Trainer, TrainingArguments
 import torch
 
+# uncomment imports below for local running
 # from open_coding_constants import PredictionDataset
 
+# import style required by FLASK
 from .open_coding_constants import PredictionDataset
 
 # prevents automatic weights and biases logging
