@@ -13,7 +13,7 @@ import numpy as np
 from transformers import Trainer, TrainingArguments
 import torch
 
-# uncomment imports below for local running
+# uncomment these imports for local running
 # from open_coding_constants import PredictionDataset
 
 # import style required by FLASK

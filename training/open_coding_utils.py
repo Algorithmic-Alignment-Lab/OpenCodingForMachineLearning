@@ -1,11 +1,10 @@
-
+# uncomment these imports for local running
 # from open_coding_constants import model_options
-
 # import open_coding_roberta
 # import open_coding_distilbert
 
+# import style required by FLASK
 from .open_coding_constants import model_options
-
 from . import open_coding_roberta
 from . import open_coding_distilbert
 

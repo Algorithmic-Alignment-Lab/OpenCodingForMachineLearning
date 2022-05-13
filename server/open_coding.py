@@ -66,7 +66,7 @@ def get_all_data_options():
 @app.route('/data/get_data_option', methods=['GET'])
 def get_data_option():
     option_id = request.args.get("id")
-    max_request_size = 15 # TODO: adjust constant
+    max_request_size = 50 # TODO: adjust constant
     options = get_option_data(option_id)
     create_labels(option_id)
     option_ids = list(options.keys())
@@ -227,7 +227,7 @@ def train_and_predict():
          # randomly select given percentage/number of examples
         # TODO: set constants
         percent_guess = 0.03
-        number_guess = 15
+        number_guess = 50
         selected_unlabeled_data = select_some(unlabeled_data, percent_guess, number_guess)
 
         # make predictions, return [{id, text, labels}]
@@ -278,7 +278,7 @@ def get_verification_data():
     # randomly select given percentage/number of examples
     # TODO: set constants
     percent_guess = 0.03
-    number_guess = 15
+    number_guess = 50
     selected_unlabeled_data = select_some(unlabeled_data, percent_guess, number_guess)
 
     # make predictions, return [{id, text, labels}], we DON'T save these (only save to dataset after user confirmation)
@@ -340,7 +340,7 @@ def get_results():
 
     # also save what was annotation
     annotations = get_annotation_data(option_id)
-    print('annotations:', annotations)
+    
     write_to_csv_annotations(kerb + '_annotations_' + name, annotations)
 
     response = {

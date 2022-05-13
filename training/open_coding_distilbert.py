@@ -5,8 +5,10 @@ from transformers import DistilBertPreTrainedModel, DistilBertConfig, DistilBert
 from transformers.modeling_outputs import MaskedLMOutput, SequenceClassifierOutput
 from transformers.activations import gelu
 
+# uncomment these imports for local running
 # from open_coding_constants import forward_types
 
+# import style required by FLASK
 from .open_coding_constants import forward_types
 
 # https://github.com/huggingface/transformers/blob/v4.17.0/src/transformers/models/distilbert/modeling_distilbert.py#L667
