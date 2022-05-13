@@ -1,27 +1,21 @@
 import {useEffect } from 'react';
-
-import StyledButton from './StyledButton';
-
-// https://devtrium.com/posts/how-keyboard-shortcut
+import { StyledButton } from '../Constants/Styles';
 
 /**
  * A customizable button that listens for a single key press event. Pressing the keyMatch
  * key will trigger the callback function specified by clickFunc.
  * 
- * @param {bool} buttonAvailable whether or not the button can be seen, and also whether or not the callback can be activated
- * @param {} callBackFunc
- * @param {bool} clickFunc a void callback function used for the keyDown event and onClick
- * @param {string} text the label of the button
- * @param {string} keyMatch the key that must be pressed to trigger the callback function
- * @returns 
+ * @param {boolean} buttonAvailable - if true, the button is clickable and responsive to keydown events. 
+ * @param {() => {}} callBackFunc - a void callback function used for the keyDown event
+ * @param {() => {}} clickFunc - a void callback function used for onClick
+ * @param {string} text - the label of the button
+ * @returns {StyledButton} StyledButton
  */
 export default function CallbackKeyEventButton({buttonAvailable, callBackFunc, clickFunc, text}) {
 
+    // handles keydown event activation
     useEffect(() => {
-        // attach the event listener
         document.addEventListener('keydown', callBackFunc); 
-
-        // remove the event listener
         return () => {
             document.removeEventListener('keydown', callBackFunc);
         };

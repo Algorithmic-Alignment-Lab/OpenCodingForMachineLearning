@@ -1,12 +1,8 @@
 import React, {Component} from 'react';
-import styled from 'styled-components';
 
 import states from './../../Constants/States';
 // import progress from './../../Constants/States';
-import Button from '@material-ui/core/Button';
-import KeyEventButton from '../../Custom/KeyEventButton';
-import NextEventButton from '../../Custom/NextEventButton';
-import CreateGroupButton from './CreateGroupButton';
+import CallbackKeyEventButton  from '../../Custom/CallbackKeyEventButton';
 import SearchBar from 'material-ui-search-bar';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
@@ -15,8 +11,9 @@ import { ScrollSync, ScrollSyncPane } from 'react-scroll-sync';
 import SearchResultTable from './PersistantSearchResultTable';
 import SelectionsTable from './SelectionsTable';
 import GroupingsTable from './GroupingsTable';
+import { InputStyle } from '../../Constants/Styles';
 
-const progress = 40;
+const progress = 50;
 
 class AssistedGrouping extends Component {
 
@@ -25,22 +22,22 @@ class AssistedGrouping extends Component {
         this.state = {
             isLoading: true,
             value: "",
-            originalRows: [],
-            visibleRowIds: [],
-            selectedRowIds: [],
-            // searchRows: [],
-            selectedRows: [],
-            unselectedRows: [],
-            groupRows: [],
+            originalRows: [], // all rows
+            visibleRowIds: [], // ids of visible rows based on search criterion
+            selectedRowIds: [], // ids of annotations currently ready to be grouped
+            selectedRows: [], // annotations currently ready to be grouped
+            unselectedRows: [], // annotations not yet grouped or ready to be grouped
+            groupRows: [], // all groups
             groupName: "",
-            allSelectedRows: new Set(),
+            allSelectedRows: new Set(), // annotations that have been formally grouped
             sectionComplete: false,
             readyToGroup: false,
+            readyToNameGroup: false,
         };
     }
     
     /**
-    * Before the component mounts, we save the annotations from open coding, and ask for them back. 
+    * When the component mounts, we save the annotations from open coding, and ask for them back. 
     * Asking for them back is more of an example, could techically just use locally saved state.
     *
     * We set up the rows of our search bar as all initially unselected. Original rows helps us keep track of completion.
@@ -49,29 +46,31 @@ class AssistedGrouping extends Component {
         try {
             // save the annotations before we ask for them
             await this.props.postData('/data/save_annotations', {"rows": this.props.loadAnnotations(), "id": this.props.getOptionID()});
-            // TODO: annotations not done saving yet
             const data = await this.props.getDataWithParams('/data/get_annotations', {"id": this.props.getOptionID()});
-            // show 404 or 500 errors
+            
             if (!data.ok) {
                 throw Error(data.statusText);
             }
             console.log("response recieved: " + data.rows);
+
             // this section of the code optimizes assuming zero-indexing
             let adjusted_rows = [];
             let unselected_rows = [];
+            let visible_rows = []; // all rows are default visible during search
             let count = 0;
             for (let row of data.rows){
                 adjusted_rows.push({id: count, trueid: row.id, text: row.text, annotation: row.annotation});
                 unselected_rows.push({id: count, trueid: row.id, text: row.text, annotation: row.annotation});
+                visible_rows.push(count);
                 count += 1;
             }
 
             this.setState({
                 originalRows: adjusted_rows,
                 unselectedRows: unselected_rows,
+                visibleRowIds: visible_rows,
                 isLoading: false
             });
-            console.log("set response");
         } catch (error) {
             console.log(error);
         }
@@ -112,15 +111,26 @@ class AssistedGrouping extends Component {
 
         }
 
+        let completed = newSelected.size === this.state.originalRows.length;
+
         this.setState({
             selectedRowIds: selectedIds,
             selectedRows: selected,
             readyToGroup: true,
             groupName: name,
             allSelectedRows: newSelected,
+            sectionComplete: completed,
+            readyToNameGroup: selected.length > 0
         });
     }
 
+    /**
+     * Function for creating or updating a group using the current selected annotations
+     * 
+     * Considers all elements within this.state.selectedRows to be a part of this new group, and
+     * adds all elements to the running set of all grouped annotations.
+     * 
+     */
     createGroup = () => {
         // update the comphrensive list of selected rows to include this new group
         let newSelected = this.state.allSelectedRows;
@@ -134,9 +144,12 @@ class AssistedGrouping extends Component {
         let completed = newSelected.size === this.state.originalRows.length;
 
         // if the group name already exists, we need to update rather than create
-        // TODO: if select group but edit name, groups name won't be updated properly (will create new group)
         let foundGroup = false;
         for (let groupRow of this.state.groupRows){
+            // two possible cases - we have clicked on a group (and thus their rows are already
+            // part of selected) or we have typed in an identical name (and there are rows not in selected
+            // to include)
+            // TODO: handle latter case
             if (groupRow.text === this.state.groupName){
                 foundGroup = true;
                 groupRow.depth = this.state.selectedRows.length;
@@ -165,17 +178,26 @@ class AssistedGrouping extends Component {
             readyToGroup: false,
             allSelectedRows: newSelected,
             groupName: "",
-            sectionComplete: completed
+            sectionComplete: completed,
+            readyToNameGroup: false
         });
-}
+    }
 
+    /**
+     * Function for deleting a group.
+     * 
+     * Removes the group from groupRows and from allSelectedRows, and repopulates unselectedRows.
+     * 
+     * @param {int} id the group to delete
+     */
     deleteGroup = (id) => {
         // take advantage of the fact that group rows are always in order
         let newSelected = new Set();
         let newUnselected = this.state.unselectedRows;
 
-        // gather a list of the subrows for all groups but this one
-        // add all of their ids to the new set of selected rows
+        // gather a list of the subrows for all groups and add all of their ids 
+        // to the new set of selected rows unless the id matches this group -
+        // if the id matches this group, it is a part of unselected rows
         for (let s = 0; s < this.state.groupRows.length; s++){
 
             if (String(s) !== id) {
@@ -185,13 +207,12 @@ class AssistedGrouping extends Component {
             } else {
                 for (let i = 0; i < this.state.groupRows[s].depth; i++){
                     newUnselected.push(this.state.groupRows[s].subRows[i]);
-                    // newSelected.add(this.state.groupRows[s].subRows[i].id);
                 }
             }
         }
 
-        console.log('new selected (delete): ', newSelected);
-
+        // NOTE: are we done? probably not, but will keep this check for
+        // when we support multiple labels per text item
         let completed = newSelected.size === this.state.originalRows.length;
 
         let newGroups = this.state.groupRows.slice(0, id).concat(this.state.groupRows.slice(id+1));
@@ -204,8 +225,11 @@ class AssistedGrouping extends Component {
         });
     }
 
+    /**
+     * Function for updating a future group's name.
+     */
     updateGroupName = e => {
-        if (e.target.value !== "" && this.state.selectedRows != []){
+        if (e.target.value !== "" && this.state.readyToNameGroup){
             this.setState({
                 groupName: e.target.value,
                 readyToGroup: true
@@ -218,6 +242,11 @@ class AssistedGrouping extends Component {
         }
     }
 
+    /**
+     * Function for pressing "Next" button.
+     * 
+     * Saves the labels created and updates the UI state.
+     */
     onNextSubmit = () => {
         let labeled = [];
 
@@ -227,90 +256,125 @@ class AssistedGrouping extends Component {
                 labeled.push({id: this.state.groupRows[j].subRows[i].trueid, label: this.state.groupRows[j].text});
             }
         }
-        console.log('labeled: ', labeled);
         this.props.saveLabelState(labeled);
         this.props.updateState(states.verification);
     }
 
+    /**
+     * Function for updating the search bar value
+     */
     onChange = (newValue) => {
         if (this.value != newValue && !this.state.isLoading){
             this.setState({ value: newValue });
         }
     }
 
+    /**
+     * Function for searching.
+     * 
+     * Search is based on an exact lowercase text match based on the state.value and annotation value.
+     */
     onSearch = () => {
-        // in here we will call the backend with our state.value
-        // and update the rows of the checkbox table
-        // temporary search algorithm -> direct matching
-        console.log('requesting search with: ' + this.state.value);
+        // we show a subset
         if (this.state.value !== "" && !this.state.isLoading) {
-            // update the visible ids
-            console.log('original rows: ' + this.state.originalRows);
+            // we update the visible row ids
             let newRows = this.state.originalRows.filter(row => row.annotation.toLowerCase().includes(this.state.value.toLowerCase()));
-            console.log('newRows: ' + newRows);
-            for (let r of newRows){
-                console.log('r: ' + r.id);
-
-            }
             this.setState({visibleRowIds: newRows.map(row => row.id)});
+        // or we show all
+        } else if (this.state.value == "") {
+            this.setState({visibleRowIds: this.state.originalRows.map(row => row.id)});
         }
     }
 
+    /**
+     * Function for selecting a row from within the search area.
+     * 
+     * We update the selected rows and unselected rows accordingly, as well as the ability to type a group name or create a group.
+     * 
+     * @param {int} index - the row to select
+     */
     selectIndex = (index) => {
         // update the ids
         let ids = this.state.selectedRowIds;
         ids.push(index);
         
-        // update the visible rows
         let rowids = this.state.originalRows.map(row => row.id);
+
+        // update the selected rows
         let sliceIndex = rowids.indexOf(index);
         let newitems = this.state.originalRows.slice(sliceIndex, sliceIndex+1);
-
         let rows = this.state.selectedRows.concat(newitems);
 
+        // remove from unselected rows
         let unselected = this.state.unselectedRows.filter(row => row.id != index);
  
-        this.setState({selectedRowIds: ids, selectedRows: rows, unselectedRows: unselected});
+        this.setState({selectedRowIds: ids, selectedRows: rows, unselectedRows: unselected, readyToNameGroup: true, readyToGroup: rows.length > 0 && this.state.groupName != ""});
     }
 
+    /**
+     * Function for un-selecting a row from within the search area.
+     * 
+     * We update the selected rows and unselected rows accordingly.
+     * 
+     * @param {int} index - the row to select
+     */
     unselectIndex = (index) => {
-        let rowids = this.state.originalRows.map(row => row.id);
-        let sliceIndex = rowids.indexOf(index);
+        if (this.state.allSelectedRows.has(index)){
+            return;
+        }
 
+        let rowids = this.state.originalRows.map(row => row.id);
+
+        // update un-selected rows
+        let sliceIndex = rowids.indexOf(index);
         let newitems = this.state.originalRows.slice(sliceIndex, sliceIndex+1);
         let rows = this.state.unselectedRows.concat(newitems);
 
+        let newSelectedRows = this.state.selectedRows.filter(row => row.id !== index);
+
         this.setState({
-            selectedRowIds: this.state.selectedRowIds.filter(elem => elem !== index), 
-            selectedRows: this.state.selectedRows.filter(row => row.id !== index),
-            unselectedRows: rows
+            selectedRowIds: this.state.selectedRowIds.filter(elem => elem !== index),  // remove from selected
+            selectedRows: newSelectedRows, // remove from selected
+            unselectedRows: rows,
+            readyToGroup: newSelectedRows.length > 0
         });
 
     }
 
+    /**
+    * Returns whether or not a row at a given index is selected.
+    */
     isSelected = (index) => {
         // we can't remove selection if it's in a group
         return this.state.allSelectedRows.has(index) || this.state.selectedRowIds.includes(index);
     }
 
+    /**
+    * Returns whether or not a row at a given index is visible based on the previous search criterion.
+    */
     isVisible = (index) => {
         return this.state.visibleRowIds.includes(index);
     }
 
+    /**
+    * keyDownEvent for Next button hotkey
+    */
     handleNextKeyPress = (event) => {
         if (event.key === ' ' && this.state.sectionComplete){
             this.onNextSubmit();
         }
     };
 
+    /**
+    * keyDownEvent for Create Or Update Group button hotkey
+    */
     handleCreateGroupKeyPress = (event) => {
-        if (event.key === 'Enter' && this.state.readyToGroup){
+        if (event.key === '/' && this.state.readyToGroup){
             this.createGroup();
         }
     };
     
     render() {
-
         return (
         <div style={{display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
             <div style={{ margin: '15px'}}>
@@ -318,7 +382,6 @@ class AssistedGrouping extends Component {
             </div>
             <div style={{ margin: '15px'}}>
                 <div style={{ display: 'flex', height: '75vh'}}>
-                        
                     <div style={{ flexGrow: 1, margin: '15px'}}>
                         <div style={{marginLeft: '10px', height: '2vh'}} >
                             Groups
@@ -479,16 +542,20 @@ class AssistedGrouping extends Component {
                                 </div>
                             </ScrollSync>
                             <div style={{ marginTop: '15px', display: 'flex', justifyContent: 'space-between', height: '3vh', width: '100%' }}>
-                                <input
-                                    placeholder="enter group name"
-                                    value={this.state.groupName}
-                                    onChange={this.updateGroupName}/>
-                                <CreateGroupButton 
+                                <div style={{overflow: 'auto', height: '3vh', border: '2px solid black', padding: '5px', borderRadius: '10px', justifyContent: 'center'}}>
+                                    <InputStyle>
+                                        <input
+                                            disabled={!this.state.readyToNameGroup}
+                                            placeholder="enter group name"
+                                            value={this.state.groupName}
+                                            onChange={this.updateGroupName}/>
+                                    </InputStyle>
+                                </div>
+                                <CallbackKeyEventButton
                                     callBackFunc={this.handleCreateGroupKeyPress}
                                     buttonAvailable={this.state.readyToGroup}
                                     clickFunc={this.createGroup}
-                                    text={'Create or Update Group (Enter)'}
-                                    keyMatch={'Enter'}
+                                    text={'Create or Update Group (/)'}
                                 />
                             </div>
                         </div>
@@ -497,12 +564,11 @@ class AssistedGrouping extends Component {
                 </div>
             </div>
             <div style={{marginTop: '15px', width:'100%'}}>
-                <NextEventButton 
+                <CallbackKeyEventButton 
                     callBackFunc={this.handleNextKeyPress}
                     buttonAvailable={this.state.sectionComplete}
                     clickFunc={this.onNextSubmit}
                     text={'Next (space)'}
-                    keyMatch={' '}
                 />
             </div>
             <div style={{marginTop: '15px'}}>

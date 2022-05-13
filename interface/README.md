@@ -38,7 +38,9 @@ To group these annotations, users can navigate the search bar (see `2`) by using
 
 After clicking on an item, the user will see that item populate under "Selected Annotations" (see `4`). Users can then use the lower text area to create a Group Name. 
 
-Once a valid group name has been typed (see `5`), the "Create or Update Group" button (see `6`) will become available to click. This button can also be "pressed" via the hot-key `enter `. 
+Once a valid group name has been typed (see `5`), the "Create or Update Group" button (see `6`) will become available to click. This button can also be "pressed" via the hot-key `/`. 
+
+<!-- TODO: update assisted grouping page image -->
 
 The left-hand-side Groups area (see `1`) contains created groups, which can be expanded, deleted, and updated. To expand a group, click on the "`*`" icon next to the group's name. To delete a group, click on the "`x`" icon. To update a group, click on the group's name and return to the search/select interactions. 
 

@@ -2,19 +2,18 @@ import { useCallback, useEffect } from 'react';
 
 import Button from '@material-ui/core/Button';
 
-// https://devtrium.com/posts/how-keyboard-shortcut
-
 /**
  * 
- * A custom button for "Next" represented by the ">" character. Pressing the right arrow
- * key will trigger the callback function specified by clickFunc.
+ * A custom button for Verification that uses index to determine enabled-ness.
   * 
  * @param {boolean} buttonAvailable whether or not button can be used
  * @param {() => {}} clickFunc callback function to occur onClick and on KeyPressEvent
  * @param {number} currIndex index representing user's current location in the verification process
  * @param {number} maxIndex index representing max possible location in the verification process
+ * @param {string} text label of button
+ * @param {boolean} hidden whether or not the button can be seen
  * 
- * @returns a Button object
+ * @returns {Object} Button
  */
 export default function NextButton({buttonAvailable, handleNextButton, clickFunc, currIndex, maxIndex, text, hidden}) {
 

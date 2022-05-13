@@ -2,6 +2,9 @@ import React, { Component, useEffect, useState } from 'react';
 
 import Multiselect from 'multiselect-react-dropdown';
 
+/**
+* Single-select drop-down for populating dataset options.
+*/
 export default class DataOptions extends Component {
 
     constructor() {

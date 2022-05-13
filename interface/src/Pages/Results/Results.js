@@ -2,11 +2,8 @@ import React, {Component} from 'react';
 
 import states from './../../Constants/States';
 // import progress from './../../Constants/States';
-import Button from '@material-ui/core/Button';
-import KeyEventButton from '../../Custom/KeyEventButton';
-import NextEventButton from '../../Custom/NextEventButton';
 import LinearProgress from '@material-ui/core/LinearProgress';
-import { red } from '@material-ui/core/colors';
+import CallbackKeyEventButton from '../../Custom/CallbackKeyEventButton';
 
 const progress = 100;
 
@@ -19,35 +16,49 @@ class Results extends Component {
             sectionComplete: false,
         }
     }
+
+    /**
+    * When the component mounts, we prompt the server to start generating our full results, 
+    * and we get the csv file which holds our results.
+    */
     async componentDidMount () {
         try {
             const data = await this.props.getDataWithParams('/data/get_results', {"id": this.props.getOptionID()});
-            // show 404 or 500 errors
+
             if (!data.ok) {
                 throw Error(data.statusText);
             }
-            console.log("response recieved: " + data.saved);
+
             this.setState({
                 savedFilepath: data.saved,
                 isLoading: false,
                 sectionComplete: true
             });
-            console.log("set response");
+
         } catch (error) {
             console.log(error);
         }
     }
 
+    /**
+    * Callback function for next submission.
+    */
     handleNextKeyPress = (event) => {
         if (event.key === ' ' && this.state.sectionComplete){
             this.onNextSubmit();
         }
     };
 
+    /**
+    * Number of verification rounds.
+    */
     getVerificationNum = () => {
         return this.props.getAccuracy().length;
     }
 
+    /**
+    * Average accuracy accross all verification rounds.
+    */
     getVerificationAccAvg= () => {
         let summation = 0;
         for (let num of this.props.getAccuracy()){
@@ -56,6 +67,9 @@ class Results extends Component {
         return summation/this.props.getAccuracy().length;
     }
 
+    /**
+    * Next submit action. Updates UI page state.
+    */
     onNextSubmit = () => {
         this.props.updateState(states.introduction);
     }
@@ -80,12 +94,11 @@ class Results extends Component {
                 )}
                 <div style={{marginTop: '15px', width:'100%'}}>
                     <div style={{alignItems:'end'}}>
-                        <NextEventButton 
+                        <CallbackKeyEventButton 
                             callBackFunc={this.handleNextKeyPress}
                             buttonAvailable={this.state.sectionComplete}
                             clickFunc={this.onNextSubmit}
                             text={'Finish (space)'}
-                            keyMatch={' '}
                         />
                     </div>
                 </div>

@@ -2,17 +2,13 @@ import React, {Component} from 'react';
 
 import states from './../../Constants/States';
 // import progress from './../../Constants/States';
-import KeyEventButton from '../../Custom/KeyEventButton';
 import CallbackKeyEventButton from '../../Custom/CallbackKeyEventButton';
-import NextEventButton from '../../Custom/NextEventButton';
 import NextButton from './NextButton';
-import Button from '@material-ui/core/Button';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Multiselect from 'multiselect-react-dropdown';
 
-const progress = 80;
+const progress = 75;
 
-// TODO: hot keys for retrain/continue prompt
 class Verification extends Component {
     constructor(props) {
         super(props);
@@ -28,7 +24,6 @@ class Verification extends Component {
             chosenRows: [],
             originalLabels: [],
             predictedLabels: [],
-            // newLabelVisible: false,
             nextArrowEnabled: false,
             modalEnabled: false,
             sectionComplete: false,
@@ -38,6 +33,9 @@ class Verification extends Component {
         };
     }
 
+    /**
+     * Refreshes state variables to beginning of verification process.
+     */
     resetState = () => {
         this.setState({
             isLoading: true,
@@ -48,7 +46,6 @@ class Verification extends Component {
             chosenRows: [],
             originalLabels: [],
             predictedLabels: [],
-            // newLabelVisible: false,
             nextArrowEnabled: false,
             modalEnabled: false,
             sectionComplete: false,
@@ -58,14 +55,14 @@ class Verification extends Component {
         });
     }
 
-    // Responsible for saving new labels and then finetuning with said labels
-    // Response is a number (20) predictions made after finetuning
+    /**
+     * Saves new labels by sending verified predictions to server, received new predictions back.
+     */
     async train (predictedLabels, modelType) {
         const data = await this.props.postData('/data/train_and_predict', {"rows": predictedLabels, "model": modelType, "id": this.props.getOptionID()});
         console.log('response ok:', data.ok);
         if (data.ok){
-            // const data = await this.props.getDataWithParams('/data/get_verification_data', {"id": this.props.getOptionID()});
-            console.log("response recieved: " + data.labeled);
+
             let rows = [];
             let labels = []
             let olabels = []
@@ -74,8 +71,7 @@ class Verification extends Component {
                 labels.push({id: obj["id"], label: obj["label"]});
                 olabels.push({id: obj["id"], label: obj["label"]})
             }
-            console.log('rows:', rows);
-            console.log('labels:', labels);
+
             this.setState({
                 isLoading: false,
                 chosenRows: rows,
@@ -85,6 +81,7 @@ class Verification extends Component {
                 currentLabel: labels[0],
                 maxItemIndex: rows.length -1,
             });
+
         } else {
             this.setState({
                 isLoading: false,
@@ -94,11 +91,15 @@ class Verification extends Component {
         }
     }
 
+    /**
+    * When the component mounts, we prompt the server to get the set of labels created
+    * for this dataset (dataset selected via option id
+    */
     async componentDidMount () {
         try {
             const predictedLabels = this.props.getLabels();
+            
             // TODO: labeled dataset is empty
-            console.log('previously saved labels:', predictedLabels);
 
             await this.train(predictedLabels, 0);
 
@@ -118,50 +119,33 @@ class Verification extends Component {
         }
     }
 
+    /**
+     * Click function that progresses to the next prediction.
+     */
     onNextArrowClick = () => {
-
-        console.log("clicked next arrow");
-        console.log("max index:", this.state.maxItemIndex);
-        console.log("curr index:", this.state.currentItemIndex);
         let nextIndex = this.state.currentItemIndex + 1;
-        let number = nextIndex + 1;
-        let maxNumber = this.state.maxItemIndex + 1;
-        // let percent = nextIndex / this.state.maxItemIndex * 100.0;
-        console.log("next index:", nextIndex);
-        console.log("-----------------------");
-
         if (nextIndex <= this.state.maxItemIndex){
             this.multiselectRef.current.resetSelectedValues();
             this.setState({
                 currentItemIndex: nextIndex,
                 currentItem: this.state.chosenRows[nextIndex],
                 currentLabel: this.state.predictedLabels[nextIndex],
-                // newLabelVisible: false,
                 nextArrowEnabled: false,
                 newLabel: null,
                 labelColor: 'black',
-                // progressPercent: percent,
-                
             });
         }
     }
 
+    /**
+     * Click function that signifies accurate prediction. Progresses user to next prediction. 
+     */
     onGoodClick = () => {
-
-        // goodItem.accuracy = 1;
-
-        // let updatedRows = this.state.chosenRows.slice(0, itemIndex).concat([goodItem], this.state.chosenRows.slice(itemIndex+1, this.state.maxItemIndex + 1));
-        
         let nextIndex = this.state.currentItemIndex + 1;
         let percent = nextIndex / (this.state.maxItemIndex + 1) * 100.0;
 
         if (this.state.currentItemIndex === this.state.maxItemIndex){
-            // if (this.state.modalEnabled){ // sus fix for not allowing user to update accuracy multiple times at the end
-            //     accuracy -= 1;
-            // }
-
             this.setState({
-                // chosenRows: updatedRows,
                 nextArrowEnabled: true,
                 modalEnabled: true,
                 labelColor: 'green',
@@ -169,7 +153,6 @@ class Verification extends Component {
             });
         } else {
             this.setState({
-                // chosenRows: updatedRows,
                 nextArrowEnabled: true,
                 labelColor: 'green',
                 progressPercent: percent,
@@ -179,22 +162,11 @@ class Verification extends Component {
         }
     }
 
-    // onBadClick = () => {
-
-    //     this.setState({
-    //         labelColor: 'red'
-    //     });
-
-    //     this.openNewLabel();
-    // }
-
-    // openNewLabel = () => {
-    //     document.getElementById("newLabel").focus();
-    //     this.setState({newLabelVisible: true});
-    // }
-
+    /**
+     * Submit function that signifies amended prediction. Progresses user to next prediction. 
+     */
     onNewLabelSubmit = () => {
-        console.log("new label: %s", this.state.newLabel);
+
         if (this.state.newLabel !== null) {
             let prevLabel = this.state.currentLabel;
             let itemIndex = this.state.currentItemIndex;
@@ -231,57 +203,89 @@ class Verification extends Component {
 
     }
 
+    /**
+     * Callback function for next-hotkey-enabled button
+     */
     handleNextButton = (event) => {
         if (event.key === 'ArrowRight' && this.state.currentItemIndex < this.state.maxItemIndex && this.state.nextArrowEnabled){
             this.onNextArrowClick();
         }
+    }  
+
+    /**
+     * Callback function for yes button.
+     */
+    handleYesButton = (event) => {
+        if (event.key === 'y') {
+            this.onGoodClick();
+        }
     }
 
+    /**
+     * Callback function for submit button.
+     */
     handleSubmitButton = (event) => {
-        if (event.key === 'Enter') {
+        if (event.key === 'Enter' && this.state.newLabel !== null) {
             this.onNewLabelSubmit();
         }
     }
 
+    /**
+     * Callback function for train button.
+     */
     handleTrainAgain = (event) => {
         if (event.key === 't' && this.state.modalEnabled) {
-            
             this.retrain();
         }
     }
 
+    /**
+     * Callback function for continue button.
+     */
     handleContinue = (event) => {
         if (event.key === 'c' && this.state.modalEnabled) {
             this.closeModal();
         }
     }
 
+    /**
+     * Select function for dropdown.
+     */
     onSelect = (selectedList, selectedItem) => {
         this.setState({newLabel: selectedItem.label});
     }
 
+    /**
+     * Remove function for dropdown.
+     */
     onRemove = (selectedList, removedItem) => {
         this.setState({newLabel: null});
     }
 
+    /**
+     * Next submit action. Updates page UI state.
+     */
     onNextSubmit = () => {
         this.props.updateState(states.results);
     }
 
+    /**
+     * Generates accuracy for a round by summing the number of unchanged predictions.
+     */
     generateAccuracy = () => {
         let ac = 0;
         for (let i = 0; i < this.state.predictedLabels.length; i++){
-            // console.log('predicted: ' + this.state.predictedLabels[i]['label']);
-            // console.log('actual: ' + this.state.originalLabels[i]['label']);
             if (this.state.predictedLabels[i]['label'] === this.state.originalLabels[i]['label']) {
                 ac += 1;
-                // console.log('accurate!');
             }
         }
         let accuracy = ac/this.state.predictedLabels.length*100.0;
         return accuracy
     }
 
+    /**
+     * Prompts retraining of model and reset of Verification stage.
+     */
     retrain = () => {
         // send results to server; reset state; retrain
         const predictedLabels = this.state.predictedLabels;
@@ -291,21 +295,23 @@ class Verification extends Component {
         this.train(predictedLabels, 1); // we retrain successively
     }
 
+    /**
+     * Should be called if continue is selected; section is now complete.
+     */
     closeModal = () => {
         let accuracy = this.generateAccuracy();
         this.props.saveAccuracy(accuracy);
-        console.log('calling close modal');
-        // close modal; activate next button
         this.setState({
             modalEnabled: false,
             sectionComplete: true,
         });
 
-    }
+    }   
 
+    /**
+    * Callback function for next submit action.
+    */
     handleNextKeyPress = (event) => {
-        console.log('trying to move to next (section complete):' + this.state.sectionComplete);
-        // TODO: prompt training, prediction, and labeling of the rest of the dataset (perhaps results is responsible for this)
         if (event.key === ' ' && this.state.sectionComplete){
             // save these labels
             this.props.saveLabels(this.state.predictedLabels);
@@ -368,10 +374,10 @@ class Verification extends Component {
                         </div>
                         <div style={{ display: 'flex', marginTop: "25px", width: '30vw', justifyContent: 'space-between', alignItems: 'flex-start'}}>
                             <div style={{width: '15vw', widthmarginRight: '5px'}}>
-                                <KeyEventButton
+                                <CallbackKeyEventButton
                                     buttonAvailable={true}
                                     clickFunc={this.onGoodClick}
-                                    keyMatch={"y"}
+                                    callBackFunc={this.handleYesButton}
                                     text={"Yes (y)"}
                                 />
                             </div>
@@ -382,16 +388,16 @@ class Verification extends Component {
                                     id={"newLabel"}
                                     placeholder={"Select new label"}
                                     hidePlaceholder={true}
-                                    options={this.state.labelOptions} // Options to display in the dropdown
+                                    options={this.state.labelOptions} 
                                     singleSelect={true}
-                                    onSelect={this.onSelect} // Function will trigger on select event
-                                    onRemove={this.onRemove} // Function will trigger on remove event
-                                    displayValue="label" // Property name to display in the dropdown options
+                                    onSelect={this.onSelect}
+                                    onRemove={this.onRemove}
+                                    displayValue="label"
                                 />
                             </div>
                             <CallbackKeyEventButton
                                 callBackFunc={this.handleSubmitButton}
-                                buttonAvailable={true}
+                                buttonAvailable={this.state.newLabel !== null}
                                 clickFunc={this.onNewLabelSubmit}
                                 text={"Submit (enter)"}
                             />
@@ -422,12 +428,11 @@ class Verification extends Component {
                 )}
                 <div style={{margin: '15px', width:'100%'}}>
                     <div style={{alignItems:'end'}}>
-                        <NextEventButton 
+                        <CallbackKeyEventButton
                             callBackFunc={this.handleNextKeyPress}
                             buttonAvailable={this.state.sectionComplete}
                             clickFunc={this.onNextSubmit}
                             text={'Next (space)'}
-                            keyMatch={' '}
                         />
                     </div>
                 </div>

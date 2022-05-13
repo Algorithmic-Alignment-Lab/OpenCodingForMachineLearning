@@ -3,13 +3,11 @@ import React, {Component, Suspense} from 'react';
 import states from './../../Constants/States';
 
 import LinearProgress from '@material-ui/core/LinearProgress';
-import KeyEventButton from '../../Custom/KeyEventButtonCallbackAvailable';
+import CallbackKeyEventButton from '../../Custom/CallbackKeyEventButton';
 
 import DataOptions from './DataOptions';
 
 const fetch = require('node-fetch');
-
-
 
 const progress = 0;
 
@@ -25,15 +23,21 @@ class Introduction extends Component {
     }
 
 
+    /**
+    * When the component mounts, we get all of the titles of the parsed data set options.
+    *
+    * This lets us populate our dropdown.
+    */
     async componentDidMount() {
         try {
             const response = await fetch('/data/get_all_data_options');
-            // show 404 or 500 errors
+            
             if (!response.ok) {
                 throw Error(response.statusText);
             }
 
             const data = await response.json();
+
             let optionsFull = data.options
             let formattedOptionsFull = [];
 
@@ -49,22 +53,40 @@ class Introduction extends Component {
         }
     }
 
-    onSelect = (selectedList, selectedItem) => {
+
+    /**
+    * Dropdown selection.
+    */
+    onSelect = (_, selectedItem) => {
         this.setState({selectedData: selectedItem, sectionComplete: true});
     }
 
-    onRemove = (selectedList, removedItem) => {
+    /**
+    * Dropdown removal.
+    */
+    onRemove = (_, __) => {
         this.setState({selectedData: null, sectionComplete: false});
     }
 
+    /**
+    * Next button submit action.
+    * 
+    * We set the option id, which indicates the dataset we are interacting with in all subsequent 
+    * backend calls. We also update the UI state.
+    */
     onNextSubmit = () => {
         this.props.setOptionID(this.state.selectedData.id);
         this.props.updateState(states.openCoding);
     }
-
-    buttonAvailable = () => {
-        return this.state.sectionComplete;
-    }
+    
+    /**
+    * keyDownEvent for Next button hotkey
+    */
+    handleNextKeyPress = (event) => {
+        if (event.key === ' ' && this.state.sectionComplete){
+            this.onNextSubmit();
+        }
+    };
 
     render() {
         return (
@@ -84,8 +106,9 @@ class Introduction extends Component {
                 </div>
                 <div style={{marginTop: '15px', width:'100%'}}>
                     <div style={{alignItems:'end'}}>
-                        <KeyEventButton
-                            buttonAvailable={this.buttonAvailable}
+                        <CallbackKeyEventButton
+                            buttonAvailable={this.state.sectionComplete}
+                            callBackFunc={this.handleNextKeyPress}
                             clickFunc={this.onNextSubmit}
                             text={'Next (space)'}
                             keyMatch={' '}

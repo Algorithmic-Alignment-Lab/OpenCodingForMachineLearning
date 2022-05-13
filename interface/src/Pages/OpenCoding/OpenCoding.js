@@ -3,30 +3,20 @@ import { ScrollSync, ScrollSyncPane } from 'react-scroll-sync';
 
 import states from '../../Constants/States';
 // import progress from './../../Constants/States';
-import Button from '@material-ui/core/Button';
-import KeyEventButton from '../../Custom/KeyEventButton';
 import CallbackKeyEventButton from '../../Custom/CallbackKeyEventButton';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
 import CustomAnnotationTable from './CustomAnnotationTable';
 
-import "./open-coding.css";
-import styled from 'styled-components'
-import NextEventButton from '../../Custom/NextEventButton';
+const progress = 25;
 
-const progress = 20;
-
-
-// tabbing + enter for sumit combo works, potential for bug where user finishes
-// and then deletes one but still hits next. Perhaps run a final check before moving forward
-// with next
 class OpenCoding extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
             rows: [],
-            // helps deal with tabbing behavior, map of row index to in Progress states
+            // helps deal with tabbing behavior, map of row index to in Progress state
             // when Enter is hit or the "Done annotating" button is prompted 
             // these values will be set to rows
             inProgress: new Map(),
@@ -36,10 +26,15 @@ class OpenCoding extends Component {
         }
     }
 
+    /**
+    * When the component mounts, we gather n randomly selected annotations based on our data option id.
+    *
+    * This lets us populate our dual-column annotation structure.
+    */
     async componentDidMount () {
         try {
             const data = await this.props.getDataWithParams('/data/get_data_option', {"id": this.props.getOptionID()});
-            // show 404 or 500 errors
+            
             if (!data.ok) {
                 throw Error(data.statusText);
             }
@@ -56,6 +51,9 @@ class OpenCoding extends Component {
         }
     }
 
+    /**
+    * Callback function for next key press
+    */
     handleNextKeyPress = (event) => {
         // console.log(`next possible: %s, section complete %s`, this.state.nextPossible, this.state.sectionComplete);
         if (event.key === ' ' && this.state.sectionComplete){
@@ -63,10 +61,19 @@ class OpenCoding extends Component {
         }
     };
 
+    /**
+    * Callback function for our customized table object.
+    * 
+    * The table object conservatively calls this function to update the editedRows state.
+    * Given the expensive nature of updating editedRows, this function should be called
+    * as few times as possible.
+    */
     toggleSubmit = (inProgressRows) => {
-        // inProgressRows is assumed to never have empty string values
+        
         let data = [...this.state.rows];
-        // let editedRows = [...this.state.editedRows];
+        
+        // delete rows that we were holding that now have empty strings;
+        // add new rows with new annotation values
         for (let [index, value] of inProgressRows) {
             if (value === "" &&  this.state.editedRows.has(index)) {
                 this.state.editedRows.delete(index);
@@ -80,7 +87,6 @@ class OpenCoding extends Component {
 
         // keep track of set of completed ids; once 
         // the size is big enough, we're good to continue
-        // empty strings
         this.setState({
             rows: data,
             editedRows: this.state.editedRows,
@@ -89,15 +95,24 @@ class OpenCoding extends Component {
         });
     }
 
+    /**
+    * Next button submit action.
+    * 
+    * We store the annotations, and we update the UI page state. 
+    * We also check for user-state consistency regarding the annotations before storing.
+    */
     onNextSubmit = () => {
-        // submit data to backend
+        // NOTE: if a user edits but does not press 'enter' again before 
+        // submitting, the map will not update, and thus there may be a disconnect between
+        // what the user has typed and what is given to the server. Thus, there may
+        // be a future need to ensure consistency.
         this.props.saveAnnotationState(this.state.rows);
         this.props.updateState(states.assistedGrouping);
     }
 
     render() {
         return (
-            <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
+            <div id = 'open_coding_page' style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
                 <div style={{ margin: '15px'}}>
                     Open Coding
                 </div>
@@ -105,7 +120,6 @@ class OpenCoding extends Component {
                     <ScrollSync>
                         <div style={{ overflow: 'auto', marginTop: '5px', padding: '5px', height: "70vh", width: "75vw", border: '2px solid black', borderRadius: '10px' }}>
                             <ScrollSyncPane>
-                                {/* TODO: this.state.rows nor updating quickly enought */}
                                 <CustomAnnotationTable columns={[
                                     {
                                         accessor: 'annotation'
@@ -120,12 +134,11 @@ class OpenCoding extends Component {
                 </div>
                 <div style={{marginTop: '15px', width:'100%'}}>
                     <div style={{display: 'flex', alignItems:'space-between'}}>
-                        <NextEventButton 
+                        <CallbackKeyEventButton
                             callBackFunc={this.handleNextKeyPress}
                             buttonAvailable={this.state.sectionComplete}
                             clickFunc={this.onNextSubmit}
                             text={'Next (space)'}
-                            keyMatch={' '}
                         />
                     </div> 
                 </div>
