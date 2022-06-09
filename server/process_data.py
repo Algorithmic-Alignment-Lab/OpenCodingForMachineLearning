@@ -5,12 +5,49 @@ import numpy as np
 
 import math
 
-
 class ProcessingError(Exception):
     pass
 
-# idea: create a table mapping option names to specialized table names
-# then each dataset gets its own table, one for reading and one for writing (separation for security)
+
+def check_header_format(row):
+    '''
+    Checks format of header row. Throws ProcessingError if the format is incorrect.
+    '''
+    if len(row) != 2:
+        raise ProcessingError("Unsupported CSV file - wrong number of columns")
+    if row[0] != 'ID' or row[1] != 'TEXT':
+        raise ProcessingError("Unsupported CSV file - wrong headers")
+
+
+def check_title_format(row):
+    '''
+    Checks format of title row. Throws ProcessingError if the format is incorrect.
+    '''
+    if len(row) != 2:
+        raise ProcessingError("Unsupported CSV file - wrong number of columns")
+    if row[0] != '0':
+        raise ProcessingError("ID 0 required for data name")
+    
+
+def check_row_format(row, rows):
+    '''
+    Checks format of non-header and non-title row. Throws ProcessingError if the format is incorrect.
+    
+    Returns id: integer, text: string of row if formatting is supported.
+    '''
+    if len(row) != 2:
+        raise ProcessingError("Unsupported CSV file - wrong number of columns")
+    
+    id, text = row
+
+    if not id.isdigit():
+        raise ProcessingError("Unsupported ID type in CSV file")
+    if id in rows:
+        raise ProcessingError("Repeat ids in given csv file")
+
+    return id, text
+
+
 def parse_options_into_db():
     '''
     Searches through all csv files in ./../data and parses them into the rows needed to create a table for the local SQLLite database.
@@ -48,28 +85,14 @@ def parse_options_into_db():
                 skip_title = True
                 for row in reader:
                     if skip_header:
-                        if len(row) != 2:
-                            raise ProcessingError("Unsupported CSV file - wrong number of columns")
-                        if row[0] != 'ID' or row[1] != 'TEXT':
-                            raise ProcessingError("Unsupported CSV file - wrong headers")
+                        check_header_format(row)
                         skip_header = False
                     elif skip_title:
-                        if len(row) != 2:
-                            raise ProcessingError("Unsupported CSV file - wrong number of columns")
-                        if row[0] != '0':
-                            raise ProcessingError("ID 0 required for data name")
+                        check_title_format(row)
                         skip_title = False
                         name = row[1]
                     else:
-                        if len(row) != 2:
-                            raise ProcessingError("Unsupported CSV file - wrong number of columns")
-                        
-                        id, text = row
-
-                        if not id.isdigit():
-                            raise ProcessingError("Unsupported ID type in CSV file")
-                        if id in rows:
-                            raise ProcessingError("Repeat ids in given csv file")
+                        id, text = check_row_format(row, rows)
 
                         # csv file expects 1-indexed format, but rest of codebase
                         # expects 0-indexed format
@@ -91,8 +114,8 @@ def parse_options_into_db():
             print(e) 
             print(f"did not parse the following file: {csv_file}")        
         
-
     return annotation_objects
+
 
 def select_some(data_arr, percent_select, number_select=None):
     '''
@@ -115,8 +138,8 @@ def save_to_csv(output_filename, objects):
     Takes the given labeled objects and writes them to a csv file.
 
     INPUTS: 
-        output_filename: str, desired name of saved file
-        objects: array of {id: int, text: str, label: str}
+        output_filename: string, desired name of saved file
+        objects: array of {id: integer, text: string, label: string}
     OUTPUTS: 
         None
     '''
@@ -139,9 +162,9 @@ def write_to_csv(output_filename, objects, first_line = True):
     Takes the given labeled objects and writes them to a csv file.
 
     INPUTS: 
-        output_filename: str, desired name of saved file
-        objects: array of {id: int, text: str, label: str}
-        first_line: bool
+        output_filename: string, desired name of saved file
+        objects: array of {id: integer, text: string, label: string}
+        first_line: boolean
     OUTPUTS: 
         None
     '''
@@ -165,8 +188,8 @@ def write_to_csv_annotations(output_filename, objects):
     Takes the given annotated objects and writes them to a csv file.
 
     INPUTS: 
-        output_filename: str, desired name of saved file
-        objects: dict of id: {text: str, annotation: str}
+        output_filename: string, desired name of saved file
+        objects: dict of id: {text: string, annotation: string}
     OUTPUTS: 
         None
     '''

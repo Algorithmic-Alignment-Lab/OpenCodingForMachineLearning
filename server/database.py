@@ -5,7 +5,7 @@ from distutils import text_file
 import sqlite3
 from sqlite3 import Error
 
-# https://www.sqlitetutorial.net/sqlite-python/create-tables/
+# sourced from https://www.sqlitetutorial.net/sqlite-python/create-tables/
 def create_connection(db_file):
     """ create a database connection to the SQLite database
         specified by db_file
@@ -22,7 +22,7 @@ def create_connection(db_file):
     return conn
 
 
-# https://www.sqlitetutorial.net/sqlite-python/create-tables/
+# sourced from https://www.sqlitetutorial.net/sqlite-python/create-tables/
 def create_table(conn, create_table_sql):
     """ create a table from the create_table_sql statement
     :param conn: Connection object
@@ -36,7 +36,7 @@ def create_table(conn, create_table_sql):
         print(e)
 
 
-# https://www.sqlitetutorial.net/sqlite-python/create-tables/
+# sourced from https://www.sqlitetutorial.net/sqlite-python/create-tables/
 def delete_table(conn, delete_table_sql):
     """ delete a table from the database
     :param conn: Connection object
@@ -52,16 +52,17 @@ def delete_table(conn, delete_table_sql):
 
 def instantiate_tables(data_dict):
     '''
-    Instatiates options and option_id table for every csv file (id) in data that was parsed.
+    Instatiates options and option_id table for every csv file (id) in ./data that was able to be parsed. Each
+    csv file within ./data is a separate dataset option for the user.
 
-    INPUTS: data_dict
+    INPUTS: nested dictionary structure, data_dict
         data_dict = {
             table_id: {
-                name: str,
+                name: string,
                 rows: {
                     row_id: {
-                        text: str
-                        annotation: str
+                        text: string,
+                        annotation: string
                     },
                     ...
                 }
@@ -87,13 +88,12 @@ def instantiate_tables(data_dict):
         clear_sql_data_tables.append(sql_clear)
         sql_data_tables.append(sql_data_header + sql_data_rest)
 
-    # create a database connection
     conn = create_connection(database)
 
     clear_data_options_table = "DROP TABLE options"
 
+    # if we successfully create a connection, we can perfom our actions
     if conn is not None:
-
         # delete pre-existing forms of table
         delete_table(conn, clear_data_options_table)
 
@@ -121,11 +121,11 @@ def fill_tables(data_dict):
     INPUTS: data_dict
         data_dict = {
             table_id: {
-                name: str,
+                name: string,
                 rows: {
                     row_id: {
-                        text: str
-                        annotation: str
+                        text: string,
+                        annotation: string
                     },
                     ...
                 }
@@ -159,12 +159,15 @@ def fill_tables(data_dict):
 
 def get_options():
     '''
-    Returns dictionary D of options available
-    D = {
-        option_id: {
-            name: str
-        }
-    }
+    Returns dictionary of dataset options available.
+
+    INPUTS: None
+    OUPUTS: custom dictionary D
+            D = {
+                option_id: {
+                    name: str
+                }
+            }
     '''
     database = "./database/data_options.db"
     conn = create_connection(database)
@@ -187,7 +190,10 @@ def get_options():
 
 def get_option(option_id):
     '''
-    Returns name of current option
+    Returns the name of current option selected.
+
+    INPUTS: int
+    OUTPUTS: string
     '''
     database = "./database/data_options.db"
     conn = create_connection(database)
@@ -207,14 +213,16 @@ def get_option(option_id):
 
 def get_option_data(option_id):
     '''
-    Returns dictionary D of rows for a particular data option.
+    Returns dictionary of row content for a particular option_id.
 
-    D = {
-        row_id: {
-            text: str
-            annotation: str
-        }
-    }
+    INPUTS: int
+    OUTPUTS: custom dictionary D
+            D = {
+                row_id: {
+                    text: str
+                    annotation: str
+                }
+            }
     '''
     database = "./database/data_options.db"
     conn = create_connection(database)
@@ -239,9 +247,12 @@ def get_option_data(option_id):
 
 def create_labels(option_id):
     '''
-    Deletes then creates a labels_{option_id} table for that particular option_id's data.
+    Deletes and then creates a labels_{option_id} table for that particular option_id's data.
 
-    Additionally, deletes then creates a label_set_{option_id} table for that particular option_id's data.
+    Additionally, deletes and then creates a label_set_{option_id} table for that particular option_id's data.
+
+    INPUTS: int
+    OUTPUTS: None
     '''
     database = "./database/data_options.db"
     conn = create_connection(database)
@@ -265,7 +276,7 @@ def create_labels(option_id):
     else:
         print("Could not establish connection while creating labels")
 
-# TODO: are we adding labels for the same row multiple times?
+
 def add_labels(option_id, labels):
     '''
     Adds in information to the labels_{option_id} table.
@@ -275,12 +286,11 @@ def add_labels(option_id, labels):
     Also adds in newly-appearing labels to the label_set_{option_id} table.
 
     INPUTS:
-        option_id: int
-        labels: iterable of tuples of (row_id: int, label: text)
+        option_id: integer
+        labels: iterable of tuples of (row_id: integer, label: string)
     OUTPUTS:
         None
     '''
-    print(f'adding labels: {labels}')
     database = "./database/data_options.db"
     conn = create_connection(database)
 
@@ -302,12 +312,10 @@ def add_labels(option_id, labels):
 
         # pre-increment so we don't overwrite
         max_id += 1
-        print(f'labels:', labels)
 
         for elem in labels:
             row_id = elem['id']
             label = elem['label']
-            print(f"row: ", (row_id, label))
             labeled_row = (row_id, label)
             conn.execute(label_insert, labeled_row)
 
@@ -322,6 +330,7 @@ def add_labels(option_id, labels):
     else:
         print("Cannot establish database connection for add_labels")
 
+
 def update_labels(option_id, labels):
     '''
     Updates information to the labels_{option_id} table.
@@ -330,8 +339,8 @@ def update_labels(option_id, labels):
     does NOT update label_set table.
 
     INPUTS:
-        option_id: int
-        labels: iterable of tuples of (row_id: int, label: text)
+        option_id: integer
+        labels: iterable of tuples of (row_id: integer, label: string)
     OUTPUTS:
         None
     '''
@@ -354,8 +363,8 @@ def get_label_set(option_id):
     '''
     Returns set of unique label texts.
 
-    INPUTS: option_id: int
-    OUTPUTS: Set of strings
+    INPUTS: integer
+    OUTPUTS: set of strings
     '''
     database = "./database/data_options.db"
     conn = create_connection(database)
@@ -375,12 +384,13 @@ def get_label_set(option_id):
     
     return labels
 
+
 def get_label_set_data(option_id):
     '''
     Returns mapping of list of tuples of (id, label) in label_set_{option_id}
 
-    INPUTS: option_id: int
-    OUTPUTS: list of tuples of (id: int, label: str)
+    INPUTS: integer
+    OUTPUTS: list of tuples of (id: integer, label: string)
     '''
     database = "./database/data_options.db"
     conn = create_connection(database)
@@ -399,12 +409,13 @@ def get_label_set_data(option_id):
     
     return labels
 
+
 def get_labeled_data(option_id):
     '''
     Returns array of labeled text objects.
 
-    INPUTS: option_id: int
-    OUTPUTS: array of {text: str, label: str, id: int} objects
+    INPUTS: integer
+    OUTPUTS: array of {text: string, label: string, id: integer} objects
     '''
     database = "./database/data_options.db"
     conn = create_connection(database)
@@ -432,12 +443,13 @@ def get_labeled_data(option_id):
     
     return labeled_data
 
+
 def get_unlabeled_data(option_id):
     '''
     Returns array of unlabeled text objects.
 
-    INPUTS: option_id: int
-    OUTPUTS: array of {text: str, id: int} objects
+    INPUTS: option_id: integer
+    OUTPUTS: array of {text: string, id: integer} objects
     '''
     database = "./database/data_options.db"
     conn = create_connection(database)
@@ -471,9 +483,13 @@ def get_unlabeled_data(option_id):
 
 def set_annotation_data(option_id, rows):
     '''
+    Sets annotations for a particular group of rows.
+
     INPUTS:
-        option_id: int
-        rows: tuple of (row_id, annotation)
+        option_id: integer
+        rows: tuple of (row_id: interger, annotation: string)
+
+    OUTPUTS: None
     '''
     database = "./database/data_options.db"
     conn = create_connection(database)
@@ -490,15 +506,19 @@ def set_annotation_data(option_id, rows):
     else:
         print("Cannot establish database connection for set_annotation_data")
 
+
 def get_annotation_data(option_id):
     '''
+    Returns a dictionary representing annotation data for any row of data under 
+    option_{option_id} with a non-empty annotation field.
+
     INPUTS:
-        option_id: int
+        option_id: integer
     OUTPUTS:
         D = {
             row_id: {
-                text: str
-                annotation: str
+                text: string
+                annotation: string
             }
         } for all entries where annotation != ""
     '''
@@ -523,11 +543,15 @@ def get_annotation_data(option_id):
 
     return d
 
+
 def get_table_rows(option_id, row_ids):
     '''
+    Returns a dictionary representing annotation data for all rows of row_ids under 
+    option_{option_id} with a non-empty annotation field.
+
     INPUTS:
-        option_id: int
-        row_ids: [int]
+        option_id: integer
+        row_ids: list of integers
     OUTPUTS:
         D = {
             row_id: {
@@ -558,16 +582,20 @@ def get_table_rows(option_id, row_ids):
 
     return d
 
+
 def get_table_rows_full(option_id, row_ids):
     '''
+    Returns a dictionary representing annotation data for all rows of row_ids under 
+    option_{option_id}.
+
     INPUTS:
-        option_id: int
-        row_ids: [int]
+        option_id: integer
+        row_ids: list of integers
     OUTPUTS:
         D = {
             row_id: {
-                text: str
-                annotation: str
+                text: string
+                annotation: string
             }
         } for all entries
     '''

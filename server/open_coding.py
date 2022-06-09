@@ -23,15 +23,6 @@ def test():
     add_options(response)
     return json.jsonify(response)
 
-# @app.route('/data/happydb', methods=['GET'])
-# def happy_db():
-#     print("happy db")
-#     response = {
-#         "body": "inside happy db"
-#     }
-
-#     add_options(response)
-#     return json.jsonify(response)
 
 @app.route('/data/prep_data', methods=['GET'])
 def prep_data():
@@ -39,7 +30,6 @@ def prep_data():
     A request to grab all csv files, and load the information into the database
     '''
     data_dict = parse_options_into_db()
-    print(f"data dictionary options: {list(data_dict.keys())}")
     instantiate_tables(data_dict)
     fill_tables(data_dict)
 
@@ -53,6 +43,9 @@ def prep_data():
 
 @app.route('/data/get_all_data_options', methods=['GET'])
 def get_all_data_options():
+    '''
+    A request to get all dataset options.
+    '''
     options = get_options()
 
     response = {
@@ -63,12 +56,20 @@ def get_all_data_options():
     add_options(response)
     return json.jsonify(response)
 
+
 @app.route('/data/get_data_option', methods=['GET'])
 def get_data_option():
+    '''
+    A request to get data for a particular dataset option. 
+    '''
     option_id = request.args.get("id")
-    max_request_size = 50 # TODO: adjust constant
+    max_request_size = 30 # NOTE: this constant adjusts the number of rows to annotate during open coding
+    
+    # get the selected data and initialize necessary tables
     options = get_option_data(option_id)
     create_labels(option_id)
+    
+    # choose a subset of rows to return at random
     option_ids = list(options.keys())
     selected_ids = select_some(option_ids, 0, max_request_size)
 
@@ -83,13 +84,16 @@ def get_data_option():
     add_options(response)
     return json.jsonify(response)
 
-# TODO: function call to initiate pre-training of model
-# then it can run in the backgrouond while the  user annotates and labels
-# can set a state in App.js
 
-# TODO: pushing back annotations
+# TODO: function call to initiate pre-training of model which runs in the background
+# while the  user annotates and labels. Conclusion sets a state in App.js.
+
+
 @app.route('/data/save_annotations', methods=['POST'])
 def save_annotations():
+    '''
+    Saves annotation rows for a particular dataset option.
+    '''
     response = {}
     add_options(response)
     content_type = request.headers.get('Content-Type')
@@ -110,6 +114,9 @@ def save_annotations():
 
 @app.route('/data/get_annotations', methods=['GET'])
 def get_annotations():
+    '''
+    Gets annotation rows for a particular dataset option.
+    '''
     option_id = request.args.get("id")
     annotations = get_annotation_data(option_id)
 
@@ -117,7 +124,6 @@ def get_annotations():
     for id in annotations:
         parsed_options.append({"id": int(id), "text": annotations[id]["text"], "annotation": annotations[id]["annotation"]})
 
-    print("annotations found:", parsed_options)
     response = {
         "rows": parsed_options
     }
@@ -128,6 +134,9 @@ def get_annotations():
 
 @app.route('/data/save_labels', methods=['POST'])
 def save_labels():
+    '''
+    Saves labels for a particular dataset option.
+    '''
     response = {}
     add_options(response)
     content_type = request.headers.get('Content-Type')
@@ -145,8 +154,12 @@ def save_labels():
 
     return json.jsonify(response)
 
+
 @app.route('/data/get_label_set', methods=['GET'])
 def get_label_set_req():
+    '''
+    Gets the set of labels currently associated with a particular dataset option.
+    '''
     option_id = request.args.get("id")
     label_set = get_label_set(option_id)
 
@@ -157,8 +170,12 @@ def get_label_set_req():
     add_options(response)
     return json.jsonify(response)
 
+
 @app.route('/data/update_labels', methods=['POST'])
 def update_labels_req():
+    '''
+    Updates labels for a particular dataset option.
+    '''
     response = {}
     add_options(response)
     content_type = request.headers.get('Content-Type')
@@ -176,8 +193,15 @@ def update_labels_req():
 
     return json.jsonify(response)
 
+
 @app.route('/data/train_and_predict', methods=['POST'])
 def train_and_predict():
+    '''
+    Initiates one loop of the train and predict feedback loop.
+
+    Saves the labels provided and succesively re-trains the appropriate classification model. Then, 
+    gathers a group of predicted labels for un-seen text examples and returns them for future classification.
+    '''
     response = {}
     add_options(response)
     content_type = request.headers.get('Content-Type')
@@ -187,21 +211,20 @@ def train_and_predict():
         rows = json_data['rows']
         option_id = json_data['id']
 
-        # save these labels
+        # save the new labels
         add_labels(option_id, rows)
 
-        # get their row ids in order to build up required data rows
+        # get row ids and build up required data rows
         row_ids = [row['id'] for row in rows]
         text_objs = get_table_rows_full(option_id, row_ids)
-        print(f'I found these text objects:', text_objs)
         data_rows = [{'text': text_objs[elem['id']]['text'], 'id': elem['id'], 'label': elem['label']} for elem in rows]
 
-        # grab which model we're going to use in order to support successive training (efficiency)
+        # grab which model we're going to use in order to support successive training (efficiency booster)
         model_type = json_data['model']
         model_name = 'happy_db_pretrained_50_5' if (model_type == 0) else 'open_coding_finetuned_1_1_1_' + 'happy_db_pretrained_50_5'
         
         percent_train = 1 # always use entire set to train
-        # TODO: set constants
+        # NOTE: These parameters are adjustable
         batch_size = 1
         num_epochs = 1
 
@@ -216,18 +239,17 @@ def train_and_predict():
             label_id_mappings['label_to_id'][label] = id
 
         # finetune the model, return output filepath
-        # TODO: support multiple labels per row_id (would require large structural change; row_id -> multiple strings?)
-        # call with no prefix based on model type
         output_name = open_coding_finetune_model(model_name, label_id_mappings, ([d['text'] for d in data_rows], [d['label'] for d in data_rows]), percent_train, batch_size, num_epochs, (model_type != 0))
         
         # will be saved at the following 
         # gather all unlabeled texts
         unlabeled_data = get_unlabeled_data(option_id)
 
-         # randomly select given percentage/number of examples
-        # TODO: set constants
+        # randomly select given percentage or number of examples
+        # NOTE: these constants are adjustable. The percentage or number given represents the number
+        # of verification examples for the next round of verification.
         percent_guess = 0.03
-        number_guess = 50
+        number_guess = 10
         selected_unlabeled_data = select_some(unlabeled_data, percent_guess, number_guess)
 
         # make predictions, return [{id, text, labels}]
@@ -241,65 +263,23 @@ def train_and_predict():
 
     return json.jsonify(response)
 
-@app.route('/data/get_verification_data', methods=['GET'])
-def get_verification_data():
-    option_id = request.args.get("id")
-
-    # get all currently labeled data
-    # TODO: should I succesively train or always freshly train?
-    data_rows = get_labeled_data(option_id)
-    print(f'verification labeled data: {data_rows}')
-    # select the model to finetune
-    # TODO: successive saving, pulling
-    # TODO: make modular, gather model name from saved database name
-    model_name = 'happy_db_pretrained_50_5'
-    percent_train = 1 # always use entire set to train
-    # TODO: set constants
-    batch_size = 1
-    num_epochs = 1
-
-    # gather label_id_mappings
-    id_label_tuples = get_label_set_data(option_id)
-    label_id_mappings = {
-        'id_to_label': {},
-        'label_to_id': {}
-    }
-    for id, label in id_label_tuples:
-        label_id_mappings['id_to_label'][id] = label
-        label_id_mappings['label_to_id'][label] = id
-
-    # finetune the model, return output filepath
-    # TODO: support multiple labels per row_id (would require large structural change; row_id -> multiple strings?)
-    output_name = open_coding_finetune_model(model_name, label_id_mappings, ([d['text'] for d in data_rows], [d['label'] for d in data_rows]), percent_train, batch_size, num_epochs)
-
-    # gather all unlabeled texts
-    unlabeled_data = get_unlabeled_data(option_id)
-
-    # randomly select given percentage/number of examples
-    # TODO: set constants
-    percent_guess = 0.03
-    number_guess = 50
-    selected_unlabeled_data = select_some(unlabeled_data, percent_guess, number_guess)
-
-    # make predictions, return [{id, text, labels}], we DON'T save these (only save to dataset after user confirmation)
-    predictions = call_predict(selected_unlabeled_data, output_name, label_id_mappings)
-
-    response = {
-        "labeled": predictions
-    }
-
-    add_options(response)
-    return json.jsonify(response)
 
 @app.route('/data/get_results', methods=['GET'])
 def get_results():
+    '''
+    Performs the final fine-tuning round with the given labels, and then enters a 
+    predictive loop, where predicted labels are written to the output file in groups
+    of 200, until all rows of data have been written.
+
+    Then, returns the output filename.
+    '''
     option_id = request.args.get("id")
-    kerb = 'demo'
+    kerb = 'cas'
 
     data_rows = get_labeled_data(option_id)
     model_name = 'happy_db_pretrained_50_5'
     percent_train = 1 # always use entire set to train
-    # TODO: set constants
+    # NOTE: These parameters are adjustable
     batch_size = 1
     num_epochs = 1
 
@@ -314,7 +294,6 @@ def get_results():
         label_id_mappings['label_to_id'][label] = id
 
     # finetune the model, return output filepath
-    # todo - set model name with no prefix
     output_name = open_coding_finetune_model(model_name, label_id_mappings, ([d['text'] for d in data_rows], [d['label'] for d in data_rows]), percent_train, batch_size, num_epochs)
     name = get_option(option_id).replace(' ', '_')
 
@@ -323,19 +302,16 @@ def get_results():
     # gather all unlabeled texts, and predict
     unlabeled_data = get_unlabeled_data(option_id)
 
+    # loop until all data has been written
     while unlabeled_data != []:
 
         some_selected_data = select_some(unlabeled_data, 0, 200)
-
-        # make predictions, return [{id, text, label}]
         predictions = call_predict(some_selected_data, output_name, label_id_mappings)
 
-        # add all labels to db
+        # add all labels into the database and incrementally update results file
         add_labels(option_id, predictions)
-        # incrementally update results file
         write_to_csv(kerb + '_labeled_' + name, predictions, False)
 
-        # loop again
         unlabeled_data = get_unlabeled_data(option_id)
 
     # also save what was annotation
@@ -353,6 +329,9 @@ def get_results():
 
 
 def add_options(response):
+    '''
+    Sets default options for all return responses that are successful.
+    '''
     response["headers"] = {"content-type": "application/json"},
     response["ok"] = True
     return response
