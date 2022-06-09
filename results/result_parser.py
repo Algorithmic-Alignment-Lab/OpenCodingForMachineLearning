@@ -3,11 +3,13 @@ import seaborn as sns
 
 import matplotlib.pyplot as plt
 
-
 def read_labels(filename):
     '''
     Given a filename that contains a csv of (ID,TEXT,LABEL), returns a dictionary mapping
-    label: example_count.
+    label to a count of items with that label.
+
+    INPUTS: string
+    OUTPUTS: dictionary mapping strings to integers
     '''
     res = {}
 
@@ -28,38 +30,47 @@ def read_labels(filename):
 
 def plot_demos(demos):
     '''
-    INPUTS: demos, list of str filenames
+    Saves figures plotting the demos provided in the 'Figures' folder. Demos are 
+    expected in the form (csv_data_filename, figure_filename). 
+
+    The csv_data_filename should be a path to a csv file of the format (ID,TEXT,LABEL). 
+    The figures created are bar graphs repersenting the frequency of each label
+    within the given csv file. 
+
+    INPUTS: list of (string, string) tuples
     OUTPUTS: None
     '''
     dicts = []
 
-    for demo, title in demos:
+    for demo, filename in demos:
         d = read_labels(demo)
-        dicts.append((demo, d, title))
+        dicts.append((demo, d, filename))
 
+    # styling
     sns.set_style('darkgrid')
     sns.set_palette('muted', 3)
-    for _, d, title in dicts:
+    for _, d, filename in dicts:
 
         labels = list(d.keys())
         values = list(d.values())
 
+        # custom figure size, adjustable
         plt.figure(figsize = (20, 5))
 
         plt.bar(labels, values, width = 0.4)
+
         plt.xlabel("Labels Created")
         plt.ylabel("No. of Text Examples in Label Category")
         plt.title("Demo Predicted Label Results")
 
-        plt.savefig('./Figures/' + title + '.png')
+        plt.savefig('./Figures/' + filename + '.png')
         plt.clf()
 
 
 if __name__ == '__main__':
+    # example usage
     csv_name = ""
     fig_title = ""
-
     demos = [(csv_name, fig_title)]
-
     plot_demos(demos)
     
