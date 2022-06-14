@@ -1,5 +1,3 @@
-# TODO: take in unlabeled data, predict labels, profit (for one label)
-# TODO: handle multiple labels per text
 import torch
 
 def predict_labels(unlabeled_data, tokenizer, model, max_length):
@@ -17,9 +15,7 @@ def predict_labels(unlabeled_data, tokenizer, model, max_length):
         text, id = elem['text'], elem['id']
         tokenized = tokenizer(text, return_tensors="pt", truncation=True, max_length=max_length)
         output = model(**tokenized)
-        # TODO: get all labels above a certain percentage? the top two? etc.
-        # is it much easier to just support one label? yes ...
-        # print(output.logits)
+        # TODO: get all labels above a certain percentage of confidence
         prediction = torch.argmax(output.logits, axis=1)[0].item()
         label = id_to_label[prediction]
 

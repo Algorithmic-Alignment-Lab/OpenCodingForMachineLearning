@@ -1,6 +1,7 @@
 import torch
 
-# https://github.com/huggingface/transformers/blob/v4.17.0/src/transformers/models/distilbert/modeling_distilbert.py#L667
+# Foundation of code derived from https://github.com/huggingface/transformers/blob/v4.17.0/src/transformers/models/distilbert/modeling_distilbert.py#L667
+
 class MLMDataset(torch.utils.data.Dataset):
     def __init__(self, encodings):
         self.encodings = encodings
@@ -30,3 +31,6 @@ forward_types = {
 } 
 
 model_options = {'distilbert', 'roberta'}
+
+# NOTE: these are customizable!
+training_options = {'percent_pretrain': 1.0, 'percent_use': 1.0, 'mask_percentage': 0.15, 'max_length': 50, }

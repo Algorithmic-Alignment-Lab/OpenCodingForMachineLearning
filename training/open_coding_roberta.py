@@ -12,7 +12,8 @@ from transformers.activations import gelu
 # import style required by FLASK
 from .open_coding_constants import forward_types
 
-# https://github.com/huggingface/transformers/blob/v4.18.0/src/transformers/models/roberta/modeling_roberta.py#L1034
+# Majority of code compiled directly from Source A (listed below)
+# Source A: https://github.com/huggingface/transformers/blob/v4.18.0/src/transformers/models/roberta/modeling_roberta.py#L1034
 class RobertaClassificationHead(nn.Module):
     """Head for sentence-level classification tasks."""
 

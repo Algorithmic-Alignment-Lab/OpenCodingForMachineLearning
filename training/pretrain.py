@@ -11,6 +11,7 @@ import torch
 
 from open_coding_constants import MLMDataset
 
+# constants representing special tokens
 CLS = 101
 SEP = 102
 MASK = 103
@@ -31,13 +32,27 @@ def generate_masked(texts, tokenizer, mask_percentage, max_length, device="cpu")
         text: str
         tokenizer: transformers tokenizer
         mask_percentage: amount of text to mask
+
     OUTPUTS: inputs dictionary
     '''
-    # https://towardsdatascience.com/masked-language-modelling-with-bert-7d49793e5d2c
+    def assign_to_device(inputs):
+        '''
+        Assigns required elements of input to the given device.
+
+        INPUTS:
+            inputs: tensor
+
+        OUTPUTS: None
+        '''
+        send_to_device = {"input_ids", "attention_mask", "labels", "token_type_ids"}
+
+        for key, val in inputs.items():
+            if key in send_to_device:
+                inputs[key] = val.to(device)
+
+    # Guided by https://towardsdatascience.com/masked-language-modelling-with-bert-7d49793e5d2c
     inputs = tokenizer(texts, return_tensors='pt', max_length=max_length, truncation=True, padding = True)
     inputs['labels'] = inputs.input_ids.detach().clone()
-
-    print(f'input id shape: {inputs["input_ids"].size()}; input labels shape: {inputs["labels"].size()}')
 
     # create random array of floats in equal dimension to input_ids
     rand = torch.rand(inputs.input_ids.shape)
@@ -58,35 +73,24 @@ def generate_masked(texts, tokenizer, mask_percentage, max_length, device="cpu")
     return inputs
 
 
-def assign_to_device(inputs, device):
-    '''
-    Assigns certain elements of input to the given device
-    '''
-    send_to_device = {"input_ids", "attention_mask", "labels", "token_type_ids" }
-
-    for key, val in inputs.items():
-        if key in send_to_device:
-            inputs[key] = val.to(device)
-
 def preprocess_data_for_mlm(filename, tokenizer, mask_percentage, max_length, percent_elems_mask, device="cpu"):
     '''
-    Prepares csv file for later mlm pre-training.
+    Prepares csv file for masked language modeling (pre-training).
 
     INPUTS: 
         filename: str name of csv file to pre-process in ./../data. 
-        tokenizer: transformers tokenizer
-        mask_percentage: percentage of each text to mask
-        max_length: maximum size per piece of text
-        percent_elems_mask: percentage of dataset to preprocess for mlm
+        tokenizer: instance of Hugging Face PreTrainedTokenizer
+        mask_percentage: float, percentage of each text to mask
+        max_length: integer, maximum size per piece of text
+        percent_elems_mask: float, percentage of dataset to preprocess for mlm
 
     OUTPUT: 
       inputs: tokenized dictionary for mlm model training, size: number of examples for pretraining
     '''
 
-    # data_dir = './../data/'
     data_dir = './data/'
     texts = []
-    # open ouput and filter
+
     with open(data_dir + filename, 'r+') as f:
         reader = csv.reader(f)
         skip_header = True
@@ -108,7 +112,6 @@ def preprocess_data_for_mlm(filename, tokenizer, mask_percentage, max_length, pe
                 texts.append(text)
 
     pretrain_num = math.floor(len(texts)*percent_elems_mask)
-    print(f'size pretrain: {pretrain_num}')
     subset_texts = np.random.choice(texts,pretrain_num)
     inputs = generate_masked(list(subset_texts), tokenizer, mask_percentage, max_length)
     return inputs, pretrain_num
@@ -146,25 +149,12 @@ def mlm_pretrain(model, tokenizer, filename, output_path_filename, mask_percenta
         train_dataset=dataset
     )
 
-    result = trainer.train()
-    # print_summary(result)
+    trainer.train()
     trainer.save_model(output_path_filename + '/model')
 
+
 def save_base_model(model, output_path_filename):
-    print('saving model at:', output_path_filename + '/model')
+    '''
+    Saves model at specified output filepath
+    '''
     model.save_pretrained(output_path_filename + '/model')
-
-    # args = TrainingArguments(
-    #     output_dir =output_path_filename + '/outputs',
-    #     logging_dir=output_path_filename + '/logs',
-    #     # save_total_limit=1, # only save best checkpoint; remove disk quota
-    # )
-
-    # trainer = Trainer(
-    #     model=model,
-    #     args=args,
-    # )
-
-
-    # trainer.train()
-    # trainer.save_model(output_path_filename + '/model')

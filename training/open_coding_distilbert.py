@@ -11,8 +11,9 @@ from transformers.activations import gelu
 # import style required by FLASK
 from .open_coding_constants import forward_types
 
-# https://github.com/huggingface/transformers/blob/v4.17.0/src/transformers/models/distilbert/modeling_distilbert.py#L667
-# https://github.com/huggingface/transformers/tree/v4.18.0/src/transformers/models/distilbert
+# Majority of code compiled directly from Sources A and B (listed below)
+# Source A: https://github.com/huggingface/transformers/blob/v4.17.0/src/transformers/models/distilbert/modeling_distilbert.py#L667
+# Source B: https://github.com/huggingface/transformers/tree/v4.18.0/src/transformers/models/distilbert
 class OpenCodingModel(DistilBertPreTrainedModel):
 
     def __init__(self, num_labels, config_path = None, model_path = None, tokenizer = None):
@@ -61,7 +62,7 @@ class OpenCodingModel(DistilBertPreTrainedModel):
 
     def update_label_id_mapping(self, mappings):
         '''
-        Mapping allows us to go from multi-class probability output to the plaintext label
+        Mapping allows us to go from multi-class probability output to the plaintext label.
         '''
         self.mappings = mappings
 
@@ -71,7 +72,7 @@ class OpenCodingModel(DistilBertPreTrainedModel):
 
     def get_position_embeddings(self) -> nn.Embedding:
         """
-        Returns the position embeddings
+        Returns the position embeddings.
         """
         return self.distilbert.get_position_embeddings()
 

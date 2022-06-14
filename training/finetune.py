@@ -24,26 +24,48 @@ os.environ["WANDB_DISABLED"] = "true"
 
 def generate_tokenized(texts, labels, tokenizer, max_length, device="cpu"):
     '''
-    Tokenizes texts and labels for modeling.
+    Tokenizes texts and labels for predictive modeling.
+
+    INPUTS: 
+        texts: 2D array of strings
+        labels: 2D array of floats
+        tokenizer: instance of Hugging Face PreTrainedTokenizer
+        max_length: integer
+        device: string, default "cpu"
+
+    OUTPUTS: tuple of tensors
     '''
+    def assign_to_device(inputs):
+        '''
+        Assigns required elements of input to the given device.
+
+        INPUTS:
+            inputs: tensor
+
+        OUTPUTS: None
+        '''
+        send_to_device = {"input_ids", "attention_mask", "labels", "token_type_ids"}
+
+        for key, val in inputs.items():
+            if key in send_to_device:
+                inputs[key] = val.to(device)
+
     inputs = tokenizer(texts, return_tensors='pt', max_length=max_length, truncation=True, padding = True)
     input_labels = torch.tensor(labels)
     assign_to_device(inputs, device)
     return inputs, input_labels
 
-def assign_to_device(inputs, device):
-    '''
-    Assigns certain elements of input to the given device
-    '''
-    send_to_device = {"input_ids", "attention_mask", "labels", "token_type_ids" }
-
-    for key, val in inputs.items():
-        if key in send_to_device:
-            inputs[key] = val.to(device)
 
 def get_data_rows(filename, percent_use, data_arr = None):
     '''
-    Randomly chooses percent_use percentage of data read at filename in the form of text, labels
+    Randomly chooses a specified percentage of the dataset's rows.
+
+    INPUTS:
+        filename: string
+        percent_use: float
+        data_arr: data to chose from, overrides filename. Defaults to None.
+
+    OUTPUTS: tuple of string array, string array
     '''
     data_dir = ''
     texts = []
@@ -78,14 +100,19 @@ def get_data_rows(filename, percent_use, data_arr = None):
                     labels.append(label)
 
     chosen_indices = np.random.choice(range(len(texts)), math.floor(percent_use*len(texts)), replace=False)
-    print(f'total number of finetuning datarows: {len(chosen_indices)}')
     return [texts[i] for i in chosen_indices], [labels[i] for i in chosen_indices]
+
 
 def get_label_id_mappings(labels):
     '''
     Given all of the labels in the selected portion of the dataset, returns dictionary with two mappings,
     label to index, and index to label. These mappings represent the same multi-label classifier output by 
     the classification linear layer.
+
+    INPUTS: array of strings
+
+    OUTPUTS: dictionary with two keys, 'label_to_id' and 'id_to_label'. The former maps string to integer and the latter maps
+            integer to string.
     '''
     all_labels = set(labels)
 
@@ -101,6 +128,7 @@ def get_label_id_mappings(labels):
         'id_to_label': id_to_label,
         'label_to_id': label_to_id,
     }
+
 
 def get_train_test(filename, percent_train, percent_use, data_tuple = None):
     '''
@@ -139,16 +167,28 @@ def get_train_test(filename, percent_train, percent_use, data_tuple = None):
         'test_labels': test_subset_labels
     }
 
+
 def convert_labels(labels, label_mapping):
+    '''
+    Converts an array of labels into the respective 2D float array representation, where
+    each index of a label represents a float array of label weights.
+
+    INPUTS:
+        labels: array of strings
+        label_mapping: dictionary
+
+    OUTPUTS: 2D float array
+    '''
     converted = []
     # each label is an array of probabilities for each possible label type
     for label in labels:
         inner_list = [0 for _ in label_mapping['id_to_label'].keys()]
         for l_i in label_mapping['id_to_label']:
             if label_mapping['id_to_label'][l_i] == label:
-                inner_list[l_i] = 1 # assume one label classification for now
+                inner_list[l_i] = 1 # assume one label classification for now. TODO: update
         converted.append(inner_list)
     return converted
+
 
 def preprocess_data_for_classification(filename, percent_train, percent_use, tokenizer, max_length, data_tuple = None, label_mapping=None, device="cpu"):
     '''
@@ -159,7 +199,7 @@ def preprocess_data_for_classification(filename, percent_train, percent_use, tok
         tokenizer: transformers tokenizer
 
     OUTPUT: 
-      inputs: tokenized dictionary for model training, size: number of examples used for model training
+      dictionary of PredictionDataset for training, PredictionDataset for testing, and label id mappings.
     '''
     train_test = get_train_test(filename, percent_train, percent_use, data_tuple)
 
@@ -201,18 +241,37 @@ def preprocess_data_for_classification(filename, percent_train, percent_use, tok
         'label_to_id': label_mapping['label_to_id']
     }
 
-def classification_finetune(model, tokenizer, filename, percent_train, percent_use, max_length, num_epochs=1, batch_size=4, data_tuple=None, device="cpu", output_filename = None):
+
+def classification_finetune(model, tokenizer, filename, percent_train, percent_use, max_length, num_epochs=1, batch_size=4, data_tuple=None, device="cpu", output_filename=None):
+    '''
+    Finetunes the given model using the data specified by filename, unless data_tuple != None. Designed for
+    use for research testing. 
+
+    INPUTS:
+        model: instance of Hugging Face PreTrainedModel
+        tokenizer: instance of Hugging Face PreTrainedTokenizer
+        filename: string
+        percent_train: float
+        percent_use: float
+        max_length: integer
+        num_epochs: integer
+        batch_size: integer
+        data_tuple: tuple of string, string (text, labels)
+        device: string
+        output_filename: string
+
+    OUTPUTS: dictionary of PredictionDataset for training, PredictionDataset for testing, and label id mappings
+    '''
     model.set_forward_type("FINETUNE")
     mapping = model.mappings
     dataset = preprocess_data_for_classification(filename, percent_train, percent_use, tokenizer, max_length, data_tuple, mapping, device)
 
     args = TrainingArguments(
         output_dir=output_filename + '/outputs',
-        logging_dir= output_filename + '/logs',
+        logging_dir=output_filename + '/logs',
         per_device_eval_batch_size=batch_size,
         per_device_train_batch_size=batch_size,
         num_train_epochs=num_epochs,
-        # save_total_limit=1, # only save best checkpoint; remove disk quota
         dataloader_pin_memory=False
     )
 
@@ -223,18 +282,33 @@ def classification_finetune(model, tokenizer, filename, percent_train, percent_u
         eval_dataset=dataset["test"]
     )
 
-    print('training')
     result = trainer.train()
-    print('evalutating')
     metrics = trainer.evaluate()
-    print('writing')
     write_finetune_results(output_filename, result, metrics)
-    # if output_filename is not None:
-    #     trainer.save_model(output_filename)
 
     return dataset
 
+
 def classification_finetune_happy_db_subsets(model, tokenizer, filename, percent_train, percent_use, max_length, num_epochs=1, batch_size=4, data_tuple=None, device="cpu", output_filename = None):
+    '''
+    Finetunes the given model using the data specified by filename, unless data_tuple != None. Calls helper function
+    for writing results in subset form. Designed for use for research testing. 
+
+    INPUTS:
+        model: instance of Hugging Face PreTrainedModel
+        tokenizer: instance of Hugging Face PreTrainedTokenizer
+        filename: string
+        percent_train: float
+        percent_use: float
+        max_length: integer
+        num_epochs: integer
+        batch_size: integer
+        data_tuple: tuple of string, string (text, labels)
+        device: string
+        output_filename: string
+
+    OUTPUTS: dictionary of PredictionDataset for training, PredictionDataset for testing, and label id mappings
+    '''
     model.set_forward_type("FINETUNE")
     mapping = model.mappings
     dataset = preprocess_data_for_classification(filename, percent_train, percent_use, tokenizer, max_length, data_tuple, mapping, device)
@@ -256,21 +330,28 @@ def classification_finetune_happy_db_subsets(model, tokenizer, filename, percent
         eval_dataset=dataset["test"]
     )
 
-    print('training')
     result = trainer.train()
-    print('evalutating')
     metrics = trainer.evaluate()
-    print('writing')
     write_subset_results(output_filename + '/results.csv', result, metrics, percent_train)
 
     return dataset
 
 def open_coding_classification_finetune(model, tokenizer, max_length, num_epochs, batch_size, data_tuple, output_filename):
     '''
-    Finetuning tailored to the needs of Open Coding.
+    Finetuning tailored to the needs of Open Coding. Data is always passed through using the data_tuple, and CPU is always used.
+
+    INPUTS:
+        model: instance of Hugging Face PreTrainedModel
+        tokenizer: instance of Hugging Face PreTrainedTokenizer
+        max_length: integer
+        num_epochs: integer
+        batch_size: integer
+        data_tuple: tuple of string, string (text, labels)
+        output_filename: string
+
+    OUTPUTS: string
     '''
     texts, labels = data_tuple
-    print(f"texts: {texts}\nlabels{labels}")
     model.set_forward_type("FINETUNE")
     mapping = model.mappings
 
@@ -299,16 +380,18 @@ def open_coding_classification_finetune(model, tokenizer, max_length, num_epochs
     trainer.save_model(output_filename)
     return 'Completed Training'
 
+
 def write_finetune_results(output_filename, result, metrics):
     '''
-    INPUTS:
-        output_filename: information about the finetuned run
-        result: training result of given run
-    OUTPUTS: None
+    Writes results of finetuning session to the logs.
 
+    INPUTS:
+        output_filename: string, information about the finetuned run
+        result: dictionary
+        metrics: dictionary
+    OUTPUTS: None
     '''
     filename = '/finetuning_logs.txt'
-    print('writing to:', output_filename + filename)
     with open(output_filename + filename, 'a+') as f:
         f.write('--------------\n')
         f.write(f'train_loss: {result.training_loss}\n')
@@ -318,6 +401,16 @@ def write_finetune_results(output_filename, result, metrics):
     
 
 def write_subset_results(output_filename, result, metrics, percent_train):
+    '''
+    Writes results of finetuning session to the logs, in subset-desired form.
+
+    INPUTS:
+        output_filename: string, information about the finetuned run
+        result: dictionary
+        metrics: dictionary
+        precent_train: float
+    OUTPUTS: None
+    '''
     with open(output_filename, 'a+') as f:
         f.write(f'{percent_train},{metrics["eval_loss"]},{result.training_loss}\n')
         f.close()
