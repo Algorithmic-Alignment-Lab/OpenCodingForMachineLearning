@@ -11,9 +11,7 @@ import Results from './Pages/Results/Results';
 
 const fetch = require('node-fetch');
 
-const fakeData = ["I went on a successful date with someone I felt sympathy and connection with.", 'I was happy when my son got 90% marks in his examination ', 'I went to the gym this morning and did yoga.', 'We had a serious talk with some friends of ours who have been flaky lately. They understood and we had a good evening hanging out.', 'I went with grandchildren to butterfly display at Crohn Conservatory\n', 'I meditated last night.', 'I made a new recipe for peasant bread, and it came out spectacular!', 'I got gift from my elder brother which was really surprising me', 'YESTERDAY MY MOMS BIRTHDAY SO I ENJOYED', 'Watching cupcake wars with my three teen children', 'I came in 3rd place in my Call of Duty video game.', 'I completed my 5 miles run without break. It makes me feel strong.', 'went to movies with my friends it was fun ', 'I was shorting Gold and made $200 from the trade.', "Hearing Songs It can be nearly impossible to go from angry to happy, so you're just looking for the thought that eases you out of your angry feeling and moves you in the direction of happiness. It may take a while, but as long as you're headed in a more positive direction youall be doing yourself a world of good.", 'My son performed very well for a test preparation.', 'I helped my neighbour to fix their car damages. ', "Managed to get the final trophy in a game I was playing. ", "A hot kiss with my girl friend last night made my day", "My new BCAAs came in the mail. Yay! Strawberry Lemonade flavored aminos make my heart happy."]
 
-// TODO: how to store annotation objects; request specific datastructure.. sqlite cry
 class App extends Component {
   constructor(props) {
     super(props);
@@ -28,7 +26,15 @@ class App extends Component {
     }
   }
 
-  // https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+  /**
+   * Helper function for posting data via an http request to the local Flask server.
+   * 
+   * Borrowed from  https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+   * 
+   * @param {string} url 
+   * @param {} data 
+   * @returns 
+   */
   async postData(url = '', data = {}) {
     // Default options are marked with *
     const response = await fetch(url, {
@@ -46,13 +52,19 @@ class App extends Component {
     return response.json(); // parses JSON response into native JavaScript objects
   }
 
+  /**
+   * Helper function for getting data from an http request to the local Flask server.
+   * 
+   * @param {string} url 
+   * @param {*} params 
+   * @returns 
+   */
   async getDataWithParams(url = '', params = {}) {
     // Default options are marked with *
     let modifiedParams = Object.keys(params).map(key => "?" + encodeURIComponent(key) + "=" + encodeURIComponent(String(params[key])));
     let joinedParams = modifiedParams.join("&");
 
     const modifiedURL = url + joinedParams;
-    console.log("modified url: ", modifiedURL)
 
     const response = await fetch(modifiedURL, {
       method: 'GET', // *GET, POST, PUT, DELETE, etc.
@@ -68,6 +80,9 @@ class App extends Component {
     return response.json(); // parses JSON response into native JavaScript objects
   }
 
+  /**
+   * TODO: delete 
+   */
   async componentDidMount() {
     try {
         const response = await fetch('/data/get_all_data_options');
@@ -94,7 +109,9 @@ class App extends Component {
 
   
 
-  // start the call to the backend to load data
+  /**
+   * Before the component mounts, we ask the server to prep the data and reset the local databases. 
+   */
   async componentWillMount() {
     try {
       const response = await fetch('/data/prep_data');
@@ -103,7 +120,6 @@ class App extends Component {
           throw Error(response.statusText);
       }
       const data = await response.json();
-      console.log(data.body);
     } catch (error) {
         console.log(error);
     }
@@ -129,7 +145,6 @@ class App extends Component {
   }
 
   // data rows are an array of {id: uid, text: string}
-
   setDataRows = (rows) => {
     this.setState({
       texts: rows
@@ -137,52 +152,10 @@ class App extends Component {
   }
 
   getDataRows = () => {
-
     return this.state.texts;
-
-    // const getPosts = async () => {
-    //   try {
-    //     // const response = await fetch('http://localhost:5000/data/' + String(this.state.name),
-    //     const response = await fetch('/data/' + String(this.state.name),
-    //     // {
-    //     //   method: "get",
-    //     //   body: JSON.stringify(body),
-    //     //   headers: { "Content-Type": "application/json" }
-    //     // }
-    //     );
-    //     console.log('response recieved');
-    //     const data = await response.json();
-    //     console.log('data received');
-    //     console.log(data);
-    //   } catch(err) {
-    //     console.log(err); // failed to fetch
-    //   }
-    // }
-
-    // getPosts();
-
-    // fetch('http://127.0.0.1:5000/data/' + String(this.state.name)) 
-    // // fetch('http://localhost:5000/data/' + String(this.state.name)) 
-    //   .then((response) => response.json()) 
-    //   .then(text => console.log(text));
-    //   // .catch((err => console.error(err));
-
-    // let n = fakeData.length;
-    // let data = [];
-    // // let fakeTexts = ["once upon a time there was something magical somewhere old and magical", "in a land far far away", "it was the happiest of times", "at a time of things that were"];
-
-    // for (let i = 0; i < n; i++){
-    //   data.push({id: i, text: fakeData[i]});
-    //   // for (let j = 0; j < 4; j++){
-    //   //     data.push({id: i*4 + j, text: fakeTexts[j]});
-    //   // }
-    // }
-
-    // return data;
   }
 
   setOptionID = (optionID) => {
-    // this.loadDataRows(optionID);
     this.setState({
       optionID: optionID
     });
@@ -194,8 +167,8 @@ class App extends Component {
   }
 
   // input array of {id: row_uid, text: string, annotation: string} saved for 
-  // first call to AssistedGrouping
-  // our annotations backend call requires [[row_uid, annotation],...]
+  // first call to AssistedGrouping, our annotations backend call requires 
+  // [[row_uid, annotation], ...]
   saveAnnotationState = (annotations) => {
     let callAnnotations = [];
 
@@ -249,25 +222,10 @@ class App extends Component {
   // expects input array of {id: uid, label: string}
   // our labels array maps {id: uid, label: string}
   saveLabels = (labels) => {
-    // insert some input checks
-    // let reducedLabels = [];
-
-    // for (let i = 0; i < labels.length; i++){
-    //   reducedLabels.push({id: labels[i].id, label: labels[i].label});
-    // }
-
-    // this will be replaced with call to backend
-    // this.setState({
-    //   labels: labels
-    // });
-    console.log('saving labels:', labels);
-
     let res = this.postData('/data/save_labels', {"rows": labels, "id": this.state.optionID});
-    console.log(res);
   }
 
   getLabels = () => {
-    console.log('getting labels:', this.state.labels);
     return this.state.labels;
   }
 
@@ -281,7 +239,6 @@ class App extends Component {
     });
 
     let res = this.postData('/data/update_labels', {"rows": labels, "id": this.state.optionID});
-    console.log(res);
   }
 
   loadLabelSet = () => {
@@ -311,12 +268,8 @@ class App extends Component {
   }
 
   saveAccuracy = (accuracy) => {
-    console.log('saving accuracy:', accuracy);
     let accuracies = this.state.verificationAccuracies;
     accuracies.push(accuracy);
-
-    console.log('accuracies: ' + accuracies);
-
     this.setState({
       verificationAccuracies: accuracies
     });
