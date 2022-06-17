@@ -19,36 +19,6 @@ from .finetune import classification_finetune, get_data_rows, get_label_id_mappi
 
 os.environ["CUDA_VISIBLE_DEVICES"]="0"
 
-# def call_finetune_model(filename, model_name, percent_train, batch_size, num_epochs):
-#     '''
-#     Call to finetune model set up for verification validation. Derives finetuning data
-#     from pre-labeled datasets.
-#     '''
-#     device = "cuda" if torch.cuda.is_available() else "cpu"
-#     labeled_data_dir = './labeled_data/'
-#     model_dir = './models/'
-
-#     # NOTE: adjustable constants
-#     percent_use = 1
-#     max_length = 50
-
-#     filename_finetune = labeled_data_dir + filename + '.csv'
-#     texts, labels = get_data_rows(filename_finetune, percent_use)
-#     label_id_mappings = get_label_id_mappings(labels)
-
-#     num_labels = len(label_id_mappings['id_to_label'].keys())
-
-#     output_filename = f'finetuned_{batch_size}_{num_epochs}_{percent_train}_{model_name}'
-#     config_path = model_dir + model_name + '/config.json'
-#     model_path = model_dir + model_name + '/'
-
-#     # load pre-trained model and update known labels
-#     model = get_model('distilbert')(num_labels, config_path, model_path).to(device)
-#     model.update_label_id_mapping(label_id_mappings)
-
-#     tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
-#     classification_finetune(model, tokenizer, filename_finetune, percent_train, percent_use, max_length, num_epochs, batch_size, (texts, labels), device, model_dir + output_filename)
-    
 
 def open_coding_finetune_model(model_name, label_id_mappings, data_tuple, percent_train, batch_size, num_epochs, no_prefix = False):
     '''

@@ -52,7 +52,7 @@ def generate_tokenized(texts, labels, tokenizer, max_length, device="cpu"):
 
     inputs = tokenizer(texts, return_tensors='pt', max_length=max_length, truncation=True, padding = True)
     input_labels = torch.tensor(labels)
-    assign_to_device(inputs, device)
+    assign_to_device(inputs)
     return inputs, input_labels
 
 

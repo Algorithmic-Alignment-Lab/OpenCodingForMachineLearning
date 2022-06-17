@@ -68,7 +68,7 @@ def generate_masked(texts, tokenizer, mask_percentage, max_length, device="cpu")
     for i in range(inputs.input_ids.shape[0]):
         inputs.input_ids[i, selection[i]] = MASK
     
-    assign_to_device(inputs, device)
+    assign_to_device(inputs)
 
     return inputs
 

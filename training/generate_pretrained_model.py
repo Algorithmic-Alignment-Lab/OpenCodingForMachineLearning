@@ -12,11 +12,6 @@ import os
 
 os.environ["CUDA_VISIBLE_DEVICES"]="0"
 
-# TODO: remove
-# def pretrain_model(model, tokenizer, filename_pretrain, mask_percentage, max_length, percent_pretrain, num_epochs, batch_size):
-#     output_path_filename = f'models/happydb_pretrained_{batch_size}_{num_epochs}'
-#     # pretrain the model based on the specified parameters
-#     mlm_pretrain(model, tokenizer, filename_pretrain, mask_percentage, max_length, percent_pretrain, num_epochs, batch_size)
 
 def call_pretrain_model(data_filename, batch_size, num_epochs):
     '''
@@ -59,7 +54,7 @@ def save_base_model_general(model_type):
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model = get_model(model_type)(0).to(device)
     # output_filename = f'models/open_coding_base_{model_type}'
-    # for server disk access
+    # for server disk access, TODO: remove
     output_filename = f'/afs/csail.mit.edu/u/m/maprice/disk/maprice/models/open_coding_base_{model_type}'
 
     save_base_model(model, output_filename)

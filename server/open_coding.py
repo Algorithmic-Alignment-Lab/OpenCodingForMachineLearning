@@ -63,7 +63,7 @@ def get_data_option():
     A request to get data for a particular dataset option. 
     '''
     option_id = request.args.get("id")
-    max_request_size = 30 # NOTE: this constant adjusts the number of rows to annotate during open coding
+    max_request_size = 10 # NOTE: this constant adjusts the number of rows to annotate during open coding
     
     # get the selected data and initialize necessary tables
     options = get_option_data(option_id)
@@ -274,7 +274,7 @@ def get_results():
     Then, returns the output filename.
     '''
     option_id = request.args.get("id")
-    kerb = 'cas'
+    kerb = 'test'
 
     data_rows = get_labeled_data(option_id)
     model_name = 'happy_db_pretrained_50_5'
@@ -304,6 +304,8 @@ def get_results():
 
     # loop until all data has been written
     while unlabeled_data != []:
+        # TODO: remove
+        break
 
         some_selected_data = select_some(unlabeled_data, 0, 200)
         predictions = call_predict(some_selected_data, output_name, label_id_mappings)
