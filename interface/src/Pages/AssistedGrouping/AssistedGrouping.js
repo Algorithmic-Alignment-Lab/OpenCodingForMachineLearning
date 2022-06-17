@@ -131,7 +131,8 @@ class AssistedGrouping extends Component {
      * adds all elements to the running set of all grouped annotations.
      * 
      */
-    createGroup = () => {
+    createOrUpdateGroup = () => {
+        console.log('creating or updating');
         // update the comphrensive list of selected rows to include this new group
         let newSelected = this.state.allSelectedRows;
 
@@ -139,21 +140,29 @@ class AssistedGrouping extends Component {
             newSelected.add(this.state.selectedRowIds[i]);
         }
 
-        console.log('new selected (create): ', newSelected);
-
         let completed = newSelected.size === this.state.originalRows.length;
 
         // if the group name already exists, we need to update rather than create
         let foundGroup = false;
         for (let groupRow of this.state.groupRows){
-            // two possible cases - we have clicked on a group (and thus their rows are already
-            // part of selected) or we have typed in an identical name (and there are rows not in selected
-            // to include)
-            // TODO: handle latter case
+
             if (groupRow.text === this.state.groupName){
+                console.log('found the group');
+                // if the groups subrows have been released (group name was reselected),
+                // these ids will already be a part of selectedRows and selectedRowIds. If
+                // the group name was typed in, then the group subrows are not a part of 
+                // selectedRows and selectedRowIds, and the new subRows will need to include
+                // the relevant information.
+
+                // we can add the groupSubRows iff their id is not present in selectedRows
+                // const groupSubRows = groupRow.subRows;
+                // let relevantSubRows = this.state.selectedRows;
+                const selectedIdsSet = new Set(this.state.selectedRowIds);
+                const relevantSubRows = this.state.selectedRows.concat(groupRow.subRows.filter(row => !selectedIdsSet.has(row.id)));
+
                 foundGroup = true;
-                groupRow.depth = this.state.selectedRows.length;
-                groupRow.subRows = this.state.selectedRows;
+                groupRow.depth = relevantSubRows.length;
+                groupRow.subRows = relevantSubRows;
                 groupRow.expanded = false;
                 groupRow.expander =  "";
                 break;
@@ -182,6 +191,8 @@ class AssistedGrouping extends Component {
             readyToNameGroup: false
         });
     }
+
+
 
     /**
      * Function for deleting a group.
@@ -366,13 +377,14 @@ class AssistedGrouping extends Component {
     };
 
     /**
-    * keyDownEvent for Create Or Update Group button hotkey
+    * keyDownEvent for Create or Update Group button hotkey
     */
     handleCreateGroupKeyPress = (event) => {
         if (event.key === '/' && this.state.readyToGroup){
-            this.createGroup();
+            this.createOrUpdateGroup();
         }
     };
+
     
     render() {
         return (
@@ -554,7 +566,7 @@ class AssistedGrouping extends Component {
                                 <CallbackKeyEventButton
                                     callBackFunc={this.handleCreateGroupKeyPress}
                                     buttonAvailable={this.state.readyToGroup}
-                                    clickFunc={this.createGroup}
+                                    clickFunc={this.createOrUpdateGroup}
                                     text={'Create or Update Group (/)'}
                                 />
                             </div>
