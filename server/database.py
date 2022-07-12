@@ -188,6 +188,7 @@ def get_options():
 
     return d
 
+
 def get_option(option_id):
     '''
     Returns the name of current option selected.
@@ -210,6 +211,7 @@ def get_option(option_id):
         print("Cannot establish database connection for get_option")
 
     return name
+
 
 def get_option_data(option_id):
     '''
@@ -243,6 +245,86 @@ def get_option_data(option_id):
         conn.close()
 
     return d
+
+
+def create_constants():
+    '''
+    Deletes and then creates a constants_{option_id} table for that particular option_id's data.
+
+    INPUTS: None
+    OUTPUTS: None
+    '''
+    database = "./database/data_options.db"
+    conn = create_connection(database)
+
+    if conn is not None:
+        sql_clear_1 = f"DROP TABLE constants"
+        sql_data_header_1 = f"CREATE TABLE IF NOT EXISTS constants"
+        sql_data_rest_1 = "(id INTEGER PRIMARY KEY, coding INTEGER NOT NULL, verification INTEGER NOT NULL, rounds INTEGER NOT NULL);"
+
+        delete_table(conn, sql_clear_1)
+        create_table(conn, sql_data_header_1 + sql_data_rest_1)
+        
+        # always only one row, with id 0
+        constants_insert = f"INSERT INTO constants(id,coding,verification,rounds) VALUES(?,?,?,?)"
+        conn.execute(constants_insert, (0, 0, 0, 0))
+
+        conn.commit()
+        conn.close()
+    else:
+        print("Could not establish connection for create_constants")
+
+
+def set_constants(constants):
+    '''
+    Adds in information to the constants_{option_id} table. Since the constants_{option_id} will only
+    ever have one row, this overwrites pre-exising information. 
+
+    INPUTS:
+        constants: tuple of integer constants in the expected order of
+            (number of open coding examples, number of verification examples per round, number of verification rounds)
+    OUTPUTS:
+        None
+    '''
+    database = "./database/data_options.db"
+    conn = create_connection(database)
+
+    if conn is not None:
+        constants_update = f"UPDATE constants SET coding = ?, verification = ?, rounds = ? WHERE id = ?"
+
+        # id is always 0
+        conn.execute(constants_update, (*constants, 0))
+        
+        conn.commit()
+        conn.close()
+    else:
+        print("Cannot establish database connection for set_constants")
+
+
+def get_constant(constant_name):
+    '''
+    Returns the value of a constant in the constants table, row 0
+
+    INPUTS: string
+    OUTPUTS: integer
+    '''
+    database = "./database/data_options.db"
+    conn = create_connection(database)
+    res = 0
+
+    if conn is not None:
+        option_request = f"""SELECT {constant_name} FROM constants WHERE id = 0""" 
+        cursor = conn.execute(option_request)
+
+        for row in cursor:
+            res = row[0]
+        
+        conn.commit()
+        conn.close()
+    else:
+        print("Cannot establish database connection for get_constant")
+
+    return res
 
 
 def create_labels(option_id):
@@ -351,7 +433,7 @@ def update_labels(option_id, labels):
         label_update = f"UPDATE labels_{option_id} SET label = ? WHERE id = ?"
 
         for row_id, label in labels:
-            labeled_row = (row_id, label)
+            labeled_row = (label, row_id)
             conn.execute(label_update, labeled_row)
 
         conn.commit()

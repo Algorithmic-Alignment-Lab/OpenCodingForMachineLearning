@@ -23,8 +23,15 @@ row_id | label
 ```
 
 ### label_set_{option_id}
+
 ```
 label_id | label
+```
+
+### constants
+
+```
+0 | number of open coding examples | number of predictions per verification round | minimum number of verification rounds
 ```
 
 ## Development Instructions

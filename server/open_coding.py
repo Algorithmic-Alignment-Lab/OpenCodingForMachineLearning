@@ -8,7 +8,7 @@ from flask import Flask, json, request
 app = Flask(__name__)
 
 from process_data import parse_options_into_db, select_some, save_to_csv, write_to_csv, write_to_csv_annotations
-from database import instantiate_tables, fill_tables, get_options, get_option, get_option_data, set_annotation_data, get_annotation_data, add_labels, update_labels, get_label_set, get_table_rows_full, get_table_rows, get_labeled_data, get_unlabeled_data, get_label_set_data, create_labels
+from database import instantiate_tables, fill_tables, get_options, get_option, get_option_data, set_annotation_data, get_annotation_data, create_constants, set_constants, get_constant, add_labels, update_labels, get_label_set, get_table_rows_full, get_table_rows, get_labeled_data, get_unlabeled_data, get_label_set_data, create_labels
 
 from training.finetune_model import open_coding_finetune_model
 
@@ -24,6 +24,7 @@ def test():
     return json.jsonify(response)
 
 
+# TODO: make table of all options including boolean of whether or not a pre-trained model exists
 @app.route('/data/prep_data', methods=['GET'])
 def prep_data():
     '''
@@ -47,6 +48,7 @@ def get_all_data_options():
     A request to get all dataset options.
     '''
     options = get_options()
+    create_constants()
 
     response = {
         "names": [options[option]["name"] for option in options],
@@ -57,17 +59,22 @@ def get_all_data_options():
     return json.jsonify(response)
 
 
+# TODO: based on selected data option, might have to pre-train the model
 @app.route('/data/get_data_option', methods=['GET'])
 def get_data_option():
     '''
     A request to get data for a particular dataset option. 
     '''
     option_id = request.args.get("id")
-    max_request_size = 10 # NOTE: this constant adjusts the number of rows to annotate during open coding
+    # constants = request.args.get("constants")
+    constants = (1, 1, 1) # TODO
+
+    max_request_size = constants[0] # NOTE: this constant adjusts the number of rows to annotate during open coding
     
     # get the selected data and initialize necessary tables
     options = get_option_data(option_id)
     create_labels(option_id)
+    set_constants(constants)
     
     # choose a subset of rows to return at random
     option_ids = list(options.keys())
@@ -249,7 +256,7 @@ def train_and_predict():
         # NOTE: these constants are adjustable. The percentage or number given represents the number
         # of verification examples for the next round of verification.
         percent_guess = 0.03
-        number_guess = 10
+        number_guess = get_constant('verification')
         selected_unlabeled_data = select_some(unlabeled_data, percent_guess, number_guess)
 
         # make predictions, return [{id, text, labels}]
