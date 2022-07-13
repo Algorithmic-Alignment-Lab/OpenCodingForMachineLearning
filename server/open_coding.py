@@ -65,10 +65,9 @@ def get_data_option():
     '''
     A request to get data for a particular dataset option. 
     '''
-    option_id = request.args.get("id")
-    # constants = request.args.get("constants")
-    constants = (1, 1, 1) # TODO
 
+    option_id = request.args.get("id")
+    constants = tuple(map(lambda k: int(k), request.args.get("constants").split(',')))
     max_request_size = constants[0] # NOTE: this constant adjusts the number of rows to annotate during open coding
     
     # get the selected data and initialize necessary tables

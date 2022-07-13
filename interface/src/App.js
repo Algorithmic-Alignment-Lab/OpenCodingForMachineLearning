@@ -22,6 +22,7 @@ class App extends Component {
       annotations: null,
       labels: null,
       name: 'happydb',
+      constants: null,
       verificationAccuracies: [],
     }
   }
@@ -61,10 +62,10 @@ class App extends Component {
    */
   async getDataWithParams(url = '', params = {}) {
     // Default options are marked with *
-    let modifiedParams = Object.keys(params).map(key => "?" + encodeURIComponent(key) + "=" + encodeURIComponent(String(params[key])));
+    let modifiedParams = Object.keys(params).map(key => encodeURIComponent(key) + "=" + encodeURIComponent(String(params[key])));
     let joinedParams = modifiedParams.join("&");
 
-    const modifiedURL = url + joinedParams;
+    const modifiedURL = url + "?" + joinedParams;
 
     const response = await fetch(modifiedURL, {
       method: 'GET', // *GET, POST, PUT, DELETE, etc.
@@ -163,7 +164,16 @@ class App extends Component {
 
   getOptionID = () => {
     return this.state.optionID;
-    // return 1;
+  }
+
+  setConstants = (constants) => {
+    this.setState({
+      constants: constants
+    });
+  }
+
+  getConstants = () => {
+    return this.state.constants;
   }
 
   // input array of {id: row_uid, text: string, annotation: string} saved for 
@@ -284,10 +294,12 @@ class App extends Component {
       return <Introduction
         setOptionID = {this.setOptionID}
         updateState = {this.updateState}
+        setConstants = {this.setConstants}
         />;
     } else if (page === states.openCoding) {
       return <OpenCoding
         getOptionID = {this.getOptionID}
+        getConstants = {this.getConstants}
         getDataWithParams = {this.getDataWithParams}
         setDataRows = {this.setDataRows}
         // getDataRows = {this.getDataRows}

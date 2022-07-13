@@ -33,19 +33,18 @@ class OpenCoding extends Component {
     */
     async componentDidMount () {
         try {
-            const data = await this.props.getDataWithParams('/data/get_data_option', {"id": this.props.getOptionID()});
+            const data = await this.props.getDataWithParams('/data/get_data_option', {"id": this.props.getOptionID(), "constants": this.props.getConstants()});
             
             if (!data.ok) {
                 throw Error(data.statusText);
             }
 
-            console.log("response recieved");
             this.setState({
                 rows: data.rows
             });
 
             this.props.setDataRows(data.rows); // cache result
-            console.log("set response");
+            
         } catch (error) {
             console.log(error);
         }

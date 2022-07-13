@@ -15,9 +15,7 @@ export default class DataOptions extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        console.log('component updated');
         if (this.props.dataOptions !== prevProps.dataOptions) {
-            console.log('prop data:', this.props.dataOptions)
             this.setState({
                 options: this.props.dataOptions
             });
