@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import { ScrollSync, ScrollSyncPane } from 'react-scroll-sync';
 
 import states from '../../Constants/States';
 // import progress from './../../Constants/States';
@@ -115,10 +114,10 @@ class OpenCoding extends Component {
                 <div style={{ margin: '15px'}}>
                     Open Coding
                 </div>
-                <div style={{ display: 'flex', height: '75vh', width: '100vw', justifyContent: 'flex-start', alignItems: 'center', flexDirection: 'column'}}>
-                    <ScrollSync>
-                        <div style={{ overflow: 'auto', marginTop: '5px', padding: '5px', height: "70vh", width: "75vw", border: '2px solid black', borderRadius: '10px' }}>
-                            <ScrollSyncPane>
+                <div style={{ display: 'flex', padding: '5px', height: '75vh', width: '100vw', justifyContent: 'flex-start', alignItems: 'center', flexDirection: 'column'}}>
+                        <div style={{ overflow: 'scroll', marginTop: '5px', height: "70vh", width: "80vw", border: '2px solid black', borderRadius: '10px' }}>
+                            <div style={{ padding: '15px'}}>
+
                                 <CustomAnnotationTable columns={[
                                     {
                                         accessor: 'annotation'
@@ -127,9 +126,8 @@ class OpenCoding extends Component {
                                         accessor: 'text'
                                     }, 
                                 ]} data={this.state.rows} toggleSubmit={this.toggleSubmit}/>
-                            </ScrollSyncPane>
+                            </div>
                         </div>
-                    </ScrollSync>
                 </div>
                 <div style={{marginTop: '15px', width:'100%'}}>
                     <div style={{display: 'flex', alignItems:'space-between'}}>

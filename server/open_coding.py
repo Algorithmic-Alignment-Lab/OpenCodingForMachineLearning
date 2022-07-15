@@ -223,7 +223,7 @@ def pretrain_model():
 
         # fetch desired dataset name from option_id
         input_filename = '_'.join(get_option(option_id).lower().split(' '))
-        input_path = './../training/data/'
+        input_path = './../data/'
         output_path = './../training/models/'
 
         # pretrain pretrain
