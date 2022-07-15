@@ -7,7 +7,7 @@ from flask import Flask, json, request
 
 app = Flask(__name__)
 
-from process_data import parse_options_into_db, select_some, save_to_csv, write_to_csv, write_to_csv_annotations
+from process_data import parse_options_into_db, find_pretrained_models, select_some, save_to_csv, write_to_csv, write_to_csv_annotations
 from database import instantiate_tables, fill_tables, get_options, get_option, get_option_data, set_annotation_data, get_annotation_data, create_constants, set_constants, get_constant, add_labels, update_labels, get_label_set, get_table_rows_full, get_table_rows, get_labeled_data, get_unlabeled_data, get_label_set_data, create_labels
 
 from training.finetune_model import open_coding_finetune_model
@@ -31,6 +31,8 @@ def prep_data():
     A request to grab all csv files, and load the information into the database
     '''
     data_dict = parse_options_into_db()
+    find_pretrained_models(data_dict)
+
     instantiate_tables(data_dict)
     fill_tables(data_dict)
 
@@ -52,7 +54,8 @@ def get_all_data_options():
 
     response = {
         "names": [options[option]["name"] for option in options],
-        "options": options
+        "options": options,
+        # "pretrained_models": {options[option]["name"]: options[option]["models"] for option in options}
     }
 
     add_options(response)
@@ -68,12 +71,16 @@ def get_data_option():
 
     option_id = request.args.get("id")
     constants = tuple(map(lambda k: int(k), request.args.get("constants").split(',')))
+    # TODO, save selected pretrained model
+    # model = 'happy_db_pretrained_50_5'
+    model = constants[3]
+
     max_request_size = constants[0] # NOTE: this constant adjusts the number of rows to annotate during open coding
     
     # get the selected data and initialize necessary tables
     options = get_option_data(option_id)
     create_labels(option_id)
-    set_constants(constants)
+    set_constants(constants, model)
     
     # choose a subset of rows to return at random
     option_ids = list(options.keys())
@@ -81,7 +88,7 @@ def get_data_option():
 
     parsed_options = []
     for id in selected_ids:
-            parsed_options.append({"id": int(id), "text": options[id]["text"], "annotation": options[id]["annotation"]})
+        parsed_options.append({"id": int(id), "text": options[id]["text"], "annotation": options[id]["annotation"]})
 
     response = {
         "rows": parsed_options
@@ -227,8 +234,10 @@ def train_and_predict():
 
         # grab which model we're going to use in order to support successive training (efficiency booster)
         model_type = json_data['model']
-        model_name = 'happy_db_pretrained_50_5' if (model_type == 0) else 'open_coding_finetuned_1_1_1_' + 'happy_db_pretrained_50_5'
-        
+        model_name = get_constant('model')
+        # model_name = 'happy_db_pretrained_50_5' if (model_type == 0) else 'open_coding_finetuned_1_1_1_' + 'happy_db_pretrained_50_5'
+        model_name = model_name if (model_type == 0) else 'open_coding_finetuned_1_1_1_' + model_name
+
         percent_train = 1 # always use entire set to train
         # NOTE: These parameters are adjustable
         batch_size = 1

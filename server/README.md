@@ -16,6 +16,11 @@ option_id | option_name
 row_id | text | annotation
 ```
 
+### option_0 -> pretrained_{option_id}
+```
+row_id | model
+```
+
 ### labels_{option_id}
 
 ```

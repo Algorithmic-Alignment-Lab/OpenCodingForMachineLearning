@@ -52,13 +52,14 @@ def delete_table(conn, delete_table_sql):
 
 def instantiate_tables(data_dict):
     '''
-    Instatiates options and option_id table for every csv file (id) in ./data that was able to be parsed. Each
+    Instatiates options, pretrained_models, and option_id table for every csv file (id) in ./data that was able to be parsed. Each
     csv file within ./data is a separate dataset option for the user.
 
     INPUTS: nested dictionary structure, data_dict
         data_dict = {
             table_id: {
                 name: string,
+                pretrained_models: [string],
                 rows: {
                     row_id: {
                         text: string,
@@ -80,6 +81,10 @@ def instantiate_tables(data_dict):
 
     sql_data_tables = []
     clear_sql_data_tables = []
+
+    pretrained_data_tables = []
+    clear_pretrained_data_tables = []
+
     for options_id in data_dict:
         sql_clear = f"DROP TABLE option_{options_id}"
         sql_data_header = f"CREATE TABLE IF NOT EXISTS option_{options_id}"
@@ -87,6 +92,13 @@ def instantiate_tables(data_dict):
 
         clear_sql_data_tables.append(sql_clear)
         sql_data_tables.append(sql_data_header + sql_data_rest)
+
+        sql_clear = f"DROP TABLE pretrained_{options_id}"
+        sql_data_header = f"CREATE TABLE IF NOT EXISTS pretrained_{options_id}"
+        sql_data_rest = "(id INTEGER PRIMARY KEY, model TEXT NOT NULL);"
+
+        clear_pretrained_data_tables.append(sql_clear)
+        pretrained_data_tables.append(sql_data_header + sql_data_rest)
 
     conn = create_connection(database)
 
@@ -100,13 +112,18 @@ def instantiate_tables(data_dict):
         # create options table
         create_table(conn, sql_data_options_table)
 
-         # delete pre-existing forms of table
+        # delete pre-existing forms of table
         for table in clear_sql_data_tables:
+            delete_table(conn, table)
+        for table in clear_pretrained_data_tables:
             delete_table(conn, table)
 
         # create each individual option's table
         for table in sql_data_tables:
             create_table(conn, table)
+        for table in pretrained_data_tables:
+            create_table(conn, table)
+
     else:
         print("Cannot establish database connection for instantiate_tables")
 
@@ -122,6 +139,7 @@ def fill_tables(data_dict):
         data_dict = {
             table_id: {
                 name: string,
+                pretrained_models: [string],
                 rows: {
                     row_id: {
                         text: string,
@@ -146,6 +164,11 @@ def fill_tables(data_dict):
             option = (options_id,data_dict[options_id]["name"])
             conn.execute(option_insert, option)
 
+            for i in range(0, len(data_dict[options_id]["pretrained_models"])):
+                row_insert_header = f"INSERT INTO pretrained_{options_id}(id,model) VALUES(?,?)"
+                row = (i,data_dict[options_id]['pretrained_models'][i])
+                conn.execute(row_insert_header, row)
+
             for row_id in data_dict[options_id]["rows"]:
                 row_insert_header = f"INSERT INTO option_{options_id}(id,text,annotation) VALUES(?,?,?)"
                 row = (row_id,data_dict[options_id]['rows'][row_id]['text'],data_dict[options_id]['rows'][row_id]['annotation'])
@@ -165,7 +188,8 @@ def get_options():
     OUPUTS: custom dictionary D
             D = {
                 option_id: {
-                    name: str
+                    name: str,
+                    models: [str]
                 }
             }
     '''
@@ -182,6 +206,15 @@ def get_options():
             d[id] = {
                 "name": name
             }
+        
+        for option_id in d:
+            d[option_id]["models"] = []
+            pretrained_model_request = f""" SELECT id, model FROM pretrained_{option_id}"""
+            cursor = conn.execute(pretrained_model_request)
+            for row in cursor:
+                _, model = row
+                d[option_id]["models"].append(model)
+
         conn.close()
     else:
         print("Cannot establish database connection for get_options")
@@ -260,14 +293,14 @@ def create_constants():
     if conn is not None:
         sql_clear_1 = f"DROP TABLE constants"
         sql_data_header_1 = f"CREATE TABLE IF NOT EXISTS constants"
-        sql_data_rest_1 = "(id INTEGER PRIMARY KEY, coding INTEGER NOT NULL, verification INTEGER NOT NULL, rounds INTEGER NOT NULL);"
+        sql_data_rest_1 = "(id INTEGER PRIMARY KEY, coding INTEGER NOT NULL, verification INTEGER NOT NULL, rounds INTEGER NOT NULL, model TEXT NOT NULL);"
 
         delete_table(conn, sql_clear_1)
         create_table(conn, sql_data_header_1 + sql_data_rest_1)
         
         # always only one row, with id 0
-        constants_insert = f"INSERT INTO constants(id,coding,verification,rounds) VALUES(?,?,?,?)"
-        conn.execute(constants_insert, (0, 0, 0, 0))
+        constants_insert = f"INSERT INTO constants(id,coding,verification,rounds,model) VALUES(?,?,?,?,?)"
+        conn.execute(constants_insert, (0, 0, 0, 0, ""))
 
         conn.commit()
         conn.close()
@@ -275,7 +308,7 @@ def create_constants():
         print("Could not establish connection for create_constants")
 
 
-def set_constants(constants):
+def set_constants(constants, model):
     '''
     Adds in information to the constants_{option_id} table. Since the constants_{option_id} will only
     ever have one row, this overwrites pre-exising information. 
@@ -283,6 +316,7 @@ def set_constants(constants):
     INPUTS:
         constants: tuple of integer constants in the expected order of
             (number of open coding examples, number of verification examples per round, number of verification rounds)
+        model: pretrained model directory (string)
     OUTPUTS:
         None
     '''
@@ -290,10 +324,10 @@ def set_constants(constants):
     conn = create_connection(database)
 
     if conn is not None:
-        constants_update = f"UPDATE constants SET coding = ?, verification = ?, rounds = ? WHERE id = ?"
+        constants_update = f"UPDATE constants SET coding = ?, verification = ?, rounds = ?, model = ? WHERE id = ?"
 
         # id is always 0
-        conn.execute(constants_update, (*constants, 0))
+        conn.execute(constants_update, (*constants, model, 0))
         
         conn.commit()
         conn.close()
@@ -306,7 +340,7 @@ def get_constant(constant_name):
     Returns the value of a constant in the constants table, row 0
 
     INPUTS: string
-    OUTPUTS: integer
+    OUTPUTS: integer or string
     '''
     database = "./database/data_options.db"
     conn = create_connection(database)

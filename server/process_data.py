@@ -117,6 +117,47 @@ def parse_options_into_db():
     return annotation_objects
 
 
+def find_pretrained_models(data_dict):
+    '''
+    Searches through all directories in ./../training/models and finds pre-trained models that correspond to each dataset option.
+
+    INPUTS: data dictionary
+    OUTPUTS: None; modifies data dictionary by adding the key "pretrained_models" mapping to an array of strings.
+    D = {
+        table_id: {
+            name: str,
+            pretrained_models: [str],
+            rows: {
+                row_id: {
+                    text: str
+                    annotation: str
+                },
+                ...
+            }
+        }
+        ...
+    }
+    '''
+
+    # gather all of the model names
+    path = './../training/models'
+    pretrained_models = set()
+
+    directories = os.listdir(path)
+    for model_dir in directories:
+        if 'pretrained' in model_dir and 'finetuned' not in model_dir: # don't include intermediate training models which are finetuned
+            pretrained_models.add(model_dir)
+
+    for option in data_dict:
+        data_dict[option]['pretrained_models'] = []
+
+        formatted_name = '_'.join(str.lower(data_dict[option]['name']).split(' ')) # TODO: document required pre-trained model name format
+
+        for pretrained_model in pretrained_models:
+            if formatted_name in pretrained_model:
+                data_dict[option]['pretrained_models'].append(pretrained_model)
+
+
 def select_some(data_arr, percent_select, number_select=None):
     '''
     Randomly selects percent_select percentage of data_arr to return. If number_select is

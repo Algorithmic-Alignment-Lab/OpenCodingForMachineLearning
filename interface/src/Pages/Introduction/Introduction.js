@@ -18,7 +18,11 @@ class Introduction extends Component {
         this.state = {
             dataOptions: null,
             dataOptionsFull: null,
+            pretrainedDropdown: ['Pretrain New Model'],
             selectedData: null,
+            selectedModel: null,
+            dataOptionSelected: false,
+            modelSelected: false,
             sectionComplete: false,
             numAnnotate: 50,
             numVerify: 50,
@@ -42,11 +46,18 @@ class Introduction extends Component {
 
             const data = await response.json();
 
-            let optionsFull = data.options
+            let optionsFull = data.options;
+
             let formattedOptionsFull = [];
 
             for (let option_id in optionsFull) {
-                formattedOptionsFull.push({id: option_id, text: optionsFull[option_id].name});
+                let models = [];
+                
+                for (let model in optionsFull[option_id].models){
+                    models.push({model: optionsFull[option_id].models[model]})
+                }
+
+                formattedOptionsFull.push({id: option_id, text: optionsFull[option_id].name, models: models});
             }
 
             this.setState({
@@ -61,15 +72,44 @@ class Introduction extends Component {
     /**
     * Dropdown selection.
     */
-    onSelect = (_, selectedItem) => {
-        this.setState({selectedData: selectedItem, sectionComplete: true});
+    onSelectDataOption = (_, selectedItem) => {
+        this.setState({
+            selectedData: selectedItem,
+            pretrainedDropdown: selectedItem.models.concat([{model: 'Pretrain New Model'}]),
+            dataOptionSelected: true,
+            selectedModel: null,
+        });
     }
 
     /**
     * Dropdown removal.
     */
-    onRemove = (_, __) => {
-        this.setState({selectedData: null, sectionComplete: false});
+    onRemoveDataOption = (_, __) => {
+        this.setState({
+            selectedData: null, 
+            pretrainedDropdown: ['Pretrain New Model'],
+            dataOptionSelected: false
+        });
+    }
+
+    /**
+    * Dropdown model selection.
+    */
+    onSelectPretrainedModel = (_, selectedItem) => {
+        this.setState({
+            selectedModel: selectedItem,
+            modelSelected: true,
+        });
+    }
+
+    /**
+    * Dropdown model removal.
+    */
+    onRemovePretrainedModel = (_, __) => {
+        this.setState({
+            selectedModel: null, 
+            modelSelected: false
+        });
     }
 
     /**
@@ -104,7 +144,7 @@ class Introduction extends Component {
     /**
      * Handles changing number of desired prediction samples.
      */
-     handleVerificationChange = (value) => {
+    handleVerificationChange = (value) => {
         this.setState({numVerify: value});
     }
 
@@ -117,7 +157,7 @@ class Introduction extends Component {
     }
 
 
-
+    // TODO: Pretrain modal if that option selected, changing definition of section complete
     render() {
         return (
             <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%'}}>
@@ -130,13 +170,26 @@ class Introduction extends Component {
                     </div>
                     <div style = {{ marginBottom: '20px'}}>
                         <DataOptions
+                            disabled={false}
                             dataOptions={this.state.dataOptions}
-                            onSelect={this.onSelect}
-                            onRemove={this.onRemove}
+                            displayValue={'text'}
+                            displayText={'Select dataset'}
+                            onSelect={this.onSelectDataOption}
+                            onRemove={this.onRemoveDataOption}
                         />
                     </div>
-                    <div>
-
+                    <div style = {{alignItems: 'center', marginBottom: '10px'}}>
+                        Select a pre-existing pretrained model to use, or pretrain a new model.
+                    </div>
+                    <div style = {{ marginBottom: '20px'}}>
+                        <DataOptions
+                            disabled={!this.state.dataOptionSelected}
+                            dataOptions={this.state.pretrainedDropdown}
+                            displayValue={'model'}
+                            displayText={'Select pretrained model'}
+                            onSelect={this.onSelectPretrainedModel}
+                            onRemove={this.onRemovePretrainedModel}
+                        />
                     </div>
                     <div style = {{alignItems: 'center', marginBottom: '10px'}}>
                         {"How many text samples would you like to annotate?"}
@@ -170,7 +223,7 @@ class Introduction extends Component {
                             updateValue={this.handleVerificationChange}
                         />
                     </div>
-                    <div style = {{alignItems: 'center', marginBottom: '10px'}}>
+                    {/* <div style = {{alignItems: 'center', marginBottom: '10px'}}>
                         {"What is the minimum number of verification rounds you'd like to complete?"}
                         <b style = {{marginLeft: '5px'}}>
                             {this.state.numMinVerify}
@@ -185,7 +238,7 @@ class Introduction extends Component {
                             defaultValue={20}
                             updateValue={this.handleMinRoundsChange}
                         />
-                    </div>
+                    </div> */}
                 </div>
                 <div style={{marginTop: '15px', width:'100%'}}>
                     <div style={{alignItems:'end'}}>
