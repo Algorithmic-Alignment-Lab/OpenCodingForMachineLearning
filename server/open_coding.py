@@ -1,6 +1,5 @@
 import sys
 
-from click import option
 [sys.path.append(i) for i in ['..']]
 
 from flask import Flask, json, request
@@ -13,6 +12,7 @@ from database import instantiate_tables, fill_tables, get_options, get_option, g
 from training.finetune_model import open_coding_finetune_model
 
 from training.predict_labels import call_predict
+from training.generate_pretrained_model import call_pretrain_model_distilbert_local
 
 @app.route('/', methods=['GET'])
 def test():
@@ -24,7 +24,6 @@ def test():
     return json.jsonify(response)
 
 
-# TODO: make table of all options including boolean of whether or not a pre-trained model exists
 @app.route('/data/prep_data', methods=['GET'])
 def prep_data():
     '''
@@ -73,8 +72,6 @@ def get_data_option():
     # in same order as defined constants table
     constants = request.args.get("constants").split(',')
     numeric_constants = tuple(map(lambda k: int(k), constants[:5]))
-    # TODO, save selected pretrained model
-    # model = 'happy_db_pretrained_50_5'
     model = constants[5]
 
     max_request_size = numeric_constants[0] # NOTE: this constant adjusts the number of rows to annotate during open coding
@@ -100,10 +97,6 @@ def get_data_option():
     return json.jsonify(response)
 
 
-# TODO: function call to initiate pre-training of model which runs in the background
-# while the  user annotates and labels. Conclusion sets a state in App.js.
-
-
 @app.route('/data/save_annotations', methods=['POST'])
 def save_annotations():
     '''
@@ -126,6 +119,7 @@ def save_annotations():
         response['ok'] = False
     
     return json.jsonify(response)
+
 
 @app.route('/data/get_annotations', methods=['GET'])
 def get_annotations():
@@ -208,6 +202,7 @@ def update_labels_req():
 
     return json.jsonify(response)
 
+
 @app.route('/data/pretrain_model', methods=['POST'])
 def pretrain_model():
     '''
@@ -226,9 +221,15 @@ def pretrain_model():
         num_epochs = json_data['num_epochs']
         option_id = json_data['id']
 
-        # TODO: pretrain model
-        # TODO: return true model name
-        response['model'] = 'happy_db_pretrained_50_5'
+        # fetch desired dataset name from option_id
+        input_filename = '_'.join(get_option(option_id).lower().split(' '))
+        input_path = './../training/data/'
+        output_path = './../training/models/'
+
+        # pretrain pretrain
+        output_filename = call_pretrain_model_distilbert_local(input_filename, int(batch_size), int(num_epochs), input_path, output_path)
+
+        response['model'] = output_filename
         response['msg'] = 'Success'
     else:
         response['msg'] = 'Content-Type not supported!'

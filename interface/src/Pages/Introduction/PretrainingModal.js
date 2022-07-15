@@ -125,7 +125,7 @@ export default class PretrainingModal extends Component {
                     { 
                         (this.state.showLoading) ? 
                         (<div style={{marginTop: '15px', width:'100%'}}>
-                            Loading
+                            Loading ...
                         </div>) :
                         ( (this.state.name === null) ?
                             null :

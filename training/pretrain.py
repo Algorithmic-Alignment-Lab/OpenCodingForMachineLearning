@@ -1,15 +1,17 @@
 import csv
 
 import math 
-
 import os
 
 import numpy as np
-
 from transformers import Trainer, TrainingArguments
 import torch
 
-from open_coding_constants import MLMDataset
+# import style required by FLASK
+from .open_coding_constants import MLMDataset
+
+# uncomment these imports for local running
+# from open_coding_constants import MLMDataset
 
 # constants representing special tokens
 CLS = 101
@@ -73,7 +75,7 @@ def generate_masked(texts, tokenizer, mask_percentage, max_length, device="cpu")
     return inputs
 
 
-def preprocess_data_for_mlm(filename, tokenizer, mask_percentage, max_length, percent_elems_mask, device="cpu"):
+def preprocess_data_for_mlm(filename, tokenizer, mask_percentage, max_length, percent_elems_mask, data_dir):
     '''
     Prepares csv file for masked language modeling (pre-training).
 
@@ -88,7 +90,6 @@ def preprocess_data_for_mlm(filename, tokenizer, mask_percentage, max_length, pe
       inputs: tokenized dictionary for mlm model training, size: number of examples for pretraining
     '''
 
-    data_dir = './data/'
     texts = []
 
     with open(data_dir + filename, 'r+') as f:
@@ -117,7 +118,7 @@ def preprocess_data_for_mlm(filename, tokenizer, mask_percentage, max_length, pe
     return inputs, pretrain_num
 
 
-def mlm_pretrain(model, tokenizer, filename, output_path_filename, mask_percentage, max_length, percent_elems_mask=.2, num_epochs=1, batch_size=4, device="cpu"):
+def mlm_pretrain(model, tokenizer, filename, output_path_filename, mask_percentage, max_length, percent_elems_mask=.2, num_epochs=1, batch_size=4, path='./data/'):
     '''
     Pretrains distilbert model on given text objects via masked language modeling. 
 
@@ -132,7 +133,7 @@ def mlm_pretrain(model, tokenizer, filename, output_path_filename, mask_percenta
         model, pretrained on given text_objects
     '''
     model.set_forward_type("PRETRAIN")
-    inputs, _ = preprocess_data_for_mlm(filename, tokenizer, mask_percentage, max_length, percent_elems_mask, device)
+    inputs, _ = preprocess_data_for_mlm(filename, tokenizer, mask_percentage, max_length, percent_elems_mask, path)
     dataset = MLMDataset(inputs)
 
     args = TrainingArguments(
