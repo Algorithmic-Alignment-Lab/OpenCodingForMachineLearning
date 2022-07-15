@@ -71,17 +71,18 @@ def get_data_option():
 
     option_id = request.args.get("id")
     # in same order as defined constants table
-    constants = tuple(map(lambda k: int(k), request.args.get("constants").split(',')))
+    constants = request.args.get("constants").split(',')
+    numeric_constants = tuple(map(lambda k: int(k), constants[:5]))
     # TODO, save selected pretrained model
     # model = 'happy_db_pretrained_50_5'
     model = constants[5]
 
-    max_request_size = constants[0] # NOTE: this constant adjusts the number of rows to annotate during open coding
+    max_request_size = numeric_constants[0] # NOTE: this constant adjusts the number of rows to annotate during open coding
     
     # get the selected data and initialize necessary tables
     options = get_option_data(option_id)
     create_labels(option_id)
-    set_constants(constants[:5], model)
+    set_constants(numeric_constants, model)
     
     # choose a subset of rows to return at random
     option_ids = list(options.keys())

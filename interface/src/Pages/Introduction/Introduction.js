@@ -1,4 +1,5 @@
 import React, {Component, Suspense} from 'react';
+import { ScrollSync, ScrollSyncPane } from 'react-scroll-sync';
 
 import states from './../../Constants/States';
 
@@ -8,6 +9,8 @@ import FixedSlider from './FixedSlider';
 import PretrainingModal from './PretrainingModal';
 
 import DataOptions from './DataOptions';
+
+import '../../Custom/styles.css';
 
 const fetch = require('node-fetch');
 
@@ -213,107 +216,113 @@ class Introduction extends Component {
                 <div style={{ margin: '15px'}}>
                     Introduction
                 </div>
-                <div style={{ margin: '15px', display: 'flex', height: '75vh', width: '90vw', justifyContent: 'flex-start', flexDirection: 'column'}}>
-                    <div style = {{alignItems: 'center', marginBottom: '10px'}}>
-                        Please select an existing database to work from. If your database is not available, please follow the given instructions to add the data to your local code base.
+                {/* <ScrollSync> */}
+                    <div style={{ overflow: 'scroll', height: "80vh", width: "95vw" }}>
+                        {/* <ScrollSyncPane> */}
+                            <div style={{ margin: '15px', display: 'flex', height: '75vh', width: '70vw', justifyContent: 'flex-start', flexDirection: 'column'}}>
+                                <div style = {{alignItems: 'center', marginBottom: '10px'}}>
+                                    Please select an existing database to work from. If your database is not available, please follow the given instructions to add the data to your local code base.
+                                </div>
+                                <div style = {{ marginBottom: '20px'}}>
+                                    <DataOptions
+                                        disabled={false}
+                                        dataOptions={this.state.dataOptions}
+                                        displayValue={'text'}
+                                        displayText={'Select dataset'}
+                                        onSelect={this.onSelectDataOption}
+                                        onRemove={this.onRemoveDataOption}
+                                    />
+                                </div>
+                                <div style = {{alignItems: 'center', marginBottom: '10px'}}>
+                                    Select a pre-existing pretrained model to use, or pretrain a new model.
+                                </div>
+                                <div style = {{ marginBottom: '20px'}}>
+                                    <DataOptions
+                                        disabled={!this.state.dataOptionSelected}
+                                        dataOptions={this.state.pretrainedDropdown}
+                                        displayValue={'model'}
+                                        displayText={'Select pretrained model'}
+                                        onSelect={this.onSelectPretrainedModel}
+                                        onRemove={this.onRemovePretrainedModel}
+                                    />
+                                </div>
+                                {/* visible if we have asked to pretrain, enabled if we haven't clicked the pretrain button, and loading
+                                until pretraining is complete */}
+                                <PretrainingModal
+                                    modelName={this.state.modelName}
+                                    showPretrainingModal={this.state.pretrainingNew}
+                                    enablePretrainingModal={!this.state.pretrainingStarted}
+                                    pretraining={this.state.pretrainingStarted && !this.state.pretrainingComplete}
+                                    pretrainNewModel={this.pretrainNewModel}
+                                />
+                                <div style = {{alignItems: 'center', marginBottom: '10px'}}>
+                                    {"How many text samples would you like to annotate?"}
+                                    <b style = {{marginLeft: '5px'}}>
+                                        {this.state.numAnnotate}
+                                    </b> 
+                                </div>
+                                <div style = {{ marginBottom: '20px'}}>
+                                    <FixedSlider 
+                                        name='Annotation Samples'
+                                        width={'90vw'}
+                                        startValue={10}
+                                        endValue={300}
+                                        defaultValue={100}
+                                        updateValue={this.handleAnnotationChange}
+                                    />
+                                </div>
+                                <div style = {{alignItems: 'center', marginBottom: '10px'}}>
+                                    {"How many predictions should the model make during each verification round?"}
+                                    <b style = {{marginLeft: '5px'}}>
+                                        {this.state.numVerify}
+                                    </b> 
+                                </div>
+                                <div style = {{ marginBottom: '20px'}}>
+                                    <FixedSlider 
+                                        name='Annotation Samples'
+                                        width={'90vw'}
+                                        startValue={10}
+                                        endValue={300}
+                                        defaultValue={100}
+                                        updateValue={this.handleVerificationChange}
+                                    />
+                                </div>
+                                <div style = {{alignItems: 'center', marginBottom: '10px'}}>
+                                    {"How many batches should the model be finetuned with?"}
+                                    <b style = {{marginLeft: '5px'}}>
+                                        {this.state.batchSize}
+                                    </b> 
+                                </div>
+                                <div style = {{ marginBottom: '20px'}}>
+                                    <FixedSlider 
+                                        name='Batch Size'
+                                        width={'29.5vw'}
+                                        startValue={1}
+                                        endValue={1}
+                                        defaultValue={50}
+                                        updateValue={this.handleBatchSizeChange}
+                                    />
+                                </div>
+                                <div style = {{alignItems: 'center', marginBottom: '10px'}}>
+                                    {"How many epochs should the model be finetuned with?"}
+                                    <b style = {{marginLeft: '5px'}}>
+                                        {this.state.numEpochs}
+                                    </b> 
+                                </div>
+                                <div style = {{ marginBottom: '20px'}}>
+                                    <FixedSlider 
+                                        name='Number of Epochs'
+                                        width={'10vw'}
+                                        startValue={1}
+                                        endValue={15}
+                                        defaultValue={1}
+                                        updateValue={this.handleNumEpochsChange}
+                                    />
+                                </div>
+                            </div>
+                        {/* </ScrollSyncPane> */}
                     </div>
-                    <div style = {{ marginBottom: '20px'}}>
-                        <DataOptions
-                            disabled={false}
-                            dataOptions={this.state.dataOptions}
-                            displayValue={'text'}
-                            displayText={'Select dataset'}
-                            onSelect={this.onSelectDataOption}
-                            onRemove={this.onRemoveDataOption}
-                        />
-                    </div>
-                    <div style = {{alignItems: 'center', marginBottom: '10px'}}>
-                        Select a pre-existing pretrained model to use, or pretrain a new model.
-                    </div>
-                    <div style = {{ marginBottom: '20px'}}>
-                        <DataOptions
-                            disabled={!this.state.dataOptionSelected}
-                            dataOptions={this.state.pretrainedDropdown}
-                            displayValue={'model'}
-                            displayText={'Select pretrained model'}
-                            onSelect={this.onSelectPretrainedModel}
-                            onRemove={this.onRemovePretrainedModel}
-                        />
-                    </div>
-                    {/* visible if we have asked to pretrain, enabled if we haven't clicked the pretrain button, and loading
-                    until pretraining is complete */}
-                    <PretrainingModal
-                        modelName={this.state.modelName}
-                        showPretrainingModal={this.state.pretrainingNew}
-                        enablePretrainingModal={!this.state.pretrainingStarted}
-                        pretraining={this.state.pretrainingStarted && !this.state.pretrainingComplete}
-                        pretrainNewModel={this.pretrainNewModel}
-                    />
-                    <div style = {{alignItems: 'center', marginBottom: '10px'}}>
-                        {"How many text samples would you like to annotate?"}
-                        <b style = {{marginLeft: '5px'}}>
-                            {this.state.numAnnotate}
-                        </b> 
-                    </div>
-                    <div style = {{ marginBottom: '20px'}}>
-                        <FixedSlider 
-                            name='Annotation Samples'
-                            width={'90vw'}
-                            startValue={10}
-                            endValue={300}
-                            defaultValue={100}
-                            updateValue={this.handleAnnotationChange}
-                        />
-                    </div>
-                    <div style = {{alignItems: 'center', marginBottom: '10px'}}>
-                        {"How many predictions should the model make during each verification round?"}
-                        <b style = {{marginLeft: '5px'}}>
-                            {this.state.numVerify}
-                        </b> 
-                    </div>
-                    <div style = {{ marginBottom: '20px'}}>
-                        <FixedSlider 
-                            name='Annotation Samples'
-                            width={'90vw'}
-                            startValue={10}
-                            endValue={300}
-                            defaultValue={100}
-                            updateValue={this.handleVerificationChange}
-                        />
-                    </div>
-                    <div style = {{alignItems: 'center', marginBottom: '10px'}}>
-                        {"How many batches should the model be finetuned with?"}
-                        <b style = {{marginLeft: '5px'}}>
-                            {this.state.batchSize}
-                        </b> 
-                    </div>
-                    <div style = {{ marginBottom: '20px'}}>
-                        <FixedSlider 
-                            name='Batch Size'
-                            width={'29.5vw'}
-                            startValue={1}
-                            endValue={1}
-                            defaultValue={50}
-                            updateValue={this.handleBatchSizeChange}
-                        />
-                    </div>
-                    <div style = {{alignItems: 'center', marginBottom: '10px'}}>
-                        {"How many epochs should the model be finetuned with?"}
-                        <b style = {{marginLeft: '5px'}}>
-                            {this.state.numEpochs}
-                        </b> 
-                    </div>
-                    <div style = {{ marginBottom: '20px'}}>
-                        <FixedSlider 
-                            name='Number of Epochs'
-                            width={'10vw'}
-                            startValue={1}
-                            endValue={15}
-                            defaultValue={1}
-                            updateValue={this.handleNumEpochsChange}
-                        />
-                    </div>
-                </div>
+                {/* </ScrollSync> */}
                 <div style={{marginTop: '15px', width:'100%'}}>
                     <div style={{alignItems:'end'}}>
                         <CallbackKeyEventButton

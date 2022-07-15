@@ -324,7 +324,7 @@ def set_constants(constants, model):
     conn = create_connection(database)
 
     if conn is not None:
-        constants_update = f"UPDATE constants SET coding = ?, verification = ?, rounds = ?, batch_size = ?, num_epochs = ?, model = ?, WHERE id = ?"
+        constants_update = f"UPDATE constants SET coding = ?, verification = ?, rounds = ?, batch_size = ?, num_epochs = ?, model = ? WHERE id = ?"
 
         # id is always 0
         conn.execute(constants_update, (*constants, model, 0))

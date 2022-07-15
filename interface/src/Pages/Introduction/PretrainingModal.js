@@ -79,7 +79,7 @@ export default class PretrainingModal extends Component {
 
     render() {
         return (this.state.visible) ? 
-            (<div style={{ margin: '15px', display: 'flex', height: '20vh', width: '90vw', justifyContent: 'flex-start', flexDirection: 'row'}}>
+            (<div style={{ padding: '15px', marginLeft: '10px', marginBottom: '10px', backgroundColor: 'rgba(0,0,0,.05)', display: 'flex', height: '20vh', width: '85vw', justifyContent: 'flex-start', flexDirection: 'row', borderRadius: '10px'}}>
                 <div>
                     <div style = {{alignItems: 'center', marginBottom: '10px'}}>
                         {"What batch size should the model be pretrained with?"}
@@ -114,16 +114,14 @@ export default class PretrainingModal extends Component {
                         />
                     </div> 
                 </div>
-                <div style={{marginLeft: '15px', width:'100%'}}>
-                    <div style={{alignItems:'end'}}>
-                        <CallbackKeyEventButton
-                            buttonAvailable={this.state.enabled}
-                            callBackFunc={this.handlePretrainKeyPress}
-                            clickFunc={this.onPretrainSubmit}
-                            text={'Pretrain Model (/)'}
-                            keyMatch={'/'}
-                        />
-                    </div>
+                <div style={{marginLeft: '20px', width:'100%'}}>
+                    <CallbackKeyEventButton
+                        buttonAvailable={this.state.enabled}
+                        callBackFunc={this.handlePretrainKeyPress}
+                        clickFunc={this.onPretrainSubmit}
+                        text={'Pretrain Model (/)'}
+                        keyMatch={'/'}
+                    />
                     { 
                         (this.state.showLoading) ? 
                         (<div style={{marginTop: '15px', width:'100%'}}>
