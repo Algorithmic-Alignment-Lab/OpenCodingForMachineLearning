@@ -295,6 +295,7 @@ class App extends Component {
         setOptionID = {this.setOptionID}
         updateState = {this.updateState}
         setConstants = {this.setConstants}
+        postData = {this.postData}
         />;
     } else if (page === states.openCoding) {
       return <OpenCoding

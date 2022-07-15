@@ -70,17 +70,18 @@ def get_data_option():
     '''
 
     option_id = request.args.get("id")
+    # in same order as defined constants table
     constants = tuple(map(lambda k: int(k), request.args.get("constants").split(',')))
     # TODO, save selected pretrained model
     # model = 'happy_db_pretrained_50_5'
-    model = constants[3]
+    model = constants[5]
 
     max_request_size = constants[0] # NOTE: this constant adjusts the number of rows to annotate during open coding
     
     # get the selected data and initialize necessary tables
     options = get_option_data(option_id)
     create_labels(option_id)
-    set_constants(constants, model)
+    set_constants(constants[:5], model)
     
     # choose a subset of rows to return at random
     option_ids = list(options.keys())
@@ -206,6 +207,33 @@ def update_labels_req():
 
     return json.jsonify(response)
 
+@app.route('/data/pretrain_model', methods=['POST'])
+def pretrain_model():
+    '''
+    Pretrains a new model for the given data set option using the specifed parameters.
+    The new model canbe found under ./training/models.
+
+    Returns the new model's directory name.
+    '''
+    response = {}
+    add_options(response)
+    content_type = request.headers.get('Content-Type')
+    if (content_type == 'application/json'):
+        json_data = request.get_json()
+
+        batch_size = json_data['batch_size']
+        num_epochs = json_data['num_epochs']
+        option_id = json_data['id']
+
+        # TODO: pretrain model
+        # TODO: return true model name
+        response['model'] = 'happy_db_pretrained_50_5'
+        response['msg'] = 'Success'
+    else:
+        response['msg'] = 'Content-Type not supported!'
+        response['ok'] = False
+
+    return json.jsonify(response)
 
 @app.route('/data/train_and_predict', methods=['POST'])
 def train_and_predict():
@@ -240,8 +268,8 @@ def train_and_predict():
 
         percent_train = 1 # always use entire set to train
         # NOTE: These parameters are adjustable
-        batch_size = 1
-        num_epochs = 1
+        batch_size = get_constant('batch_size')
+        num_epochs = get_constant('num_epochs')
 
         # gather label_id_mappings
         id_label_tuples = get_label_set_data(option_id)
@@ -260,12 +288,9 @@ def train_and_predict():
         # gather all unlabeled texts
         unlabeled_data = get_unlabeled_data(option_id)
 
-        # randomly select given percentage or number of examples
-        # NOTE: these constants are adjustable. The percentage or number given represents the number
-        # of verification examples for the next round of verification.
-        percent_guess = 0.03
+        # randomly select chosen number of examples
         number_guess = get_constant('verification')
-        selected_unlabeled_data = select_some(unlabeled_data, percent_guess, number_guess)
+        selected_unlabeled_data = select_some(unlabeled_data, 0.0, number_guess)
 
         # make predictions, return [{id, text, labels}]
         predictions = call_predict(selected_unlabeled_data, output_name, label_id_mappings)
@@ -289,14 +314,14 @@ def get_results():
     Then, returns the output filename.
     '''
     option_id = request.args.get("id")
-    kerb = 'test'
+    kerb = 'final'
 
     data_rows = get_labeled_data(option_id)
-    model_name = 'happy_db_pretrained_50_5'
+    model_name = get_constant('model')
     percent_train = 1 # always use entire set to train
     # NOTE: These parameters are adjustable
-    batch_size = 1
-    num_epochs = 1
+    batch_size = get_constant('batch_size')
+    num_epochs = get_constant('num_epochs')
 
     # gather label_id_mappings
     id_label_tuples = get_label_set_data(option_id)
@@ -319,8 +344,8 @@ def get_results():
 
     # loop until all data has been written
     while unlabeled_data != []:
-        # TODO: remove
-        break
+        # # TODO: remove
+        # break
 
         some_selected_data = select_some(unlabeled_data, 0, 200)
         predictions = call_predict(some_selected_data, output_name, label_id_mappings)

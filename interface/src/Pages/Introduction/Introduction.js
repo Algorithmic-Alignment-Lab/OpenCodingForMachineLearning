@@ -5,6 +5,7 @@ import states from './../../Constants/States';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import CallbackKeyEventButton from '../../Custom/CallbackKeyEventButton';
 import FixedSlider from './FixedSlider';
+import PretrainingModal from './PretrainingModal';
 
 import DataOptions from './DataOptions';
 
@@ -12,21 +13,29 @@ const fetch = require('node-fetch');
 
 const progress = 0;
 
+const pretrainNew = 'Pretrain New Model';
+
 class Introduction extends Component {
     constructor(props) {
         super(props);
         this.state = {
             dataOptions: null,
             dataOptionsFull: null,
-            pretrainedDropdown: ['Pretrain New Model'],
+            pretrainedDropdown: [pretrainNew],
             selectedData: null,
             selectedModel: null,
+            modelName: null,
             dataOptionSelected: false,
             modelSelected: false,
+            pretrainingNew: false,
+            pretrainingStarted: false,
+            pretrainingComplete: false,
             sectionComplete: false,
             numAnnotate: 50,
             numVerify: 50,
-            numMinVerify: 20
+            numMinVerify: 20,
+            batchSize: 1,
+            numEpochs: 1,
         }
     }
 
@@ -75,7 +84,7 @@ class Introduction extends Component {
     onSelectDataOption = (_, selectedItem) => {
         this.setState({
             selectedData: selectedItem,
-            pretrainedDropdown: selectedItem.models.concat([{model: 'Pretrain New Model'}]),
+            pretrainedDropdown: selectedItem.models.concat([{model: pretrainNew}]),
             dataOptionSelected: true,
             selectedModel: null,
         });
@@ -88,7 +97,8 @@ class Introduction extends Component {
         this.setState({
             selectedData: null, 
             pretrainedDropdown: ['Pretrain New Model'],
-            dataOptionSelected: false
+            dataOptionSelected: false,
+            sectionComplete: false
         });
     }
 
@@ -98,7 +108,10 @@ class Introduction extends Component {
     onSelectPretrainedModel = (_, selectedItem) => {
         this.setState({
             selectedModel: selectedItem,
+            modelName: selectedItem.model === pretrainNew ? null : selectedItem.model,
             modelSelected: true,
+            pretrainingNew: selectedItem.model === pretrainNew,
+            sectionComplete: selectedItem.model !== pretrainNew
         });
     }
 
@@ -108,8 +121,39 @@ class Introduction extends Component {
     onRemovePretrainedModel = (_, __) => {
         this.setState({
             selectedModel: null, 
-            modelSelected: false
+            modelName: null,
+            modelSelected: false,
+            sectionComplete: false
         });
+    }
+
+    // TODO: post request to pretrain model
+    pretrainNewModel = async (numEpochs, batchSize) => {
+        // get data option
+        const dataOption = this.state.selectedData.id;
+
+        // update state to show loading and disable additional pretraining submissions
+        this.setState({
+            pretrainingStarted: true,
+        });
+
+        try {
+            const response = await this.props.postData('/data/pretrain_model', {"id": dataOption, "batch_size": batchSize, "num_epochs": numEpochs});
+            
+            if (!response.ok) {
+                throw Error(response.statusText);
+            }
+
+            // now we're done loading, but still disable pressing pre-train again
+            this.setState({
+                selectedModel: {model: response.model}, // no longer pretraining default
+                modelName: response.model,
+                pretrainingComplete: true,
+                sectionComplete: true
+            });
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     /**
@@ -120,7 +164,7 @@ class Introduction extends Component {
     */
     onNextSubmit = () => {
         this.props.setOptionID(this.state.selectedData.id);
-        this.props.setConstants([this.state.numAnnotate, this.state.numVerify, this.state.numMinVerify]);
+        this.props.setConstants([this.state.numAnnotate, this.state.numVerify, this.state.numMinVerify, this.state.batchSize, this.state.numEpochs, this.state.selectedModel.model]);
         this.props.updateState(states.openCoding);
     }
     
@@ -132,7 +176,6 @@ class Introduction extends Component {
             this.onNextSubmit();
         }
     };
-
 
     /**
      * Handles changing number of desired annotation samples.
@@ -148,12 +191,18 @@ class Introduction extends Component {
         this.setState({numVerify: value});
     }
 
+    /**
+     * Handles changing desired batch size.
+     */
+    handleBatchSizeChange = (value) => {
+        this.setState({batchSize: value});
+    }
 
     /**
-     * Handles changing number of desired verifiation rounds.
+     * Handles desired number of epochs.
      */
-     handleMinRoundsChange = (value) => {
-        this.setState({numMinVerify: value});
+    handleNumEpochsChange = (value) => {
+        this.setState({numEpochs: value});
     }
 
 
@@ -191,6 +240,15 @@ class Introduction extends Component {
                             onRemove={this.onRemovePretrainedModel}
                         />
                     </div>
+                    {/* visible if we have asked to pretrain, enabled if we haven't clicked the pretrain button, and loading
+                    until pretraining is complete */}
+                    <PretrainingModal
+                        modelName={this.state.modelName}
+                        showPretrainingModal={this.state.pretrainingNew}
+                        enablePretrainingModal={!this.state.pretrainingStarted}
+                        pretraining={this.state.pretrainingStarted && !this.state.pretrainingComplete}
+                        pretrainNewModel={this.pretrainNewModel}
+                    />
                     <div style = {{alignItems: 'center', marginBottom: '10px'}}>
                         {"How many text samples would you like to annotate?"}
                         <b style = {{marginLeft: '5px'}}>
@@ -223,22 +281,38 @@ class Introduction extends Component {
                             updateValue={this.handleVerificationChange}
                         />
                     </div>
-                    {/* <div style = {{alignItems: 'center', marginBottom: '10px'}}>
-                        {"What is the minimum number of verification rounds you'd like to complete?"}
+                    <div style = {{alignItems: 'center', marginBottom: '10px'}}>
+                        {"How many batches should the model be finetuned with?"}
                         <b style = {{marginLeft: '5px'}}>
-                            {this.state.numMinVerify}
+                            {this.state.batchSize}
                         </b> 
                     </div>
                     <div style = {{ marginBottom: '20px'}}>
                         <FixedSlider 
-                            name='Annotation Samples'
+                            name='Batch Size'
                             width={'29.5vw'}
-                            startValue={10}
-                            endValue={50}
-                            defaultValue={20}
-                            updateValue={this.handleMinRoundsChange}
+                            startValue={1}
+                            endValue={1}
+                            defaultValue={50}
+                            updateValue={this.handleBatchSizeChange}
                         />
-                    </div> */}
+                    </div>
+                    <div style = {{alignItems: 'center', marginBottom: '10px'}}>
+                        {"How many epochs should the model be finetuned with?"}
+                        <b style = {{marginLeft: '5px'}}>
+                            {this.state.numEpochs}
+                        </b> 
+                    </div>
+                    <div style = {{ marginBottom: '20px'}}>
+                        <FixedSlider 
+                            name='Number of Epochs'
+                            width={'10vw'}
+                            startValue={1}
+                            endValue={15}
+                            defaultValue={1}
+                            updateValue={this.handleNumEpochsChange}
+                        />
+                    </div>
                 </div>
                 <div style={{marginTop: '15px', width:'100%'}}>
                     <div style={{alignItems:'end'}}>

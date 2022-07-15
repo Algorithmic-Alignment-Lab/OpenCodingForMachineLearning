@@ -293,14 +293,14 @@ def create_constants():
     if conn is not None:
         sql_clear_1 = f"DROP TABLE constants"
         sql_data_header_1 = f"CREATE TABLE IF NOT EXISTS constants"
-        sql_data_rest_1 = "(id INTEGER PRIMARY KEY, coding INTEGER NOT NULL, verification INTEGER NOT NULL, rounds INTEGER NOT NULL, model TEXT NOT NULL);"
+        sql_data_rest_1 = "(id INTEGER PRIMARY KEY, coding INTEGER NOT NULL, verification INTEGER NOT NULL, rounds INTEGER NOT NULL, batch_size INTEGER NOT NULL, num_epochs INTEGER NOT NULL, model TEXT NOT NULL);"
 
         delete_table(conn, sql_clear_1)
         create_table(conn, sql_data_header_1 + sql_data_rest_1)
         
         # always only one row, with id 0
-        constants_insert = f"INSERT INTO constants(id,coding,verification,rounds,model) VALUES(?,?,?,?,?)"
-        conn.execute(constants_insert, (0, 0, 0, 0, ""))
+        constants_insert = f"INSERT INTO constants(id,coding,verification,rounds,batch_size,num_epochs,model) VALUES(?,?,?,?,?,?,?)"
+        conn.execute(constants_insert, (0, 0, 0, 0,  0, 0, ""))
 
         conn.commit()
         conn.close()
@@ -324,7 +324,7 @@ def set_constants(constants, model):
     conn = create_connection(database)
 
     if conn is not None:
-        constants_update = f"UPDATE constants SET coding = ?, verification = ?, rounds = ?, model = ? WHERE id = ?"
+        constants_update = f"UPDATE constants SET coding = ?, verification = ?, rounds = ?, batch_size = ?, num_epochs = ?, model = ?, WHERE id = ?"
 
         # id is always 0
         conn.execute(constants_update, (*constants, model, 0))
