@@ -3,8 +3,6 @@
 
 output ids off by 1 (original: 178, output: 177)
 
-bash code to make app
-
 app runs on lab server and port forwards
 
 bring back select all for assisted grouping

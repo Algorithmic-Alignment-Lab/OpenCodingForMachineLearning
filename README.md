@@ -6,7 +6,7 @@ More information about this project can be found at [TODO: paper link](google.co
 
 ---
 
-This interface requires the installation of npm ([MacOS example](https://changelog.com/posts/install-node-js-with-homebrew-on-os-x)). This interface also requires the installation of [Flask](https://flask.palletsprojects.com/en/2.0.x/installation/#virtual-environments), and [Hugging Face Transformers](https://huggingface.co/docs/transformers/installation).
+This interface requires the installation of npm ([MacOS example](https://changelog.com/posts/install-node-js-with-homebrew-on-os-x)) [Ubuntu Example](https://linuxize.com/post/how-to-install-node-js-on-ubuntu-20-04/). This interface also requires the installation of [Flask](https://flask.palletsprojects.com/en/2.0.x/installation/#virtual-environments), and [Hugging Face Transformers](https://huggingface.co/docs/transformers/installation).
 
 [Homebrew](https://docs.brew.sh/Installation) is recommended for MacOS users. 
 
@@ -22,7 +22,7 @@ When finished, the command `ls` should list out the five main directories of thi
 
 To help make library installations and running the application more smooth, we have provided two executable files, `setup.sh` and `opencoding.sh`. These files likely already have `read` permissions, but we will need them to have `execute` permissions in order to run them below. More information about permissions can be found [here](https://terminalcheatsheet.com/guides/navigate-terminal).
 
-Run the following commands to add `execute` permissions to our `sh` files.
+Run the following commands to add `execute` permissions to our `.sh` files.
 
 ```
 $ chmod +x setup.sh
@@ -31,7 +31,11 @@ $ chmod +x opencoding.sh
 
 ### Installations
 
-Complete the necessary installations by running the command
+This interface requires the installation of npm ([MacOS example](https://changelog.com/posts/install-node-js-with-homebrew-on-os-x)) [Ubuntu Example](https://linuxize.com/post/how-to-install-node-js-on-ubuntu-20-04/). 
+
+Follow the instructions in the links above or your preferred method of installation for your machine to install npm. 
+
+Complete the remaining necessary installations by running the command
 
 ```
 $ ./setup.sh
