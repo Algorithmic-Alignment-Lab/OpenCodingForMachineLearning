@@ -32,8 +32,10 @@ The HappyDB, SMS Spambase, and Fake News (Kaggle Competition) (labeled) datasets
 
 On your local machine or server, please run the following commaned within `/training` to create a pretrained OpenCodingModel for running the HappyDB OpenCodingForMachineLearning interface. 
 
-This will require a fair amount of computre power, and it may take a significant amount of time.
+This will require a fair amount of compute power, and it may take a significant amount of time.
 
 ```
 $ python3 generate_pretrained_model.py happy_db 50 5
 ```
+
+Alternatively, you can train models within the interface on your local machine. 

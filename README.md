@@ -12,17 +12,60 @@ This interface requires the installation of npm ([MacOS example](https://changel
 
 ## How to Get Started
 
-To get started, complete the **Development Instructions** within the `training`, `server`, and `interface` directories' `README.md` files (**in order**). 
+### Navigation
 
-<!-- Get started by running the executable file
+To start, open your terminal and navigate into the `OpenCodingForMachineLearning` directory. The commands `cd` and `ls` may be helpful, as well as [this guide](https://terminalcheatsheet.com/guides/navigate-terminal). 
+
+When finished, the command `ls` should list out the five main directories of this project - `data`, `interface`, `results`, `server`, and `training`, in addition to a few other files. 
+
+### Permissions
+
+To help make library installations and running the application more smooth, we have provided two executable files, `setup.sh` and `opencoding.sh`. These files likely already have `read` permissions, but we will need them to have `execute` permissions in order to run them below. More information about permissions can be found [here](https://terminalcheatsheet.com/guides/navigate-terminal).
+
+Run the following commands to add `execute` permissions to our `sh` files.
 
 ```
-$ ./open_coding
+$ chmod +x setup.sh
+$ chmod +x opencoding.sh
 ```
 
-Then, navigate to [http://localhost:3000/](http://localhost:3000/). Note that you may have to replace 'localhost' with your computer's IP address.
+### Installations
 
-HappyDB is already available for annotation and label creation. If you would like to upload your own dataset, please see **Using Personal Data**. -->
+Complete the necessary installations by running the command
+
+```
+$ ./setup.sh
+```
+
+in the terminal within the `OpenCodingForMachineLearning` directory. If you have an M1 chip, you may run into issues installing the necesary dependies for the `server` part of the project - please see the `README.md` file within `server` for troubleshooting guidelines. 
+
+IF any issues arise with installations, you may also consult the **Development Instructions** within the `training`, `server`, and `interface` directories' `README.md` files (**in order**).
+
+### Running the Project Application
+
+Finally, run the following commaned within the `OpenCodingForMachineLearning` directory.
+
+```
+# ./opencoding.sh
+```
+
+Then, navigate to [http://localhost:3000/](http://localhost:3000/). Note that you may have to replace 'localhost' with your computer's IP address. You should see the introduction page!
+
+HappyDB is already available for annotation and label creation, in addition to a few other datasets. If you would like to upload your own dataset, please see **Using Personal Data**.
+
+### Closing the Project Application
+
+When you're done using the application, close the `http://localhost:3000/` tab and press the following keys after clicking on your terminal:
+
+`Command + C` for Mac users
+`Control + C` for Windows users
+
+If you've accidentally closed the terminal before quitting and the website is still working, you will have to find the processes related to the ports `8000` and `3000` and kill them. The following commands are useful for finding and killing respectively, and this [stack overflow thread](https://stackoverflow.com/questions/3855127/find-and-kill-process-locking-port-3000-on-mac) may also be useful. 
+
+```
+$ sudo lsof -i :[PORT NUMBER]
+$ kill -15 [PID]
+```
 
 ## About this Repository
 
