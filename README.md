@@ -50,7 +50,7 @@ IF any issues arise with installations, you may also consult the **Development I
 Finally, run the following commaned within the `OpenCodingForMachineLearning` directory.
 
 ```
-# ./opencoding.sh
+$ ./opencoding.sh
 ```
 
 Then, navigate to [http://localhost:3000/](http://localhost:3000/). Note that you may have to replace 'localhost' with your computer's IP address. You should see the introduction page!
