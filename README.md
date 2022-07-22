@@ -59,17 +59,13 @@ HappyDB is already available for annotation and label creation, in addition to a
 
 ### Closing the Project Application
 
-When you're done using the application, close the `http://localhost:3000/` tab and press the following keys after clicking on your terminal:
-
-`Command + C` for Mac users
-`Control + C` for Windows users
-
-If you've accidentally closed the terminal before quitting and the website is still working, you will have to find the processes related to the ports `8000` and `3000` and kill them. The following commands are useful for finding and killing respectively, and this [stack overflow thread](https://stackoverflow.com/questions/3855127/find-and-kill-process-locking-port-3000-on-mac) may also be useful. 
+When you're done using the application, close the `http://localhost:3000/` tab and enter the following command into your terminal:
 
 ```
-$ sudo lsof -i :[PORT NUMBER]
-$ kill -15 [PID]
+$ ./shutdown.sh
 ```
+
+If you aren't able to type into your terminal, you may have to click on the terminal and press `enter` first. If you accidentally close the terminal before shutting down the application, just open a new terminal and navigate back to `OpenCodingForMachineLearning` to try executing the shutdown command again.
 
 ## About this Repository
 
