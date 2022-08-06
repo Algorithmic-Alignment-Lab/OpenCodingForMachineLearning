@@ -77,7 +77,7 @@ class Results extends Component {
     render() {
         return (
             <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
-                <div style={{ marginTop: '15px', marginLeft: '15px'}}>
+                <div style={{ margin: '15px'}}>
                     <b>
                         Results
                     </b>

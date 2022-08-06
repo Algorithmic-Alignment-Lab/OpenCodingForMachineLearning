@@ -24,7 +24,7 @@ row_id | model
 ### labels_{option_id}
 
 ```
-row_id | label
+row_id | true_label | predicted_label
 ```
 
 ### label_set_{option_id}

@@ -111,7 +111,7 @@ class OpenCoding extends Component {
     render() {
         return (
             <div id = 'open_coding_page' style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
-                <div style={{ marginTop: '15px', marginLeft: '15px'}}>
+                <div style={{ margin: '15px'}}>
                     <b>
                         Open Coding
                     </b>

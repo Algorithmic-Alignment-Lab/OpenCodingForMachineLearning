@@ -9,5 +9,3 @@ bring back select all for assisted grouping
 
 verification - minimum number of rounds
 enforce minimum number of verification rounds and showcase the round number
-
-removing ScrollSync, replace with overflow -> "scroll"

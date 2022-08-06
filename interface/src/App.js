@@ -229,8 +229,8 @@ class App extends Component {
     });
   }
 
-  // expects input array of {id: uid, label: string}
-  // our labels array maps {id: uid, label: string}
+  // expects input array of {id: uid, true_label: string}
+  // our labels array maps {id: uid, true_label: string}
   saveLabels = (labels) => {
     let res = this.postData('/data/save_labels', {"rows": labels, "id": this.state.optionID});
   }

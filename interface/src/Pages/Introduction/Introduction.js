@@ -246,13 +246,13 @@ class Introduction extends Component {
     render() {
         return (
             <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%'}}>
-                <div style={{ marginTop: '15px', marginLeft: '15px'}}>
+                <div style={{ margin: '15px'}}>
                     <b>
                         Introduction
                     </b>
                 </div>
                 <div style={{ overflow: 'scroll', height: "80vh", width: "95vw" }}>
-                    <div style={{ margin: '15px', display: 'flex', height: '75vh', width: '70vw', justifyContent: 'flex-start', flexDirection: 'column'}}>
+                    <div style={{ margin: '15px', display: 'flex', height: '65vh', width: '91vw', justifyContent: 'flex-start', flexDirection: 'column'}}>
                         <div style = {{alignItems: 'center', marginBottom: '10px'}}>
                             Please select an existing database to work from. If your database is not available, please follow the given instructions to add the data to your local code base.
                         </div>

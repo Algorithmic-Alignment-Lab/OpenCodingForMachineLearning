@@ -7,7 +7,7 @@ from flask import Flask, json, request
 app = Flask(__name__)
 
 from process_data import parse_options_into_db, find_pretrained_models, select_some, save_to_csv, write_to_csv, write_to_csv_annotations
-from database import instantiate_tables, fill_tables, get_options, get_option, get_option_data, set_annotation_data, get_annotation_data, create_constants, set_constants, get_constant, add_labels, update_labels, get_label_set, get_table_rows_full, get_table_rows, get_labeled_data, get_unlabeled_data, get_label_set_data, create_labels
+from database import instantiate_tables, fill_tables, get_options, get_option, get_option_data, set_annotation_data, get_annotation_data, create_constants, set_constants, get_constant, add_labels, get_label_set, get_table_rows_full, get_table_rows, get_labeled_data, get_unlabeled_data, get_label_set_data, create_labels
 
 from training.finetune_model import open_coding_finetune_model
 
@@ -140,7 +140,7 @@ def get_annotations():
     add_options(response)
     return json.jsonify(response)
 
-
+# TODO: update rows to include prediction
 @app.route('/data/save_labels', methods=['POST'])
 def save_labels():
     '''
@@ -179,28 +179,7 @@ def get_label_set_req():
     add_options(response)
     return json.jsonify(response)
 
-
-@app.route('/data/update_labels', methods=['POST'])
-def update_labels_req():
-    '''
-    Updates labels for a particular dataset option.
-    '''
-    response = {}
-    add_options(response)
-    content_type = request.headers.get('Content-Type')
-    if (content_type == 'application/json'):
-        json_data = request.get_json()
-
-        rows = json_data['rows']
-        option_id = json_data['id']
-
-        update_labels(option_id, rows)
-        response['msg'] = 'Success'
-    else:
-        response['msg'] = 'Content-Type not supported!'
-        response['ok'] = False
-
-    return json.jsonify(response)
+# TODO: function for extracting prediction accuracy for open coding
 
 
 @app.route('/data/pretrain_model', methods=['POST'])
@@ -260,7 +239,7 @@ def train_and_predict():
         # get row ids and build up required data rows
         row_ids = [row['id'] for row in rows]
         text_objs = get_table_rows_full(option_id, row_ids)
-        data_rows = [{'text': text_objs[elem['id']]['text'], 'id': elem['id'], 'label': elem['label']} for elem in rows]
+        data_rows = [{'text': text_objs[elem['id']]['text'], 'id': elem['id'], 'label': elem['true_label']} for elem in rows]
 
         # grab which model we're going to use in order to support successive training (efficiency booster)
         model_type = json_data['model']
@@ -346,19 +325,19 @@ def get_results():
 
     # loop until all data has been written
     while unlabeled_data != []:
-        # # TODO: remove
-        # break
-
+    
         some_selected_data = select_some(unlabeled_data, 0, 200)
         predictions = call_predict(some_selected_data, output_name, label_id_mappings)
 
+        full_labels = [{'id': pred['id'], 'true_label': pred['label'], 'predicted_label': pred['label']} for pred in predictions]
+
         # add all labels into the database and incrementally update results file
-        add_labels(option_id, predictions)
+        add_labels(option_id, full_labels)
         write_to_csv(kerb + '_labeled_' + name, predictions, False)
 
         unlabeled_data = get_unlabeled_data(option_id)
 
-    # also save what was annotation
+    # also save annotations
     annotations = get_annotation_data(option_id)
     
     write_to_csv_annotations(kerb + '_annotations_' + name, annotations)

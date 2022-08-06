@@ -288,11 +288,16 @@ class Verification extends Component {
      */
     retrain = () => {
         // send results to server; reset state; retrain
-        const predictedLabels = this.state.predictedLabels;
+        const fullLabels = [];
+
+        for (let i = 0; i < this.state.predictedLabels.length; i++){
+            fullLabels.push({id: this.state.predictedLabels[i].id, true_label: this.state.predictedLabels[i].label, predicted_label: this.state.originalLabels[i].label});
+        }
+
         let accuracy = this.generateAccuracy();
         this.props.saveAccuracy(accuracy);
         this.resetState();
-        this.train(predictedLabels, 1); // we retrain successively
+        this.train(fullLabels, 1); // we retrain successively
     }
 
     /**
@@ -323,7 +328,7 @@ class Verification extends Component {
     render() {
         return (
             <div style={{display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
-                <div style={{ marginTop: '15px', marginLeft: '15px'}}>
+                <div style={{ margin: '15px'}}>
                     <b>
                         Verification
                     </b>

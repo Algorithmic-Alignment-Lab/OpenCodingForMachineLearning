@@ -262,7 +262,7 @@ class AssistedGrouping extends Component {
         for (let j = 0; j < this.state.groupRows.length; j ++){
             for (let i = 0; i < this.state.groupRows[j].subRows.length; i++){
                 // we want the trueid (aka the database mapping)
-                labeled.push({id: this.state.groupRows[j].subRows[i].trueid, label: this.state.groupRows[j].text});
+                labeled.push({id: this.state.groupRows[j].subRows[i].trueid, true_label: this.state.groupRows[j].text, predicted_label: null});
             }
         }
         this.props.saveLabelState(labeled);
@@ -508,7 +508,7 @@ class AssistedGrouping extends Component {
                         <div style={{ marginTop: '5px', padding: '5px', height: '13vh', width: '60vw', border: '2px solid black', borderRadius: '10px'}}>
                             <div style={{ display: 'flex', position: 'relative',overflow: 'scroll', height: '13vh', width: '60vw'}}>
                                 <SelectionsTable
-                                    style={{width: "58vw"}}
+                                    style={{width: "57vw"}}
                                     data={this.state.selectedRows}
                                     columns={[
                                         {
@@ -524,7 +524,7 @@ class AssistedGrouping extends Component {
                         <div style={{ marginTop: '5px', padding: '5px', height: '13vh', width: '60vw', border: '2px solid black', borderRadius: '10px'}}>
                             <div style={{ display: 'flex', position: 'relative',overflow: 'scroll', height: '13vh', width: '60vw'}}>
                                 <SelectionsTable
-                                    style={{width: "58vw"}}
+                                    style={{width: "57vw"}}
                                     data={this.state.unselectedRows}
                                     columns={[
                                         {
