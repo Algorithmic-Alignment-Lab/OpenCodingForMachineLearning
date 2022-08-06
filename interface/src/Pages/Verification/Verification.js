@@ -323,8 +323,10 @@ class Verification extends Component {
     render() {
         return (
             <div style={{display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
-                <div style={{ margin: '15px'}}>
-                    Verification
+                <div style={{ marginTop: '15px', marginLeft: '15px'}}>
+                    <b>
+                        Verification
+                    </b>
                 </div>
                 {
                     this.state.isLoading ? (

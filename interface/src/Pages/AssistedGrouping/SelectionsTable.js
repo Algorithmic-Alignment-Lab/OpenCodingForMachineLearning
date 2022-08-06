@@ -25,7 +25,7 @@ function SelectionsTable({ style, columns, data}) {
 
 
         return (
-            <div style={{ width: style.width, marginLeft: '10px' }}>
+            <div style={{ width: style.width}}>
                     {original.annotation}
             </div>);
 

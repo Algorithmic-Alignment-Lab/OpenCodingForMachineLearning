@@ -239,18 +239,6 @@ class App extends Component {
     return this.state.labels;
   }
 
-  // expects input array of {id: uid, label: string}
-  // our labels array maps {id: uid, label: string}
-  updateLabels = (labels) => {
-    // this will be replaced with call to backend
-    // optimize something something
-    this.setState({
-      labels: labels
-    });
-
-    let res = this.postData('/data/update_labels', {"rows": labels, "id": this.state.optionID});
-  }
-
   loadLabelSet = () => {
     // this will be replaced with call to backend
     // that is dependent on the result of SAVE LABELS not UPDATE LABELS
@@ -303,7 +291,6 @@ class App extends Component {
         getConstants = {this.getConstants}
         getDataWithParams = {this.getDataWithParams}
         setDataRows = {this.setDataRows}
-        // getDataRows = {this.getDataRows}
         saveAnnotations = {this.saveAnnotations}
         saveAnnotationState = {this.saveAnnotationState}
         updateState = {this.updateState}
@@ -324,7 +311,6 @@ class App extends Component {
         loadLabelSet = {this.loadLabelSet}
         loadLabels = {this.loadLabels}
         saveLabels = {this.saveLabels}
-        // updateLabels = {this.updateLabels}
         getLabels = {this.getLabels}
         retrainModel = {this.retrainModel}
         getDataRows = {this.getDataRows}

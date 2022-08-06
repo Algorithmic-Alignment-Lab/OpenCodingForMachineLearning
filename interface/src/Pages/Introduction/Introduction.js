@@ -246,8 +246,10 @@ class Introduction extends Component {
     render() {
         return (
             <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%'}}>
-                <div style={{ margin: '15px'}}>
-                    Introduction
+                <div style={{ marginTop: '15px', marginLeft: '15px'}}>
+                    <b>
+                        Introduction
+                    </b>
                 </div>
                 <div style={{ overflow: 'scroll', height: "80vh", width: "95vw" }}>
                     <div style={{ margin: '15px', display: 'flex', height: '75vh', width: '70vw', justifyContent: 'flex-start', flexDirection: 'column'}}>

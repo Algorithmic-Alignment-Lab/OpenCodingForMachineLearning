@@ -6,8 +6,6 @@ import CallbackKeyEventButton  from '../../Custom/CallbackKeyEventButton';
 import SearchBar from 'material-ui-search-bar';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
-import { ScrollSync, ScrollSyncPane } from 'react-scroll-sync';
-
 import SearchResultTable from './PersistantSearchResultTable';
 import SelectionsTable from './SelectionsTable';
 import GroupingsTable from './GroupingsTable';
@@ -389,8 +387,10 @@ class AssistedGrouping extends Component {
     render() {
         return (
         <div style={{display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
-            <div style={{ margin: '15px'}}>
-                Assisted Grouping
+            <div style={{ marginTop: '15px', marginLeft: '15px'}}>
+                <b>
+                    Assisted Grouping
+                </b>
             </div>
             <div style={{ margin: '15px'}}>
                 <div style={{ display: 'flex', height: '75vh'}}>
@@ -398,79 +398,75 @@ class AssistedGrouping extends Component {
                         <div style={{marginLeft: '10px', height: '2vh'}} >
                             Groups
                         </div>
-                        <ScrollSync>
-                            <div style={{ display: 'flex', position: 'relative', height: '38vh'}}>
-                                <ScrollSyncPane>
-                                    <div style={{ overflow: 'auto', marginTop: '5px', padding: '5px', height: "38vh", width: "25vw", border: '2px solid black', borderRadius: '10px' }}>
-                                        <GroupingsTable
-                                            style={{width: "25vw"}}
-                                            data={this.state.groupRows}
-                                            columns={[
-                                                {
-                                                    id: 'expander', // Make sure it has an ID
-                                                    Header: ({ getToggleAllRowsExpandedProps, isAllRowsExpanded }) => (
-                                                    <span {...getToggleAllRowsExpandedProps()}>
-                                                        {isAllRowsExpanded ? '*' : '-'}
-                                                    </span>
-                                                    ), 
-                                                    Cell: ({ row }) => (
-                                                        <span
-                                                            {...row.getToggleRowExpandedProps({
-                                                                style: {
-                                                                // We can even use the row.depth property
-                                                                // and paddingLeft to indicate the depth
-                                                                // of the row
-                                                                paddingLeft: `${row.depth/2}rem`,
-                                                                },
-                                                            })}
-                                                            >  
-                                                            {row.isExpanded ? '*' : '-'}
-                                                        </span>
-                                                    )
-                                                },
-                                                {   
-                                                    Header: 'Group',
-                                                    accessor: 'text',
-                                                    Cell: ({ row }) => (
-                                                        <span>
-                                                            <div onClick={() => {
-                                                                    console.log(row);
-                                                                    this.reselectGroup(row.id);
-                                                                }}>
-                                                                {row.original.text}
-                                                            </div>
-                                                        </span> 
-                                                    )
-                                                },
-                                                {
-                                                    Header: 'Delete',
-                                                    accessor: 'delete',
-                                                    Cell: ({ row }) => (
-                                                        (row.isExpanded) ? 
-                                                        null 
-                                                        :
-                                                        (
-                                                        <span>
-                                                            <div onClick={() => {this.deleteGroup(row.id)}}>
-                                                                x
-                                                            </div>
-                                                        </span>
-                                                        )
-                                                    )
-                                                }
-                                            
-                                            ]}
-                                        />
-                                    </div>  
-                                </ScrollSyncPane>
-                            </div>
-                        </ScrollSync>
+                        <div style={{ marginTop: '5px', padding: '5px', height: '38vh', width: '25vw', border: '2px solid black', borderRadius: '10px'}}>
+                            <div style={{ display: 'flex', position: 'relative', overflow: 'scroll', height: '38vh', width: '25vw'}}>
+                                <GroupingsTable
+                                    style={{width: '24vw'}}
+                                    data={this.state.groupRows}
+                                    columns={[
+                                        {
+                                            id: 'expander', // Make sure it has an ID
+                                            Header: ({ getToggleAllRowsExpandedProps, isAllRowsExpanded }) => (
+                                            <span {...getToggleAllRowsExpandedProps()}>
+                                                {isAllRowsExpanded ? '*' : '-'}
+                                            </span>
+                                            ), 
+                                            Cell: ({ row }) => (
+                                                <span
+                                                    {...row.getToggleRowExpandedProps({
+                                                        style: {
+                                                        // We can even use the row.depth property
+                                                        // and paddingLeft to indicate the depth
+                                                        // of the row
+                                                        paddingLeft: `${row.depth/2}rem`,
+                                                        },
+                                                    })}
+                                                    >  
+                                                    {row.isExpanded ? '*' : '-'}
+                                                </span>
+                                            )
+                                        },
+                                        {   
+                                            Header: 'Group',
+                                            accessor: 'text',
+                                            Cell: ({ row }) => (
+                                                <span>
+                                                    <div onClick={() => {
+                                                            console.log(row);
+                                                            this.reselectGroup(row.id);
+                                                        }}>
+                                                        {row.original.text}
+                                                    </div>
+                                                </span> 
+                                            )
+                                        },
+                                        {
+                                            Header: 'Delete',
+                                            accessor: 'delete',
+                                            Cell: ({ row }) => (
+                                                (row.isExpanded) ? 
+                                                null 
+                                                :
+                                                (
+                                                <span>
+                                                    <div onClick={() => {this.deleteGroup(row.id)}}>
+                                                        x
+                                                    </div>
+                                                </span>
+                                                )
+                                            )
+                                        }
+                                    
+                                    ]}
+                                />
+                            </div>  
+                        </div>
                     </div>
                     <div style={{ flexGrow: 1, margin: '15px'}}>
                         <div style={{marginLeft: '10px', height: '2vh'}} >
                             Search Annotations
                         </div>
-                        <div style = {{marginTop: '5px', padding: '5px', border: '2px solid black', borderRadius: '10px', height: "30vh", width: '60vw'}}>
+                        <div style = {{marginTop: '5px', padding: '5px', border: '2px solid black', borderRadius: '10px', height: "28vh", width: '60vw'}}>
                             <SearchBar
                                 style={{width: "60vw", height:'5vh'}}
                                 value={this.state.value}
@@ -484,95 +480,79 @@ class AssistedGrouping extends Component {
                                         Loading ...
                                     </div>
                                 ) : (
-                                <ScrollSync>
-                                    <div style={{ display: 'flex', position: 'relative', height: '25vh', width: "60vw"}}>
-                                        <ScrollSyncPane>
-                                            <div style={{overflow: 'auto'}}>
-                                                <SearchResultTable
-                                                    data={this.state.originalRows}
-                                                    columns={[
-                                                        {   
-                                                            Header: 'Annotation',
-                                                            accessor: 'annotation'
-                                                        },
-                                                        { 
-                                                            Header: 'Text',
-                                                            accessor: 'text',
-                                                        }
-                                                        
-                                                    ]}
-                                                    selectIndex={this.selectIndex}
-                                                    unselectIndex={this.unselectIndex}
-                                                    isSelected={this.isSelected}
-                                                    isVisible={this.isVisible}
-                                                />
-                                            </div>
-                                        </ScrollSyncPane>
-                                    </div>
-                                </ScrollSync>)
+                                <div style={{ overflow: 'scroll', display: 'flex', position: 'relative', height: '23vh', width: "60vw"}}>
+                                    <SearchResultTable
+                                        data={this.state.originalRows}
+                                        columns={[
+                                            {   
+                                                Header: 'Annotation',
+                                                accessor: 'annotation'
+                                            },
+                                            { 
+                                                Header: 'Text',
+                                                accessor: 'text',
+                                            }
+                                            
+                                        ]}
+                                        selectIndex={this.selectIndex}
+                                        unselectIndex={this.unselectIndex}
+                                        isSelected={this.isSelected}
+                                        isVisible={this.isVisible}
+                                    />
+                                </div>)
                             }
-                            <div style={{ marginTop: '15px', marginLeft: '10px', height: '2vh'}} >
-                                Selected Annotations
-                            </div>
-                            <ScrollSync>
-                                <div style={{ marginTop: '5px', display: 'flex', position: 'relative', height: '15vh'}}>
-                                    <ScrollSyncPane>
-                                        <div style={{overflow: 'auto', height: '15vh', width: '60vw', border: '2px solid black', borderRadius: '10px'}}>
-                                            <SelectionsTable
-                                                    style={{width: "60vw"}}
-                                                    data={this.state.selectedRows}
-                                                    columns={[
-                                                        {
-                                                            accessor: 'annotation'
-                                                        }
-                                                        
-                                                    ]}
-                                                />
-                                        </div>
-                                    </ScrollSyncPane>
-                                </div>
-                            </ScrollSync>
-                            <div style={{marginTop: '15px', marginLeft: '10px', height: '2vh'}} >
-                            Unselected Annotations
-                            </div>
-                            <ScrollSync>
-                                <div style={{ marginTop: '5px', display: 'flex', position: 'relative', height: '15vh'}}>
-                                    <ScrollSyncPane>
-                                        <div style={{overflow: 'auto', height: '15vh', width: '60vw', border: '2px solid black', borderRadius: '10px'}}>
-                                            <SelectionsTable
-                                                    style={{width: "60vw"}}
-                                                    data={this.state.unselectedRows}
-                                                    columns={[
-                                                        {
-                                                            accessor: 'annotation'
-                                                        }
-                                                        
-                                                    ]}
-                                                />
-                                        </div>
-                                    </ScrollSyncPane>
-                                </div>
-                            </ScrollSync>
-                            <div style={{ marginTop: '15px', display: 'flex', justifyContent: 'space-between', height: '3vh', width: '100%' }}>
-                                <div style={{overflow: 'auto', height: '3vh', border: '2px solid black', padding: '5px', borderRadius: '10px', justifyContent: 'center'}}>
-                                    <InputStyle>
-                                        <input
-                                            disabled={!this.state.readyToNameGroup}
-                                            placeholder="enter group name"
-                                            value={this.state.groupName}
-                                            onChange={this.updateGroupName}/>
-                                    </InputStyle>
-                                </div>
-                                <CallbackKeyEventButton
-                                    callBackFunc={this.handleCreateGroupKeyPress}
-                                    buttonAvailable={this.state.readyToGroup}
-                                    clickFunc={this.createOrUpdateGroup}
-                                    text={'Create or Update Group (/)'}
+                        </div>
+                        <div style={{ marginTop: '15px', marginLeft: '10px', height: '2vh'}} >
+                            Selected Annotations
+                        </div>
+                        <div style={{ marginTop: '5px', padding: '5px', height: '13vh', width: '60vw', border: '2px solid black', borderRadius: '10px'}}>
+                            <div style={{ display: 'flex', position: 'relative',overflow: 'scroll', height: '13vh', width: '60vw'}}>
+                                <SelectionsTable
+                                    style={{width: "58vw"}}
+                                    data={this.state.selectedRows}
+                                    columns={[
+                                        {
+                                            accessor: 'annotation'
+                                        }
+                                    ]}
                                 />
                             </div>
                         </div>
-                    </div>
-                        
+                        <div style={{marginTop: '15px', marginLeft: '10px', height: '2vh'}} >
+                            Unselected Annotations
+                        </div>
+                        <div style={{ marginTop: '5px', padding: '5px', height: '13vh', width: '60vw', border: '2px solid black', borderRadius: '10px'}}>
+                            <div style={{ display: 'flex', position: 'relative',overflow: 'scroll', height: '13vh', width: '60vw'}}>
+                                <SelectionsTable
+                                    style={{width: "58vw"}}
+                                    data={this.state.unselectedRows}
+                                    columns={[
+                                        {
+                                            accessor: 'annotation'
+                                        }
+                                        
+                                    ]}
+                                />
+                            </div>
+                        </div>
+                        <div style={{ marginTop: '15px', display: 'flex', justifyContent: 'space-between', height: '3vh', width: '100%' }}>
+                            <div style={{overflow: 'auto', height: '3vh', border: '2px solid black', padding: '5px', borderRadius: '10px', justifyContent: 'center'}}>
+                                <InputStyle>
+                                    <input
+                                        disabled={!this.state.readyToNameGroup}
+                                        placeholder="enter group name"
+                                        value={this.state.groupName}
+                                        onChange={this.updateGroupName}/>
+                                </InputStyle>
+                            </div>
+                            <CallbackKeyEventButton
+                                callBackFunc={this.handleCreateGroupKeyPress}
+                                buttonAvailable={this.state.readyToGroup}
+                                clickFunc={this.createOrUpdateGroup}
+                                text={'Create or Update Group (/)'}
+                            />
+                        </div>
+                    </div>   
                 </div>
             </div>
             <div style={{marginTop: '15px', width:'100%'}}>

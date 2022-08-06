@@ -77,8 +77,10 @@ class Results extends Component {
     render() {
         return (
             <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
-                <div style={{ margin: '15px'}}>
-                    Results
+                <div style={{ marginTop: '15px', marginLeft: '15px'}}>
+                    <b>
+                        Results
+                    </b>
                 </div>
                 <div style={{ display: 'flex', height: '75vh', width: '80vw', justifyContent: 'flex-start', alignItems: 'center', flexDirection: 'column'}}>
                         You have completed this labeling session in {this.getVerificationNum()} verification rounds with an average accuracy of {this.getVerificationAccAvg()}%. Please wait for the server to finish labeling your dataset.
