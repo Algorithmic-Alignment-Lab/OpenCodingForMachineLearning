@@ -66,7 +66,7 @@ function CustomAnnotationTable({ columns, data, toggleSubmit}) {
   };
 
   const {
-    getTableProps, getTableBodyProps, headerGroups, rows, prepareRow,
+    getTableProps, getTableBodyProps, rows, prepareRow,
   } = useTable({
     columns,
     data,

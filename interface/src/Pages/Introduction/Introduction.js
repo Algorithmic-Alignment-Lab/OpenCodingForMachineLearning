@@ -242,7 +242,6 @@ class Introduction extends Component {
     }
 
 
-    // TODO: Pretrain modal if that option selected, changing definition of section complete
     render() {
         return (
             <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%'}}>

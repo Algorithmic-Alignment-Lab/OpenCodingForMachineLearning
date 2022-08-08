@@ -5,8 +5,6 @@ import { useTable } from "react-table";
 
 import { TableStyle } from "../../Constants/Styles";
 
-// import ".././OpenCoding/open-coding.css";
-
 
 /**
  * Single-column table with no additional functionalities
@@ -17,7 +15,7 @@ function SelectionsTable({ style, columns, data}) {
         value: initialValue, row: { index, original }, column: { id },
     }) => {
 
-        const [value, setValue] = React.useState(initialValue);
+        const [, setValue] = React.useState(initialValue);
 
         React.useEffect(() => {
             setValue(initialValue);
@@ -36,7 +34,7 @@ function SelectionsTable({ style, columns, data}) {
   };
 
   const {
-    getTableProps, getTableBodyProps, headerGroups, rows, prepareRow,
+    getTableProps, getTableBodyProps, rows, prepareRow,
   } = useTable({
     columns,
     data,

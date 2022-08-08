@@ -273,7 +273,7 @@ class AssistedGrouping extends Component {
      * Function for updating the search bar value
      */
     onChange = (newValue) => {
-        if (this.value != newValue && !this.state.isLoading){
+        if (this.value !== newValue && !this.state.isLoading){
             this.setState({ value: newValue });
         }
     }
@@ -290,7 +290,7 @@ class AssistedGrouping extends Component {
             let newRows = this.state.originalRows.filter(row => row.annotation.toLowerCase().includes(this.state.value.toLowerCase()));
             this.setState({visibleRowIds: newRows.map(row => row.id)});
         // or we show all
-        } else if (this.state.value == "") {
+        } else if (this.state.value === "") {
             this.setState({visibleRowIds: this.state.originalRows.map(row => row.id)});
         }
     }
@@ -315,9 +315,9 @@ class AssistedGrouping extends Component {
         let rows = this.state.selectedRows.concat(newitems);
 
         // remove from unselected rows
-        let unselected = this.state.unselectedRows.filter(row => row.id != index);
+        let unselected = this.state.unselectedRows.filter(row => row.id !== index);
  
-        this.setState({selectedRowIds: ids, selectedRows: rows, unselectedRows: unselected, readyToNameGroup: true, readyToGroup: rows.length > 0 && this.state.groupName != ""});
+        this.setState({selectedRowIds: ids, selectedRows: rows, unselectedRows: unselected, readyToNameGroup: true, readyToGroup: rows.length > 0 && this.state.groupName !== ""});
     }
 
     /**

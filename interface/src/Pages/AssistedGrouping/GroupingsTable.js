@@ -14,7 +14,6 @@ function GroupingsTable({columns, data}) {
   const {
       getTableProps,
       getTableBodyProps,
-      headerGroups,
       rows,
       prepareRow,
     } = useTable(

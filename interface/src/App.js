@@ -81,35 +81,7 @@ class App extends Component {
     return response.json(); // parses JSON response into native JavaScript objects
   }
 
-  /**
-   * TODO: delete 
-   */
-  async componentDidMount() {
-    try {
-        const response = await fetch('/data/get_all_data_options');
-        // show 404 or 500 errors
-        if (!response.ok) {
-            throw Error(response.statusText);
-        }
-
-        const data = await response.json();
-        let optionsFull = data.options
-        let formattedOptionsFull = [];
-
-        for (let option_id in optionsFull) {
-            formattedOptionsFull.push({id: option_id, text: optionsFull[option_id].name});
-        }
-
-        this.setState({
-            dataOptions: formattedOptionsFull
-        });
-    } catch (error) {
-        console.log(error);
-    }
-}
-
   
-
   /**
    * Before the component mounts, we ask the server to prep the data and reset the local databases. 
    */
@@ -120,29 +92,10 @@ class App extends Component {
       if (!response.ok) {
           throw Error(response.statusText);
       }
-      const data = await response.json();
+      await response.json();
     } catch (error) {
         console.log(error);
     }
-  }
-
-  loadDataRows = (optionID) => {
-    this.getDataWithParams('/data/get_data_option/', {"id": this.state.optionID}).then(
-      data => {
-
-        let parsed_data = [];
-
-        for (let row_id in data.rows) {
-          parsed_data.push({id: row_id, text: data.rows[row_id]});
-        }
-
-        this.setState({
-          texts: parsed_data
-        });
-      }
-    );
-
-    return true;
   }
 
   // data rows are an array of {id: uid, text: string}
@@ -232,7 +185,7 @@ class App extends Component {
   // expects input array of {id: uid, true_label: string}
   // our labels array maps {id: uid, true_label: string}
   saveLabels = (labels) => {
-    let res = this.postData('/data/save_labels', {"rows": labels, "id": this.state.optionID});
+    this.postData('/data/save_labels', {"rows": labels, "id": this.state.optionID});
   }
 
   getLabels = () => {

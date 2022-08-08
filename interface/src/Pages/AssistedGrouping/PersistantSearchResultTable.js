@@ -20,7 +20,7 @@ function SearchResultTable({ columns, data, selectIndex, unselectIndex, isSelect
         value: initialValue, row: { index, original }, column: { id }, selectIndex, unselectIndex, isSelected
     }) => {
 
-        const [value, setValue] = React.useState(initialValue);
+        const [, setValue] = React.useState(initialValue);
 
         React.useEffect(() => {
             setValue(initialValue);
@@ -59,7 +59,7 @@ function SearchResultTable({ columns, data, selectIndex, unselectIndex, isSelect
   };
 
   const {
-    getTableProps, getTableBodyProps, headerGroups, rows, prepareRow,
+    getTableProps, getTableBodyProps, rows, prepareRow,
   } = useTable({
     columns,
     data,

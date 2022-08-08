@@ -1,4 +1,4 @@
-import React, { Component, useEffect, useState } from 'react';
+import React, { Component } from 'react';
 
 import FixedSlider from './FixedSlider';
 import CallbackKeyEventButton from '../../Custom/CallbackKeyEventButton';
