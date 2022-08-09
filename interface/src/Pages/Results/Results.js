@@ -4,6 +4,7 @@ import states from './../../Constants/States';
 // import progress from './../../Constants/States';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import CallbackKeyEventButton from '../../Custom/CallbackKeyEventButton';
+import Loading from '../../Custom/Loading';
 
 const progress = 100;
 
@@ -87,7 +88,7 @@ class Results extends Component {
                 </div>
                 {this.state.isLoading ? (
                     <div style={{ color: 'red', display: 'flex', height: '75vh', width: '80vw', justifyContent: 'flex-start', alignItems: 'center', flexDirection: 'column'}}>
-                        Loading ...
+                        <Loading/>
                     </div>
                 ) : (
                     <div style={{  color: 'green', display: 'flex', height: '75vh', width: '80vw', justifyContent: 'flex-start', alignItems: 'center', flexDirection: 'column'}}>

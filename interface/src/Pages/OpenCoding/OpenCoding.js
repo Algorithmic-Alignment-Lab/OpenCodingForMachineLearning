@@ -6,6 +6,7 @@ import CallbackKeyEventButton from '../../Custom/CallbackKeyEventButton';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
 import CustomAnnotationTable from './CustomAnnotationTable';
+import Loading from '../../Custom/Loading';
 
 const progress = 25;
 
@@ -15,6 +16,7 @@ class OpenCoding extends Component {
         super(props);
         this.state = {
             rows: [],
+            rowsLoaded: false,
             // helps deal with tabbing behavior, map of row index to in Progress state
             // when Enter is hit or the "Done annotating" button is prompted 
             // these values will be set to rows
@@ -39,7 +41,8 @@ class OpenCoding extends Component {
             }
 
             this.setState({
-                rows: data.rows
+                rows: data.rows,
+                rowsLoaded: true
             });
 
             this.props.setDataRows(data.rows); // cache result
@@ -119,15 +122,18 @@ class OpenCoding extends Component {
                 <div style={{ display: 'flex', padding: '5px', height: '75vh', width: '100vw', justifyContent: 'flex-start', alignItems: 'center', flexDirection: 'column'}}>
                         <div style={{ overflow: 'scroll', marginTop: '5px', height: "70vh", width: "80vw", border: '2px solid black', borderRadius: '10px' }}>
                             <div style={{ padding: '15px'}}>
-
-                                <CustomAnnotationTable columns={[
-                                    {
-                                        accessor: 'annotation'
-                                    }, 
-                                    {
-                                        accessor: 'text'
-                                    }, 
-                                ]} data={this.state.rows} toggleSubmit={this.toggleSubmit}/>
+                                {
+                                    (this.state.rowsLoaded) ?
+                                        <CustomAnnotationTable columns={[
+                                            {
+                                                accessor: 'annotation'
+                                            }, 
+                                            {
+                                                accessor: 'text'
+                                            }, 
+                                        ]} data={this.state.rows} toggleSubmit={this.toggleSubmit}/>
+                                        : <Loading/>
+                                }
                             </div>
                         </div>
                 </div>

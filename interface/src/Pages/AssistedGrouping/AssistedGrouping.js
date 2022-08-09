@@ -10,6 +10,7 @@ import SearchResultTable from './PersistantSearchResultTable';
 import SelectionsTable from './SelectionsTable';
 import GroupingsTable from './GroupingsTable';
 import { InputStyle } from '../../Constants/Styles';
+import Loading from '../../Custom/Loading';
 
 const progress = 50;
 
@@ -477,7 +478,7 @@ class AssistedGrouping extends Component {
                                 (this.state.isLoading) ?
                                 (
                                     <div>
-                                        Loading ...
+                                        <Loading/>
                                     </div>
                                 ) : (
                                 <div style={{ overflow: 'scroll', display: 'flex', position: 'relative', height: '23vh', width: "60vw"}}>

@@ -6,6 +6,7 @@ import CallbackKeyEventButton from '../../Custom/CallbackKeyEventButton';
 import NextButton from './NextButton';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Multiselect from 'multiselect-react-dropdown';
+import Loading from '../../Custom/Loading';
 
 const progress = 75;
 
@@ -336,7 +337,7 @@ class Verification extends Component {
                 {
                     this.state.isLoading ? (
                         <div style={{height: '75%', width: '100%', justifyContent: 'flex-start', alignItems: 'center', alignContent: 'center', flexDirection: 'column'}}>
-                            Loading ...
+                            <Loading/>
                         </div>
                     ) : (
                     <div style={{ display: 'flex', height: '75%', width: '100%', justifyContent: 'flex-start', alignItems: 'center', flexDirection: 'column'}}>
