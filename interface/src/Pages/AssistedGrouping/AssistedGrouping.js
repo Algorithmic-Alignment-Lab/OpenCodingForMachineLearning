@@ -24,14 +24,16 @@ class AssistedGrouping extends Component {
             originalRows: [], // all rows
             visibleRowIds: [], // ids of visible rows based on search criterion
             selectedRowIds: [], // ids of annotations currently ready to be grouped
-            selectedRows: [], // annotations currently ready to be grouped
-            unselectedRows: [], // annotations not yet grouped or ready to be grouped
+            selectedRows: [], // annotations ready to be grouped or already grouped
+            unselectedRows: [], // annotations not yet grouped or not yet ready to be grouped
             groupRows: [], // all groups
             groupName: "",
-            allSelectedRows: new Set(), // annotations that have been formally grouped
+            allGroupedRows: new Set(), // annotations that have been formally grouped
             sectionComplete: false,
             readyToGroup: false,
             readyToNameGroup: false,
+            selectAllOn: false,
+            selectAllActive: true,
         };
     }
     
@@ -50,7 +52,6 @@ class AssistedGrouping extends Component {
             if (!data.ok) {
                 throw Error(data.statusText);
             }
-            console.log("response recieved: " + data.rows);
 
             // this section of the code optimizes assuming zero-indexing
             let adjusted_rows = [];
@@ -78,7 +79,7 @@ class AssistedGrouping extends Component {
     /**
      * Function for reselecting a given group from the Groups view box.
      * 
-     * Considers all elements of said group to no longer count towards completion (not in allSelectedRows)
+     * Considers all elements of said group to no longer count towards completion (not in allGroupedRows)
      * and releases elements to be modified again by user.
      * 
      * @param {int} id identifies row
@@ -117,7 +118,7 @@ class AssistedGrouping extends Component {
             selectedRows: selected,
             readyToGroup: true,
             groupName: name,
-            allSelectedRows: newSelected,
+            allGroupedRows: newSelected,
             sectionComplete: completed,
             readyToNameGroup: selected.length > 0
         });
@@ -131,9 +132,8 @@ class AssistedGrouping extends Component {
      * 
      */
     createOrUpdateGroup = () => {
-        console.log('creating or updating');
         // update the comphrensive list of selected rows to include this new group
-        let newSelected = this.state.allSelectedRows;
+        let newSelected = this.state.allGroupedRows;
 
         for (let i = 0; i < this.state.selectedRowIds.length; i++){
             newSelected.add(this.state.selectedRowIds[i]);
@@ -143,10 +143,11 @@ class AssistedGrouping extends Component {
 
         // if the group name already exists, we need to update rather than create
         let foundGroup = false;
-        for (let groupRow of this.state.groupRows){
+        let newGroupRows = this.state.groupRows;
+
+        for (let groupRow of newGroupRows){
 
             if (groupRow.text === this.state.groupName){
-                console.log('found the group');
                 // if the groups subrows have been released (group name was reselected),
                 // these ids will already be a part of selectedRows and selectedRowIds. If
                 // the group name was typed in, then the group subrows are not a part of 
@@ -154,8 +155,6 @@ class AssistedGrouping extends Component {
                 // the relevant information.
 
                 // we can add the groupSubRows iff their id is not present in selectedRows
-                // const groupSubRows = groupRow.subRows;
-                // let relevantSubRows = this.state.selectedRows;
                 const selectedIdsSet = new Set(this.state.selectedRowIds);
                 const relevantSubRows = this.state.selectedRows.concat(groupRow.subRows.filter(row => !selectedIdsSet.has(row.id)));
 
@@ -167,15 +166,15 @@ class AssistedGrouping extends Component {
                 break;
             }
         }
-
+        
         // create a new group if we didn't find one
         if (!foundGroup){
-            this.setState({groupRows: this.state.groupRows.concat([
+            newGroupRows = newGroupRows.concat([
                 {id: this.state.groupRows.length, text: this.state.groupName, expander: "", expanded: false, depth: this.state.selectedRows.length, subRows: this.state.selectedRows}
-            ])});
+            ]);
         } else {
             // if the updated group has no values, (no selected rows), we need to remove it
-            this.setState({groupRows: this.state.groupRows.filter(row => row.depth !== 0)});
+            newGroupRows = newGroupRows.filter(row => row.depth !== 0);
         }
         
         
@@ -184,19 +183,21 @@ class AssistedGrouping extends Component {
             selectedRowIds: [],
             selectedRows: [],
             readyToGroup: false,
-            allSelectedRows: newSelected,
+            allGroupedRows: newSelected,
             groupName: "",
             sectionComplete: completed,
-            readyToNameGroup: false
+            readyToNameGroup: false,
+            groupRows: newGroupRows,
+            selectAllActive: this.selectAllCanChange(null, newSelected),
+            selectAllOn: this.selectAllPersistance(null, newSelected)
         });
     }
-
 
 
     /**
      * Function for deleting a group.
      * 
-     * Removes the group from groupRows and from allSelectedRows, and repopulates unselectedRows.
+     * Removes the group from groupRows and from allGroupedRows, and repopulates unselectedRows.
      * 
      * @param {int} id the group to delete
      */
@@ -228,10 +229,11 @@ class AssistedGrouping extends Component {
         let newGroups = this.state.groupRows.slice(0, id).concat(this.state.groupRows.slice(id+1));
 
         this.setState({
-            allSelectedRows: newSelected,
+            allGroupedRows: newSelected,
             groupRows: newGroups,
             sectionComplete: completed,
-            unselectedRows: newUnselected
+            unselectedRows: newUnselected,
+            selectAllActive: this.selectAllCanChange(null, newSelected)
         });
     }
 
@@ -285,15 +287,19 @@ class AssistedGrouping extends Component {
      * Search is based on an exact lowercase text match based on the state.value and annotation value.
      */
     onSearch = () => {
-        // we show a subset
+        let newVisibleIds = this.state.originalRows.map(row => row.id);
+        // we show a subset, or we show all
         if (this.state.value !== "" && !this.state.isLoading) {
             // we update the visible row ids
             let newRows = this.state.originalRows.filter(row => row.annotation.toLowerCase().includes(this.state.value.toLowerCase()));
-            this.setState({visibleRowIds: newRows.map(row => row.id)});
-        // or we show all
-        } else if (this.state.value === "") {
-            this.setState({visibleRowIds: this.state.originalRows.map(row => row.id)});
+            newVisibleIds = newRows.map(row => row.id);
         }
+
+        this.setState({
+            visibleRowIds: newVisibleIds,
+            selectAllOn: this.selectAllPersistance(newVisibleIds, null),
+            selectAllActive: this.selectAllCanChange(newVisibleIds, null)
+        });
     }
 
     /**
@@ -313,12 +319,12 @@ class AssistedGrouping extends Component {
         // update the selected rows
         let sliceIndex = rowids.indexOf(index);
         let newitems = this.state.originalRows.slice(sliceIndex, sliceIndex+1);
-        let rows = this.state.selectedRows.concat(newitems);
+        let selected = this.state.selectedRows.concat(newitems);
 
         // remove from unselected rows
         let unselected = this.state.unselectedRows.filter(row => row.id !== index);
  
-        this.setState({selectedRowIds: ids, selectedRows: rows, unselectedRows: unselected, readyToNameGroup: true, readyToGroup: rows.length > 0 && this.state.groupName !== ""});
+        this.setState({selectedRowIds: ids, selectedRows: selected, unselectedRows: unselected, readyToNameGroup: true, readyToGroup: selected.length > 0 && this.state.groupName !== ""});
     }
 
     /**
@@ -329,7 +335,7 @@ class AssistedGrouping extends Component {
      * @param {int} index - the row to select
      */
     unselectIndex = (index) => {
-        if (this.state.allSelectedRows.has(index)){
+        if (this.state.allGroupedRows.has(index)){
             return;
         }
 
@@ -338,17 +344,122 @@ class AssistedGrouping extends Component {
         // update un-selected rows
         let sliceIndex = rowids.indexOf(index);
         let newitems = this.state.originalRows.slice(sliceIndex, sliceIndex+1);
-        let rows = this.state.unselectedRows.concat(newitems);
+        let unselected = this.state.unselectedRows.concat(newitems);
 
-        let newSelectedRows = this.state.selectedRows.filter(row => row.id !== index);
+        let selected = this.state.selectedRows.filter(row => row.id !== index);
 
         this.setState({
             selectedRowIds: this.state.selectedRowIds.filter(elem => elem !== index),  // remove from selected
-            selectedRows: newSelectedRows, // remove from selected
-            unselectedRows: rows,
-            readyToGroup: newSelectedRows.length > 0
+            selectedRows: selected, // remove from selected
+            unselectedRows: unselected,
+            readyToGroup: selected.length > 0 && this.state.groupName !== ""
         });
 
+    }
+
+    /**
+    * Function for selecting all rows from within the search area.
+    * 
+    * We update the selected rows and unselected rows accordingly.
+    */
+    onSelectAllClick = () => {
+        if (this.state.selectAllOn) {
+            this.unselectAll();
+        } else {
+            this.selectAll();
+        }
+    }
+
+
+    // For every id currently visible in the search bar, if any row has not yet been grouped,
+    // it is still changeable. This means that we can click the 'selectAll' checkbox
+    selectAllCanChange = (vIds, gRows) => {
+        const visibleIds = (vIds !== null) ? vIds : this.state.visibleRowIds;
+        const groupRows = (gRows !== null) ? gRows : this.state.allGroupedRows;
+        for (let id of visibleIds) {
+            if (!groupRows.has(id)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    // When updating the state of visible rows and created groups,
+    // the 'Select All' checkbox should persist / be selected if 
+    // all visibleIds are currently selected or grouped
+    selectAllPersistance = (vIds, gRows) => {
+        const visibleIds = (vIds !== null) ? vIds : this.state.visibleRowIds;
+        const groupRows = (gRows !== null) ? gRows : this.state.allGroupedRows;
+
+        for (let id of visibleIds) {
+            // no group has the id and the id is not selected
+            // means that we could still 'select all', and it
+            // should be off
+            if (!groupRows.has(id) && !this.isSelected(id)){
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    /**
+    * Function for selecting all rows from within the search area.
+    * 
+    * We update the selected rows and unselected rows accordingly.
+    */
+    selectAll = () => {
+        let selected = this.state.selectedRows;
+        let unselected = this.state.unselectedRows;
+        let newSelectedIds = this.state.selectedRowIds;
+
+        // we iterate over unselected visible ids
+        const visibleIds = this.state.visibleRowIds.filter(id => ! this.isSelected(id));
+        const rowids = this.state.originalRows.map(row => row.id);
+
+        for (let id of visibleIds) {
+            newSelectedIds.push(id);
+
+            // update the selected rows
+            let sliceIndex = rowids.indexOf(id);
+            let newitems = this.state.originalRows.slice(sliceIndex, sliceIndex+1);
+            selected = selected.concat(newitems);
+
+            // remove from unselected rows
+            unselected = unselected.filter(row => row.id !== id);
+        }
+
+        this.setState({ selectAllOn: true, selectedRowIds: newSelectedIds, selectedRows: selected, unselectedRows: unselected, readyToNameGroup: true, readyToGroup: selected.length > 0 && this.state.groupName !== ""});
+    }
+
+
+    /**
+    * Function for un-selecting all rows from within the search area.
+    * 
+    * We update the selected rows and unselected rows accordingly.
+    */
+    unselectAll = () => {
+        let selected = this.state.selectedRows;
+        let unselected = this.state.unselectedRows;
+
+        // we iterate over selected visible ids
+        const visibleIds = this.state.visibleRowIds.filter(id => this.isSelected(id));
+        const rowids = this.state.originalRows.map(row => row.id);
+
+        for (let id of visibleIds) {
+            
+            // update the unselected rows
+            let sliceIndex = rowids.indexOf(id);
+            let newitems = this.state.originalRows.slice(sliceIndex, sliceIndex+1);
+            unselected = unselected.concat(newitems);
+
+            // remove from selected rows
+            selected = selected.filter(row => row.id !== id);
+        }
+
+        this.setState({ selectAllOn: false, selectedRowIds: [], selectedRows: selected, unselectedRows: unselected, readyToNameGroup: true, readyToGroup: selected.length > 0 && this.state.groupName !== ""});
+       
     }
 
     /**
@@ -356,7 +467,7 @@ class AssistedGrouping extends Component {
     */
     isSelected = (index) => {
         // we can't remove selection if it's in a group
-        return this.state.allSelectedRows.has(index) || this.state.selectedRowIds.includes(index);
+        return this.state.allGroupedRows.has(index) || this.state.selectedRowIds.includes(index);
     }
 
     /**
@@ -433,7 +544,6 @@ class AssistedGrouping extends Component {
                                             Cell: ({ row }) => (
                                                 <span>
                                                     <div onClick={() => {
-                                                            console.log(row);
                                                             this.reselectGroup(row.id);
                                                         }}>
                                                         {row.original.text}
@@ -485,12 +595,22 @@ class AssistedGrouping extends Component {
                                     <SearchResultTable
                                         data={this.state.originalRows}
                                         columns={[
+                                            {
+                                                Header: () => <input type="checkbox" disabled={!this.state.selectAllActive} checked={this.state.selectAllOn} onClick={this.onSelectAllClick} readOnly={true}/>,
+                                                accessor: 'selectAll'
+                                            },
                                             {   
-                                                Header: 'Annotation',
+                                                Header: () => 
+                                                        (<div style={{marginLeft: '10px', textAlign: 'left'}}>
+                                                            Annotation
+                                                        </div>),
                                                 accessor: 'annotation'
                                             },
                                             { 
-                                                Header: 'Text',
+                                                Header: () => 
+                                                        (<div style={{marginLeft: '10px', textAlign: 'left'}}>
+                                                            Text
+                                                        </div>),
                                                 accessor: 'text',
                                             }
                                             

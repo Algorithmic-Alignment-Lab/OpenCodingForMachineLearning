@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Table } from "react-bootstrap";
-import { useTable } from "react-table";
+import { useTable, } from "react-table";
 
 import { TableStyle } from "../../Constants/Styles";
 
@@ -34,32 +34,27 @@ function SearchResultTable({ columns, data, selectIndex, unselectIndex, isSelect
             }
         }
         
-        // two different cell types to load, based on column
+        // three different cell types to load, based on column
+        // two different click functions, based on row
         return (
-          <div style={{ display: 'flex', height: '80%' }} onClick={onClick}>
-              {(id === 'text') ? (
+          <div style={{ marginLeft: '5px', display: 'flex', height: '80%' }} onClick={onClick}>
+              {(id !== 'selectAll') ? (
                 <div style={{ marginLeft: '10px' }}>
-                  {original.text}
+                  {original[id]}
                 </div> ) :
-                (
-                <div style={{ display: 'flex'}}>
-                  <input type="checkbox" checked={isSelected(index)} readOnly={true}/>
-                  <div style={{ marginLeft: '10px' }}>
-                    {original.annotation}
-                  </div>
-                </div>
-                )
+                (<input type="checkbox" checked={isSelected(index)} readOnly={true}/>)
               }
           </div>
         );
     };
+
   
   const defaultColumn = {
     Cell: CustomCell,
   };
 
   const {
-    getTableProps, getTableBodyProps, rows, prepareRow,
+    getTableProps, headerGroups, getTableBodyProps, rows, prepareRow,
   } = useTable({
     columns,
     data,
@@ -73,6 +68,18 @@ function SearchResultTable({ columns, data, selectIndex, unselectIndex, isSelect
   return (
     <TableStyle>
       <Table {...getTableProps()}>
+        <thead>
+          {headerGroups.map(headerGroup => (
+            <tr {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map(column => {
+                const { render, getHeaderProps } = column;
+                return (
+                  <th {...getHeaderProps()}>{render("Header")}</th>
+                );
+              })}
+            </tr>
+          ))}
+        </thead>
         <tbody {...getTableBodyProps()}>
           {rows.map((row, i) => {
             // decide whether or not to show the row; used to reduce results based on searching
