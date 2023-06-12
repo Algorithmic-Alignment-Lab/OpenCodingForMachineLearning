@@ -24,6 +24,7 @@ class App extends Component {
       name: 'happydb',
       constants: null,
       verificationAccuracies: [],
+      prepDataDone: false,
     }
   }
 
@@ -93,6 +94,9 @@ class App extends Component {
           throw Error(response.statusText);
       }
       await response.json();
+      this.setState({
+        prepDataDone: true
+      });
     } catch (error) {
         console.log(error);
     }
@@ -231,6 +235,7 @@ class App extends Component {
   }
 
   getView(page) {
+    if (this.state.prepDataDone){
     if (page === states.introduction) {
       return <Introduction
         setOptionID = {this.setOptionID}
@@ -282,6 +287,8 @@ class App extends Component {
         />;
     } else {
       // default value if state transitions ever fail
+      return <div/>;
+    }} else {
       return <div/>;
     }
   }

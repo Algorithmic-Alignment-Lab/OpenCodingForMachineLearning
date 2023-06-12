@@ -77,7 +77,7 @@ def parse_options_into_db():
 
     for csv_file in files:
         try:
-            with open(path + '/' + csv_file, 'r+') as f:
+            with open(path + '/' + csv_file, 'r+', encoding="utf-8", errors='replace') as f:
                 name = None
                 rows = {}
                 reader = csv.reader(f)
@@ -112,7 +112,10 @@ def parse_options_into_db():
             table_id += 1
         except ProcessingError as e:
             print(e) 
-            print(f"did not parse the following file: {csv_file}")        
+            print(f"did not parse the following file: {csv_file}") 
+        except Exception as err:
+            print(err)
+            print(f"did not parse the following file: {csv_file}")         
         
     return annotation_objects
 
