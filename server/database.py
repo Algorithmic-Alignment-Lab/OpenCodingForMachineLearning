@@ -5,6 +5,7 @@ from distutils import text_file
 import sqlite3
 from sqlite3 import Error
 from xml.etree.ElementPath import prepare_predicate
+import os
 
 # sourced from https://www.sqlitetutorial.net/sqlite-python/create-tables/
 def create_connection(db_file):
@@ -18,6 +19,7 @@ def create_connection(db_file):
         conn = sqlite3.connect(db_file)
         return conn
     except Error as e:
+        print("Error in create connection")
         print(e)
 
     return conn
@@ -100,7 +102,7 @@ def instantiate_tables(data_dict):
 
         clear_pretrained_data_tables.append(sql_clear)
         pretrained_data_tables.append(sql_data_header + sql_data_rest)
-
+    
     conn = create_connection(database)
 
     clear_data_options_table = "DROP TABLE options"
