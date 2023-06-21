@@ -8,6 +8,7 @@ import OpenCoding from './Pages/OpenCoding/OpenCoding';
 import AssistedGrouping from './Pages/AssistedGrouping/AssistedGrouping';
 import Verification from './Pages/Verification/Verification';
 import Results from './Pages/Results/Results';
+import DocToolHome from './Pages/DocToolHome/DocToolHome'
 
 const fetch = require('node-fetch');
 
@@ -284,6 +285,10 @@ class App extends Component {
         getOptionID = {this.getOptionID}
         getDataWithParams = {this.getDataWithParams}
         getAccuracy = {this.getAccuracy}
+        />;
+    } else if (page === states.doctoolhome) {
+        return <DocToolHome
+            updateState = {this.updateState}
         />;
     } else {
       // default value if state transitions ever fail
