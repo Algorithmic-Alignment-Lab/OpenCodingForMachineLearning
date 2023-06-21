@@ -5,7 +5,8 @@ const states = {
     openCoding: 1,
     assistedGrouping: 2,
     verification: 3,
-    results: 4
+    results: 4,
+    doctoolhome: 5, // I don't htink the number really matters, since we call it with whatever next page.
 }
 
 export default states;
