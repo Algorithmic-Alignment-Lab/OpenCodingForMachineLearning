@@ -4,12 +4,12 @@ import states from './../../Constants/States';
 import CallbackKeyEventButton from '../../Custom/CallbackKeyEventButton';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
-class DocToolHome {
+class DocToolHome extends Component{
     constructor(props) {
         super(props);
         this.state = {
             sectionComplete: true, // set on for now so we can test easier.
-            progressPercent: 100,
+            progressPercent: 100, // todo, change this to the intermediate value between assisted grouping and verification
         };
     }
 
