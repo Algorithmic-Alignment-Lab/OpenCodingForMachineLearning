@@ -287,7 +287,7 @@ class App extends Component {
         getAccuracy = {this.getAccuracy}
         />;
     } else if (page === states.doctoolhome) {
-        return <DocToolHome
+        return <DocJustification
             updateState = {this.updateState}
         />;
     } else {
