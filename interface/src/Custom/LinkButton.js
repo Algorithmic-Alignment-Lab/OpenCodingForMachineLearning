@@ -3,7 +3,6 @@ import React from "react";
 import PropTypes from "prop-types";
 import Button from "@mui/material/Button";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import Model from "./Model.js";
 
 const LinkButton = (props) => {
 	let location = useLocation();
