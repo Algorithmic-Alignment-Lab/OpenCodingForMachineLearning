@@ -1,6 +1,7 @@
 #!/bin/bash
 # a command I always have to do but forget to run
-/bin/sh -ec 'export NODE_OPTIONS=--openssl-legacy-provider'
+# /bin/sh -ec 'export NODE_OPTIONS=--openssl-legacy-provider'
+# doing that didn't work^ so I'm going to try and add a file to run that
 # similarly, installing material-ui always says unable to resolve dependencies, so I just force it.
 /bin/sh -ec 'cd ./interface && npm cache verify && npm install --save --legacy-peer-deps  && npm install  --force node-fetch@2'
 # TODO: M1 machines have different installation instructions
