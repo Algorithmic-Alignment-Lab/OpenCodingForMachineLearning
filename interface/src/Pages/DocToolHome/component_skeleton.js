@@ -1,21 +1,24 @@
+// 
+
 import React, {Component} from 'react';
 import states from './../../Constants/States';
 
 import CallbackKeyEventButton from '../../Custom/CallbackKeyEventButton';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
-const progress = 62; // in between 50 and 75
+const progress = 0; /* TODO: set this to the intermediate value between previous progress and next progress*/
 
-class DocToolHome extends Component {
+class MyComponent extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            sectionComplete: true, // set on for now so we can test easier.
+            sectionComplete: false, /* TODO: interact with the page and decide when to allow the user to move on. */
         };
     }
 
     onNextSubmit = () => {
-        this.props.updateState(states.verification);
+        this.props.updateState(/* TODO: set the next state here! */);
+        // pass in states.{something}
     }
 
     /**
@@ -33,16 +36,9 @@ class DocToolHome extends Component {
             <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
                 <div style={{ margin: '15px'}}>
                     <b>
-                        DocToolHome
+                        MyComponent
                     </b>
                 </div>
-                <div>Hello from our test page!</div>
-                <div>Todo:</div>
-                <li>
-                    Add Taylor's repo here locally.
-                    Connect assistedGrouping to her hypothesis generation stage
-                    connect her hypothesis checking / accuracy stage to our verification stage
-                </li>
             
                 <div style={{margin: '15px', width:'100%'}}>
                         <div style={{alignItems:'end'}}>
@@ -62,4 +58,4 @@ class DocToolHome extends Component {
     }
 }
 
-export default DocToolHome;
+export default MyComponent;
