@@ -286,7 +286,7 @@ class App extends Component {
         getDataWithParams = {this.getDataWithParams}
         getAccuracy = {this.getAccuracy}
         />;
-    } else if (page === states.doctoolhome) {
+    } else if (page === states.docJustification) {
         return <DocJustification
             updateState = {this.updateState}
         />;
