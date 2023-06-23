@@ -122,7 +122,8 @@ class DocGeneration extends Component {
 								}}
 							>
 								<List>
-									{this.state.contexts.map((value) => (
+                                    {/*Todo: come back when we start incorporating data i.e. previously shown labels */}
+									{/*this.state.contexts.map((value) => (
 										<ListItem
 											key={value}
 											component="div"
@@ -149,7 +150,7 @@ class DocGeneration extends Component {
 										>
 											<ListItemText primary={value} />
 										</ListItem>
-									))}
+									))*/}
 								</List>
 							</Box>
 
@@ -199,10 +200,10 @@ class DocGeneration extends Component {
 					>
 						<Typography variant="h6">Context</Typography>
 						<Typography paragraph>
-							{this.state.contexts[this.state.selectedContext]}
+							{/*this.state.contexts[this.state.selectedContext]*/}
 						</Typography>
 						<Typography paragraph>
-							{this.state.contextsData[this.state.selectedContext]}
+							{/*this.state.contextsData[this.state.selectedContext]*/}
 						</Typography>
 
 						<Button
