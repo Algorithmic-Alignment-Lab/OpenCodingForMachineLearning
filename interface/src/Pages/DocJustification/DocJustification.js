@@ -25,6 +25,7 @@ import Box from "@mui/material/Box";
 import Popover from "@mui/material/Popover";
 import TextField from "@mui/material/TextField";
 // import Model from "./Model.js";
+// todo: when the time comes link OpenCodingModel and deal the lines that used to have this model 
 import LinkButton from "./../../Custom/LinkButton.js";
 import { Navigate } from "react-router-dom";
 import ListItem from "@mui/material/ListItem";
@@ -43,8 +44,8 @@ class DocGeneration extends Component {
 		super(props);
 
 		this.state = {
-			contexts: Model.contextNames,
-			contextsData: Model.csvInputs,
+			// contexts: Model.contextNames,
+			// contextsData: Model.csvInputs,
 			anchorEl: null,
 			open: false,
 			id: undefined,
@@ -106,7 +107,7 @@ class DocGeneration extends Component {
 									label="justification"
 									id="justification"
 									onChange={(event) => {
-										Model.contextJustification = event.target.value;
+										// Model.contextJustification = event.target.value;
 									}}
 								/>
 							</Box>
@@ -154,7 +155,7 @@ class DocGeneration extends Component {
 							<LinkButton
 								to="/NLPDocTool/step5"
 								onClick={() => {
-									console.log(Model);
+									// console.log(Model);
 								}}
 								variant="contained"
 							>
