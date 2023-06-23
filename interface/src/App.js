@@ -8,7 +8,9 @@ import OpenCoding from './Pages/OpenCoding/OpenCoding';
 import AssistedGrouping from './Pages/AssistedGrouping/AssistedGrouping';
 import Verification from './Pages/Verification/Verification';
 import Results from './Pages/Results/Results';
-import DocToolHome from './Pages/DocToolHome/DocToolHome'
+// todo: switch to using the DocGeneration step first
+// then have DocJustification come at the end
+import DocToolHome from './Pages/DocJustification/DocJustification'
 
 const fetch = require('node-fetch');
 
