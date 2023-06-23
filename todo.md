@@ -12,6 +12,7 @@ pip: /Users/Jessica/MyOpenCodingRepo/server/venv/bin/pip
 ```
 
 - this came about because I was trying to fix this error:
+```bash
 Error: error:0308010C:digital envelope routines::unsupported
     at new Hash (node:internal/crypto/hash:69:19)
     at Object.createHash (node:crypto:138:10)
@@ -43,4 +44,5 @@ Error: error:0308010C:digital envelope routines::unsupported
   reason: 'unsupported',
   code: 'ERR_OSSL_EVP_UNSUPPORTED'
 }
+```
 - which we figured was from not being able to use dropbox folders, but now its probably because the setup isn't working.
