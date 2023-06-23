@@ -10,7 +10,7 @@ import Verification from './Pages/Verification/Verification';
 import Results from './Pages/Results/Results';
 // todo: switch to using the DocGeneration step first
 // then have DocJustification come at the end
-import DocToolHome from './Pages/DocJustification/DocJustification'
+import DocJustification from './Pages/DocJustification/DocJustification'
 
 const fetch = require('node-fetch');
 
