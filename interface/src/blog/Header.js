@@ -1,13 +1,13 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import Toolbar from '@mui/material/Toolbar';
-import Button from '@mui/material/Button';
+// import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
-import SearchIcon from '@mui/icons-material/Search';
+// import SearchIcon from '@mui/icons-material/Search';
 import Typography from '@mui/material/Typography';
-import Link from '@mui/material/Link';
-import Avatar from '@mui/material/Avatar';
-import logo from './static/AAGLogo.png';
+// import Link from '@mui/material/Link';
+// import Avatar from '@mui/material/Avatar';
+// import logo from './static/AAGLogo.png';
 import { AppBar } from '@mui/material';
 // import LinkButton from './../LinkButton.js'
 import LinkButton from './../Custom/LinkButton.js'
