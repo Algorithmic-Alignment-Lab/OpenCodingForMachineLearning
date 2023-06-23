@@ -26,7 +26,7 @@ import {
   Route,
   Redirect,
 } from "react-router-dom";
-import Step1 from '../Step1.js';
+// import Step1 from '../Step1.js';
 
 export default function Blog() {
   return (
@@ -80,7 +80,7 @@ export default function Blog() {
           );
         }}
       />
-      <Route path="/step1" component={Step1} />
+      {/* <Route path="/step1" component={Step1} /> */} 
       
         </Routes>
     </Router>
