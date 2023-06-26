@@ -1,4 +1,5 @@
 // old step 5
+// note to self: any leftover import unused warnings, ignore them because we will use those imports later.
 // todo: link this page to AssistedGrouping
 
 // todo: add the next 2 steps of NLPDocTool to this branch and connect the pages.
@@ -9,21 +10,21 @@ import Grid from '@mui/material/Grid'; // Grid version 1
 import Container from '@mui/material/Container';
 // import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { ThemeProvider } from '@mui/material/styles';
-import Header from './blog/Header.js';
+import Header from './../../blog/Header.js';
 
-import Footer from './blog/Footer.js';
+import Footer from './../../blog/Footer.js';
 // import { red } from '@mui/material/colors';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button'
-import theme from './blog/theme.js';
+import theme from './../../blog/theme.js';
 import Typography from '@mui/material/Typography';
 // import { IconButton } from "@mui/material";
 // import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import Box from '@mui/material/Box';
 import Popover from '@mui/material/Popover';
 import TextField from '@mui/material/TextField';
-import Model from './Model.js';
-import LinkButton from './LinkButton.js';
+// import Model from './Model.js';
+import LinkButton from './../../Custom/LinkButton.js';
 // import { Navigate } from "react-router-dom";
 import ListItem from '@mui/material/ListItem';
 import List from '@mui/material/List';
@@ -36,6 +37,15 @@ import FormControl from "@mui/material/FormControl";
 // import Divider from "@mui/material/Divider";
 import axios from "axios";
 import Link from "@mui/material/Link";
+
+// openCoding imports to keep things consistent (using the same mechanism to switch pages)
+import states from './../../Constants/States';
+
+import CallbackKeyEventButton from '../../Custom/CallbackKeyEventButton';
+import LinearProgress from '@material-ui/core/LinearProgress';
+
+const progress = 62; // between 50 and 75 for now.
+// todo: when adding next NLPDocTool page, change this to 1/3 of the way between openCoding pages.
 
 class DocGeneration extends Component {
     constructor(props) {
@@ -56,7 +66,10 @@ class DocGeneration extends Component {
         binarySimilarity: 0,
 
         contextPrediction: "",
-        similarityScore: 0
+        similarityScore: 0,
+
+        sectionComplete: true // placeholder
+        // todo: interact with the page to decide when to set this to true for real.
       }
     }
   
@@ -64,6 +77,17 @@ class DocGeneration extends Component {
     
     // open = Boolean(this.state.anchorEl);
     // id = this.open ? 'simple-popover' : undefined;
+    
+    // use openCoding mechanism to go between pages
+    onNextSubmit = () => {
+        this.props.updateState(states.verification);
+    }
+
+    handleNextKeyPress = (event) => {
+        if (event.key === ' ' && this.state.sectionComplete){
+            this.onNextSubmit();
+        }
+    };
 
 
     render() {
@@ -100,21 +124,21 @@ class DocGeneration extends Component {
                                 this.setState({
                                     compareOutput: event.target.value
                                 })
-                                this.setState({
-                                    compareOutputIndex: Model.indexOf(this.state.compareOutput)
-                                })
+                                // this.setState({
+                                //     compareOutputIndex: Model.indexOf(this.state.compareOutput)
+                                // })
                                 
                                 console.log(this.state.compareOutput + " " + this.state.compareOutputIndex);
 
                             }}
                         >
-                            {Model.outputs.map((x) => (
+                            {/*Model.outputs.map((x) => (
                                 <MenuItem 
                                 value={x.name}
                                 >
                                     {x.name}
                                 </MenuItem>
-                            ))}
+                            ))*/}
                             
                             
                         </Select>
@@ -126,7 +150,7 @@ class DocGeneration extends Component {
                     
                   <List>
                     
-                    {Model.contextNames.map((value) => (
+                    {/*Model.contextNames.map((value) => (
                       
                     <ListItem
                     key={value} component="div" divider
@@ -158,13 +182,13 @@ class DocGeneration extends Component {
                         <ListItemText primary={value}  />
                      </ListItem>
                     ))
-                    }
+                    */}
                   </List>
 
                 </Box>
                 
                 <LinkButton to="/NLPDocTool/results" onClick={()=>{
-                    console.log(Model);
+                    // console.log(Model);
                     // CALL THE PREDICTIONS AND POPULATE MODEL PREDICTIONS
                     // CALCULATE Similarity SCORES 
                 }} variant="contained">
@@ -203,12 +227,12 @@ class DocGeneration extends Component {
           spacing={4}
           sx={{ paddingTop: 5, paddingRight: 5, paddingLeft: 5, paddingBottom: 5}}
           >
-            <Typography variant="h6">Context: {Model.contextNames[this.state.selectedContext]}</Typography>
-            <Typography paragraph>{Model.csvInputs[this.state.selectedContext]}</Typography>
+            <Typography variant="h6">Context: {/*Model.contextNames[this.state.selectedContext]*/}</Typography>
+            <Typography paragraph>{/*Model.csvInputs[this.state.selectedContext]*/}</Typography>
             <Box sx={{ flexGrow: 1 }}>
             <Grid container spacing={4}>
             <Grid item xs={6}>
-                <Typography variant="h6" sx={{textAlign: 'center',}}>What would you expect the model's response be in this context?</Typography>
+                <Typography variant="h6" sx={{textAlign: 'center',}}>What would you expect the Model's response be in this context?</Typography>
             </Grid>
             <Grid item xs={6}>
             <Typography variant="h6" sx={{textAlign: 'center',}}>Why is this a good response? Why does it comply with any relevant standards or laws?</Typography>
@@ -261,8 +285,9 @@ class DocGeneration extends Component {
                     document.getElementById("HumanResponse").disabled = true;
                     document.getElementById("Rationale").disabled = true;
 
-                    Model.humanResponses[this.state.selectedContext] = this.state.humanResponse;
-                    Model.humanResponseRationale[this.state.selectedContext] = this.state.humanResponseRationale;
+                    // Model.humanResponses[this.state.selectedContext] = this.state.humanResponse;
+                    // Model.humanResponseRationale[this.state.selectedContext] = this.state.humanResponseRationale;
+                    // 
                     this.setState({
                         modelOutput: 'visible'
                     });
@@ -270,43 +295,43 @@ class DocGeneration extends Component {
                     
                     //Run the Hugging Face Prediction 
 
-                    var data = new URLSearchParams();
-                    data.append("hfURL", Model.apiLink + Model.endpoint);
-                    data.append("input", Model.csvInputs[this.state.selectedContext]);
-                    data.append("inputName", Model.parameters[0].name);
-                    data.append("outputName", Model.outputs[0].name);
-                    axios({
-                        method: "post",
-                        url: Model.backendUrl+"/runPrediction",
-                        data: data,
-                        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                      })
-                    .then(res => { // then print response status
-                        console.log(res.statusText);
+                    // var data = new URLSearchParams();
+                    // data.append("hfURL", Model.apiLink + Model.endpoint);
+                    // data.append("input", Model.csvInputs[this.state.selectedContext]);
+                    // data.append("inputName", Model.parameters[0].name);
+                    // data.append("outputName", Model.outputs[0].name);
+                    // axios({
+                    //     method: "post",
+                    //     url: Model.backendUrl+"/runPrediction",
+                    //     data: data,
+                    //     headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    //   })
+                    // .then(res => { // then print response status
+                    //     console.log(res.statusText);
                         
-                        this.setState({
-                            contextPrediction: res.data});
-                        console.log(res.data);
+                    //     this.setState({
+                    //         contextPrediction: res.data});
+                    //     console.log(res.data);
                         
-                    })
+                    // })
 
-                    var data2 = new URLSearchParams();
-                    data2.append("one", this.state.contextPrediction);
-                    data2.append("two", this.state.humanResponse);
-                    axios({
-                        method: "post",
-                        url: Model.backendUrl+"/getSimilarity",
-                        data: data2,
-                        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                      })
-                    .then(res => { // then print response status
-                        console.log(res.statusText);
+                    // var data2 = new URLSearchParams();
+                    // data2.append("one", this.state.contextPrediction);
+                    // data2.append("two", this.state.humanResponse);
+                    // axios({
+                    //     method: "post",
+                    //     url: Model.backendUrl+"/getSimilarity",
+                    //     data: data2,
+                    //     headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    //   })
+                    // .then(res => { // then print response status
+                    //     console.log(res.statusText);
                         
-                        this.setState({
-                            similarityScore: res.data});
-                        console.log(res.data);
+                    //     this.setState({
+                    //         similarityScore: res.data});
+                    //     console.log(res.data);
                         
-                    })
+                    // })
                 }
 
             }>
@@ -395,33 +420,53 @@ class DocGeneration extends Component {
 
             }
             >Done</Button>
-            <Button
-            variant="contained"
-            onClick={
-                () => {
-                    Model.predictions[this.state.selectedContext] = this.state.contextPrediction;
-                    Model.metricOne[this.state.selectedContext] = this.state.similarityScore;
-                    Model.resultJustification[this.state.selectedContext] = this.state.resultJustification;
-                    Model.metricTwo[this.state.selectedContext] = this.state.binarySimilarity;
-                    this.setState({
-                        selectedContext: this.state.selectedContext + 1,
-                        modelOutput: 'hidden',
-                        contextPrediction: "",
-                        humanResponse: "",
-                        humanResponseRationale: "",
-                        resultJustification: ""
-                    })
+            {/* Using openCoding's mechanism to switch pages 
+            // todo: come back here and revisit the old state setting and data methods when done importing model
+            */}
+            <div style={{marginTop: '15px', width:'100%'}}>
+                <CallbackKeyEventButton 
+                    callBackFunc={this.handleNextKeyPress}
+                    buttonAvailable={this.state.sectionComplete}
+                    clickFunc={this.onNextSubmit}
+                    text={'Next (space)'}
+                />
+            </div>
+            <div style={{marginTop: '15px'}}>
+                <LinearProgress variant="determinate" value={progress}/>
+            </div>
+            <div>
+            {
+                /* <Button
+                variant="contained"
+                onClick={
+                    () => {
+                        // todo: come back to this once we pass in our model
+                        // Model.predictions[this.state.selectedContext] = this.state.contextPrediction;
+                        // Model.metricOne[this.state.selectedContext] = this.state.similarityScore;
+                        // Model.resultJustification[this.state.selectedContext] = this.state.resultJustification;
+                        // Model.metricTwo[this.state.selectedContext] = this.state.binarySimilarity;
+                        // this.setState({
+                        //     selectedContext: this.state.selectedContext + 1,
+                        //     modelOutput: 'hidden',
+                        //     contextPrediction: "",
+                        //     humanResponse: "",
+                        //     humanResponseRationale: "",
+                        //     resultJustification: ""
+                        // })
 
-                    document.getElementById("HumanResponse").value = "";
-                    document.getElementById("Rationale").value = "";
-                    document.getElementById("ResultJustification").value = "";
+                        document.getElementById("HumanResponse").value = "";
+                        document.getElementById("Rationale").value = "";
+                        document.getElementById("ResultJustification").value = "";
 
-                    document.getElementById("HumanResponse").disabled = false;
-                    document.getElementById("Rationale").disabled = false;
+                        document.getElementById("HumanResponse").disabled = false;
+                        document.getElementById("Rationale").disabled = false;
+                    }
+
                 }
+            >Next</Button> 
+            */}
 
-            }
-            >Next</Button>
+            </div>
             </Stack>
         </Stack>
         </Box>
