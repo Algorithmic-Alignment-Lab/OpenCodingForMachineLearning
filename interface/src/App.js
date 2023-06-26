@@ -1,396 +1,401 @@
 // todo: consolidate / decide if we'll use routes or not.
 
-import {Component} from 'react';
+import { Component } from "react";
 
-import {
-    BrowserRouter as Router,
-    Routes,
-    Route,
-} from "react-router-dom";
+// import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-import './App.css';
+import "./App.css";
 
-import states from './Constants/States';
-import Introduction from './Pages/Introduction/Introduction'
-import OpenCoding from './Pages/OpenCoding/OpenCoding';
-import AssistedGrouping from './Pages/AssistedGrouping/AssistedGrouping';
-import DocGeneration from './Pages/DocGeneration/DocGeneration';
+import states from "./Constants/States";
+import Introduction from "./Pages/Introduction/Introduction";
+import OpenCoding from "./Pages/OpenCoding/OpenCoding";
+import AssistedGrouping from "./Pages/AssistedGrouping/AssistedGrouping";
+import DocGeneration from "./Pages/DocGeneration/DocGeneration";
 // todo: docComparison/results
-import Verification from './Pages/Verification/Verification';
-import Results from './Pages/Results/Results';
+import Verification from "./Pages/Verification/Verification";
+import Results from "./Pages/Results/Results";
 // then have DocJustification come at the end
-import DocJustification from './Pages/DocJustification/DocJustification'
+import DocJustification from "./Pages/DocJustification/DocJustification";
 
 // helpers for NLPDocTool
 // todo: if we change the paths for these, i.e. put them in their own page folders, change the paths here
-import DocResults from './Pages/DocGeneration/DocResults'
-import ViewDoc from './Pages/DocGeneration/ViewDoc'
+import DocResults from "./Pages/DocGeneration/DocResults";
+import ViewDoc from "./Pages/DocGeneration/ViewDoc";
 
-const fetch = require('node-fetch');
-
+const fetch = require("node-fetch");
 
 class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      pageState: states.introduction,
-      optionID: null,
-      texts: null,
-      annotations: null,
-      labels: null,
-      name: 'happydb',
-      constants: null,
-      verificationAccuracies: [],
-      prepDataDone: false,
-    }
-  }
+	constructor(props) {
+		super(props);
+		this.state = {
+			pageState: states.introduction,
+			optionID: null,
+			texts: null,
+			annotations: null,
+			labels: null,
+			name: "happydb",
+			constants: null,
+			verificationAccuracies: [],
+			prepDataDone: false,
+		};
+	}
 
-  /**
-   * Helper function for posting data via an http request to the local Flask server.
-   * 
-   * Borrowed from  https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
-   * 
-   * @param {string} url 
-   * @param {} data 
-   * @returns 
-   */
-  async postData(url = '', data = {}) {
-    // Default options are marked with *
-    const response = await fetch(url, {
-      method: 'POST', // *GET, POST, PUT, DELETE, etc.
-      mode: 'cors', // no-cors, *cors, same-origin
-      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-      credentials: 'same-origin', // include, *same-origin, omit
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      redirect: 'follow', // manual, *follow, error
-      referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-      body: JSON.stringify(data) // body data type must match "Content-Type" header
-    });
-    return response.json(); // parses JSON response into native JavaScript objects
-  }
+	/**
+	 * Helper function for posting data via an http request to the local Flask server.
+	 *
+	 * Borrowed from  https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+	 *
+	 * @param {string} url
+	 * @param {} data
+	 * @returns
+	 */
+	async postData(url = "", data = {}) {
+		// Default options are marked with *
+		const response = await fetch(url, {
+			method: "POST", // *GET, POST, PUT, DELETE, etc.
+			mode: "cors", // no-cors, *cors, same-origin
+			cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+			credentials: "same-origin", // include, *same-origin, omit
+			headers: {
+				"Content-Type": "application/json",
+			},
+			redirect: "follow", // manual, *follow, error
+			referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+			body: JSON.stringify(data), // body data type must match "Content-Type" header
+		});
+		return response.json(); // parses JSON response into native JavaScript objects
+	}
 
-  /**
-   * Helper function for getting data from an http request to the local Flask server.
-   * 
-   * @param {string} url 
-   * @param {*} params 
-   * @returns 
-   */
-  async getDataWithParams(url = '', params = {}) {
-    // Default options are marked with *
-    let modifiedParams = Object.keys(params).map(key => encodeURIComponent(key) + "=" + encodeURIComponent(String(params[key])));
-    let joinedParams = modifiedParams.join("&");
+	/**
+	 * Helper function for getting data from an http request to the local Flask server.
+	 *
+	 * @param {string} url
+	 * @param {*} params
+	 * @returns
+	 */
+	async getDataWithParams(url = "", params = {}) {
+		// Default options are marked with *
+		let modifiedParams = Object.keys(params).map(
+			(key) =>
+				encodeURIComponent(key) + "=" + encodeURIComponent(String(params[key]))
+		);
+		let joinedParams = modifiedParams.join("&");
 
-    const modifiedURL = url + "?" + joinedParams;
+		const modifiedURL = url + "?" + joinedParams;
 
-    const response = await fetch(modifiedURL, {
-      method: 'GET', // *GET, POST, PUT, DELETE, etc.
-      mode: 'cors', // no-cors, *cors, same-origin
-      cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-      credentials: 'same-origin', // include, *same-origin, omit
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      redirect: 'follow', // manual, *follow, error
-      referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-    });
-    return response.json(); // parses JSON response into native JavaScript objects
-  }
+		const response = await fetch(modifiedURL, {
+			method: "GET", // *GET, POST, PUT, DELETE, etc.
+			mode: "cors", // no-cors, *cors, same-origin
+			cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+			credentials: "same-origin", // include, *same-origin, omit
+			headers: {
+				"Content-Type": "application/json",
+			},
+			redirect: "follow", // manual, *follow, error
+			referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+		});
+		return response.json(); // parses JSON response into native JavaScript objects
+	}
 
-  
-  /**
-   * Before the component mounts, we ask the server to prep the data and reset the local databases. 
-   */
-  async componentWillMount() {
-    try {
-      const response = await fetch('/data/prep_data');
-      // show 404 or 500 errors
-      if (!response.ok) {
-          throw Error(response.statusText);
-      }
-      await response.json();
-      this.setState({
-        prepDataDone: true
-      });
-    } catch (error) {
-        console.log(error);
-    }
-  }
+	/**
+	 * Before the component mounts, we ask the server to prep the data and reset the local databases.
+	 */
+	async componentWillMount() {
+		try {
+			const response = await fetch("/data/prep_data");
+			// show 404 or 500 errors
+			if (!response.ok) {
+				throw Error(response.statusText);
+			}
+			await response.json();
+			this.setState({
+				prepDataDone: true,
+			});
+		} catch (error) {
+			console.log(error);
+		}
+	}
 
-  // data rows are an array of {id: uid, text: string}
-  setDataRows = (rows) => {
-    this.setState({
-      texts: rows
-    });
-  }
+	// data rows are an array of {id: uid, text: string}
+	setDataRows = (rows) => {
+		this.setState({
+			texts: rows,
+		});
+	};
 
-  getDataRows = () => {
-    return this.state.texts;
-  }
+	getDataRows = () => {
+		return this.state.texts;
+	};
 
-  setOptionID = (optionID) => {
-    this.setState({
-      optionID: optionID
-    });
-  }
+	setOptionID = (optionID) => {
+		this.setState({
+			optionID: optionID,
+		});
+	};
 
-  getOptionID = () => {
-    return this.state.optionID;
-  }
+	getOptionID = () => {
+		return this.state.optionID;
+	};
 
-  setConstants = (constants) => {
-    this.setState({
-      constants: constants
-    });
-  }
+	setConstants = (constants) => {
+		this.setState({
+			constants: constants,
+		});
+	};
 
-  getConstants = () => {
-    return this.state.constants;
-  }
+	getConstants = () => {
+		return this.state.constants;
+	};
 
-  // input array of {id: row_uid, text: string, annotation: string} saved for 
-  // first call to AssistedGrouping, our annotations backend call requires 
-  // [[row_uid, annotation], ...]
-  saveAnnotationState = (annotations) => {
-    let callAnnotations = [];
+	// input array of {id: row_uid, text: string, annotation: string} saved for
+	// first call to AssistedGrouping, our annotations backend call requires
+	// [[row_uid, annotation], ...]
+	saveAnnotationState = (annotations) => {
+		let callAnnotations = [];
 
-    for (let i = 0; i < annotations.length; i++){
-      callAnnotations.push([annotations[i].id, annotations[i].annotation]);
-    }
+		for (let i = 0; i < annotations.length; i++) {
+			callAnnotations.push([annotations[i].id, annotations[i].annotation]);
+		}
 
-    this.setState({
-      annotations: callAnnotations
-    });
+		this.setState({
+			annotations: callAnnotations,
+		});
+	};
 
-  }
+	// expects input array of {id: row_uid, text: string, annotation: string}
+	// our annotations backend call requires [[row_uid, annotation],...]
+	saveAnnotations = (annotations) => {
+		// insert some input checks
+		let reducedAnnotations = [];
+		let callAnnotations = [];
 
-  // expects input array of {id: row_uid, text: string, annotation: string}
-  // our annotations backend call requires [[row_uid, annotation],...]
-  saveAnnotations = (annotations) => {
-    // insert some input checks
-    let reducedAnnotations = [];
-    let callAnnotations = [];
+		for (let i = 0; i < annotations.length; i++) {
+			reducedAnnotations.push({
+				id: annotations[i].id,
+				annotation: annotations[i].annotation,
+			});
+		}
 
-    for (let i = 0; i < annotations.length; i++){
-      reducedAnnotations.push({id: annotations[i].id, annotation: annotations[i].annotation});
-    }
+		for (let i = 0; i < annotations.length; i++) {
+			callAnnotations.push([annotations[i].id, annotations[i].annotation]);
+		}
 
-    for (let i = 0; i < annotations.length; i++){
-      callAnnotations.push([annotations[i].id, annotations[i].annotation]);
-    }
+		// this will be replaced with call to backend
+		this.setState({
+			annotations: reducedAnnotations,
+		});
 
-    // this will be replaced with call to backend
-    this.setState({
-      annotations: reducedAnnotations
-    });
+		let res = this.postData("/data/save_annotations", {
+			rows: callAnnotations,
+			id: this.state.optionID,
+		});
+		console.log(res);
+	};
 
-    let res = this.postData('/data/save_annotations', {"rows": callAnnotations, "id": this.state.optionID});
-    console.log(res);
-  }
+	loadAnnotations = () => {
+		// this will be replaced with call to backend
+		// maybe copy first
+		return this.state.annotations;
+	};
 
-  loadAnnotations = () => {
-    // this will be replaced with call to backend
-    // maybe copy first
-    return this.state.annotations;
-  }
+	saveLabelState = (labels) => {
+		console.log("saving label state:", labels);
+		this.setState({
+			labels: labels,
+		});
+	};
 
-  saveLabelState = (labels) => {
-    console.log('saving label state:', labels);
-    this.setState({
-      labels: labels
-    });
-  }
+	// expects input array of {id: uid, true_label: string}
+	// our labels array maps {id: uid, true_label: string}
+	saveLabels = (labels) => {
+		this.postData("/data/save_labels", {
+			rows: labels,
+			id: this.state.optionID,
+		});
+	};
 
-  // expects input array of {id: uid, true_label: string}
-  // our labels array maps {id: uid, true_label: string}
-  saveLabels = (labels) => {
-    this.postData('/data/save_labels', {"rows": labels, "id": this.state.optionID});
-  }
+	getLabels = () => {
+		return this.state.labels;
+	};
 
-  getLabels = () => {
-    return this.state.labels;
-  }
+	loadLabelSet = () => {
+		// this will be replaced with call to backend
+		// that is dependent on the result of SAVE LABELS not UPDATE LABELS
+		let labelSet = new Set(this.state.labels.map((row) => row.label));
+		let labelArray = Array.from(labelSet);
 
-  loadLabelSet = () => {
-    // this will be replaced with call to backend
-    // that is dependent on the result of SAVE LABELS not UPDATE LABELS
-    let labelSet = new Set(this.state.labels.map((row) => row.label));
-    let labelArray = Array.from(labelSet);
+		let finalLabels = [];
 
-    let finalLabels = []
+		for (let i = 0; i < labelArray.length; i++) {
+			finalLabels.push({ id: i, label: labelArray[i] });
+		}
 
-    for (let i = 0; i < labelArray.length; i++){
-      finalLabels.push({id: i, label: labelArray[i]});
-    }
-    
-    return finalLabels
-  }
+		return finalLabels;
+	};
 
-  loadLabels = () => {
-    // this will be replaced with call to backend
-    // maybe copy first
-    return this.state.labels;
-  }
+	loadLabels = () => {
+		// this will be replaced with call to backend
+		// maybe copy first
+		return this.state.labels;
+	};
 
-  retrainModel = () => {
-    // this will be replaced with call to backend
-    return true;
-  }
+	retrainModel = () => {
+		// this will be replaced with call to backend
+		return true;
+	};
 
-  saveAccuracy = (accuracy) => {
-    let accuracies = this.state.verificationAccuracies;
-    accuracies.push(accuracy);
-    this.setState({
-      verificationAccuracies: accuracies
-    });
-  }
+	saveAccuracy = (accuracy) => {
+		let accuracies = this.state.verificationAccuracies;
+		accuracies.push(accuracy);
+		this.setState({
+			verificationAccuracies: accuracies,
+		});
+	};
 
-  getAccuracy = () => {
-    return this.state.verificationAccuracies;
-  }
+	getAccuracy = () => {
+		return this.state.verificationAccuracies;
+	};
 
-  // add render functions for each component with the arguments we want to pass for reusability
-  renderIntroduction() {
-    return <Introduction
-        setOptionID = {this.setOptionID}
-        updateState = {this.updateState}
-        setConstants = {this.setConstants}
-        postData = {this.postData}
-        />;
-  }
+	// add render functions for each component with the arguments we want to pass for reusability
+	renderIntroduction() {
+        console.log('In renderIntroduction()');
+		return (
+			<Introduction
+				setOptionID={this.setOptionID}
+				updateState={this.updateState}
+				setConstants={this.setConstants}
+				postData={this.postData}
+			/>
+		);
+	}
 
-  renderOpenCoding() {
-    return <OpenCoding
-        getOptionID = {this.getOptionID}
-        getConstants = {this.getConstants}
-        getDataWithParams = {this.getDataWithParams}
-        setDataRows = {this.setDataRows}
-        saveAnnotations = {this.saveAnnotations}
-        saveAnnotationState = {this.saveAnnotationState}
-        updateState = {this.updateState}
-        />
-  }
+	renderOpenCoding() {
+		return (
+			<OpenCoding
+				getOptionID={this.getOptionID}
+				getConstants={this.getConstants}
+				getDataWithParams={this.getDataWithParams}
+				setDataRows={this.setDataRows}
+				saveAnnotations={this.saveAnnotations}
+				saveAnnotationState={this.saveAnnotationState}
+				updateState={this.updateState}
+			/>
+		);
+	}
 
-  renderAssistedGrouping() {
-    return <AssistedGrouping
-        loadAnnotations = {this.loadAnnotations}
-        getDataRows = {this.getDataRows}
-        saveLabels = {this.saveLabels}
-        updateState = {this.updateState}
-        getOptionID = {this.getOptionID}
-        getDataWithParams = {this.getDataWithParams}
-        saveLabelState = {this.saveLabelState}
-        postData = {this.postData}
-        />;
-  }
+	renderAssistedGrouping() {
+		return (
+			<AssistedGrouping
+				loadAnnotations={this.loadAnnotations}
+				getDataRows={this.getDataRows}
+				saveLabels={this.saveLabels}
+				updateState={this.updateState}
+				getOptionID={this.getOptionID}
+				getDataWithParams={this.getDataWithParams}
+				saveLabelState={this.saveLabelState}
+				postData={this.postData}
+			/>
+		);
+	}
 
-  renderDocGeneration() {
-    return <DocGeneration
-            updateState = {this.updateState}
-        />;
-  }
+	renderDocGeneration() {
+		return <DocGeneration updateState={this.updateState} />;
+	}
 
-  renderDocComparison() {
-    return <div>Still haven't implemented this / linked the pages... Come back later!</div>;
-  }
+	renderDocComparison() {
+		return (
+			<div>
+				Still haven't implemented this / linked the pages... Come back later!
+			</div>
+		);
+	}
 
-  renderVerification() {
-    return <Verification
-        loadLabelSet = {this.loadLabelSet}
-        loadLabels = {this.loadLabels}
-        saveLabels = {this.saveLabels}
-        getLabels = {this.getLabels}
-        retrainModel = {this.retrainModel}
-        getDataRows = {this.getDataRows}
-        updateState = {this.updateState}
-        getOptionID = {this.getOptionID}
-        getDataWithParams = {this.getDataWithParams}
-        postData = {this.postData}
-        saveAccuracy = {this.saveAccuracy}
-        />;
-  }
+	renderVerification() {
+		return (
+			<Verification
+				loadLabelSet={this.loadLabelSet}
+				loadLabels={this.loadLabels}
+				saveLabels={this.saveLabels}
+				getLabels={this.getLabels}
+				retrainModel={this.retrainModel}
+				getDataRows={this.getDataRows}
+				updateState={this.updateState}
+				getOptionID={this.getOptionID}
+				getDataWithParams={this.getDataWithParams}
+				postData={this.postData}
+				saveAccuracy={this.saveAccuracy}
+			/>
+		);
+	}
 
-  renderResults() {
-    return <Results
-        updateState = {this.updateState}
-        getOptionID = {this.getOptionID}
-        getDataWithParams = {this.getDataWithParams}
-        getAccuracy = {this.getAccuracy}
-        />;
-  }
+	renderResults() {
+		return (
+			<Results
+				updateState={this.updateState}
+				getOptionID={this.getOptionID}
+				getDataWithParams={this.getDataWithParams}
+				getAccuracy={this.getAccuracy}
+			/>
+		);
+	}
 
-  renderDocJustification() {
-    return <DocJustification
-            updateState = {this.updateState}
-        />;
-  }
+	renderDocJustification() {
+		return <DocJustification updateState={this.updateState} />;
+	}
 
-  getView(page) {
-    if (this.state.prepDataDone){
-    if (page === states.introduction) {
-      return this.renderIntroduction();
-    } else if (page === states.openCoding) {
-      return this.renderOpenCoding();
-    } else if (page === states.assistedGrouping) {
-      return this.renderAssistedGrouping();
-    } else if (page === states.docGeneration) {
-        return this.renderDocGeneration();
-        // todo: docComparison/results
-    } else if (page === states.docVerification) {
-        return this.renderDocVerification();
-    } else if (page === states.verification) {
-      return this.renderVerification();
-    } else if (page === states.results) {
-      return this.renderResults();
-    }  else if (page === states.docJustification) {
-      return this.renderDocJustification();
-    } else {
-      // default value if state transitions ever fail
-      return <div/>;
-    }} else {
-      return <div/>;
-    }
-  }
+	getView(page) {
+		if (this.state.prepDataDone) {
+			if (page === states.introduction) {
+				return this.renderIntroduction();
+			} else if (page === states.openCoding) {
+				return this.renderOpenCoding();
+			} else if (page === states.assistedGrouping) {
+				return this.renderAssistedGrouping();
+			} else if (page === states.docGeneration) {
+				return this.renderDocGeneration();
+				// todo: docComparison/results
+			} else if (page === states.docVerification) {
+				return this.renderDocVerification();
+			} else if (page === states.verification) {
+				return this.renderVerification();
+			} else if (page === states.results) {
+				return this.renderResults();
+			} else if (page === states.docJustification) {
+				return this.renderDocJustification();
+			} else {
+				// default value if state transitions ever fail
+				return <div />;
+			}
+		} else {
+			return <div />;
+		}
+	}
 
-  updateState = (newPageState) => {
-    console.log('new pagestate: ' + newPageState);
-    this.setState({
-      pageState: newPageState
-    })
-  }
+	updateState = (newPageState) => {
+		console.log("new pagestate: " + newPageState);
+		this.setState({
+			pageState: newPageState,
+		});
+	};
 
-  render() {
-    return (
-        <div style={{margin: '25px', height: '90vh', width: '90vw', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
-          {/*
-          // attempt using routers instead, where we just pass in getView(something as the component)
-          this.getView(this.state.pageState)
-          */}
-            <Router>
-                <Routes>
-                    {/* The / will probably be the only one that gets used. 
-                        But we can try and have the others as options to see what happens. */}
-                    <Route path='/' render={() => this.getView(this.state.pageState)} />
-                    {/* Since the old components don't use routers, we'll see if we need to add that to make that happen */}
-                    <Route path='/introduction' component={this.renderIntroduction} />
-                    <Route path='/openCoding' component={this.renderOpenCoding} />
-                    <Route path='/assistedGrouping' component={this.renderAssistedGrouping} />
-                    <Route path='/docGeneration' component={this.renderDocGeneration} />
-                    <Route path='/docComparison' component={this.renderDocComparison} />
-                    <Route path='/verification' component={this.renderVerification} />
-                    <Route path='/results' component={this.renderResults} />
-                    <Route path='/docVerification' component={this.renderDocVerification} />
-                    {/* Helpers for NLPDocTool */}
-                    <Route path="/NLPDocTool/results" element={<DocResults />} />
-                    <Route path="/NLPDocTool/viewDoc" element={<ViewDoc />} />
-                </Routes>
-            </Router>
-        </div>
-    );
-  }
-
+	render() {
+		return (
+			<div
+				style={{
+					margin: "25px",
+					height: "90vh",
+					width: "90vw",
+					display: "flex",
+					flexDirection: "column",
+					alignItems: "center",
+					justifyContent: "center",
+				}}
+			>
+	            {this.getView(this.state.pageState)}
+          
+			</div>
+		);
+	}
 }
 
 export default App;
