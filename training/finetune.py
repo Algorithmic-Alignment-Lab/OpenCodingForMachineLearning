@@ -272,7 +272,8 @@ def classification_finetune(model, tokenizer, filename, percent_train, percent_u
         per_device_eval_batch_size=batch_size,
         per_device_train_batch_size=batch_size,
         num_train_epochs=num_epochs,
-        dataloader_pin_memory=False
+        dataloader_pin_memory=False,
+        use_mps_device=True
     )
 
     trainer = Trainer(
@@ -320,7 +321,8 @@ def classification_finetune_happy_db_subsets(model, tokenizer, filename, percent
         per_device_train_batch_size=batch_size,
         num_train_epochs=num_epochs,
         # save_total_limit=1, # only save best checkpoint; remove disk quota
-        dataloader_pin_memory=False
+        dataloader_pin_memory=False,
+        use_mps_device=True
     )
 
     trainer = Trainer(
@@ -365,7 +367,8 @@ def open_coding_classification_finetune(model, tokenizer, max_length, num_epochs
         per_device_train_batch_size=batch_size,
         num_train_epochs=num_epochs,
         save_total_limit=1, # only save best checkpoint; remove disk quota
-        dataloader_pin_memory=False
+        dataloader_pin_memory=False,
+        use_mps_device=True
     )
 
     trainer = Trainer(
