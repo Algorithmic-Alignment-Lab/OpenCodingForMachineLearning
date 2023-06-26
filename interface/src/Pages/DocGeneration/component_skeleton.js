@@ -16,6 +16,27 @@ class MyComponent extends Component {
         };
     }
 
+    /**
+    * When the component mounts, we save the annotations from open coding, and ask for them back. 
+    * Asking for them back is more of an example, could techically just use locally saved state.
+    
+    * todo: see if this makes post less angry about database being locked
+    */
+    async componentDidMount () {
+        try {
+            // save the annotations before we ask for them
+            await this.props.postData('/data/save_annotations', {"rows": this.props.loadAnnotations(), "id": this.props.getOptionID()});
+            const data = await this.props.getDataWithParams('/data/get_annotations', {"id": this.props.getOptionID()});
+            
+            if (!data.ok) {
+                throw Error(data.statusText);
+            }
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     onNextSubmit = () => {
         this.props.updateState(/* TODO: set the next state here! */);
         // pass in states.{something}
