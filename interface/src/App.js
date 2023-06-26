@@ -302,6 +302,14 @@ class App extends Component {
 		return <DocGeneration updateState={this.updateState} />;
 	}
 
+    renderDocResults() {
+        return <DocResults/>
+    }
+
+    renderViewDoc() {
+        return <ViewDoc/>
+    }
+
 	renderDocComparison() {
 		return (
 			<div>
@@ -351,11 +359,18 @@ class App extends Component {
 				return this.renderOpenCoding();
 			} else if (page === states.assistedGrouping) {
 				return this.renderAssistedGrouping();
+                
 			} else if (page === states.docGeneration) {
 				return this.renderDocGeneration();
-				// todo: docComparison/results
-			} else if (page === states.docVerification) {
-				return this.renderDocVerification();
+                // todo: docComparison/results
+            } else if (page === states.docResults) {
+                return this.renderDocResults();
+            } else if (page === states.docView) {
+                return this.renderViewDoc();
+
+            } else if (page === states.docComparison) {
+				return this.renderDocComparison();
+
 			} else if (page === states.verification) {
 				return this.renderVerification();
 			} else if (page === states.results) {

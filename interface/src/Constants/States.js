@@ -6,11 +6,13 @@ const states = {
     assistedGrouping: 2,
     // todo: generation (what the annotator thinks the model will output)
     docGeneration: 3, 
-    docComparison: 4,
+    docResults: 4,
+    docView: 5, 
+    docComparison: 6,
     // todo: comparison (what the annotator thought vs the actual model output)
-    verification: 5, // openCoding: the annotator checks how correct the model was
-    results: 6,
-    docJustification: 7, // let's just have the numbers go in order for ease of understanding
+    verification: 7, // openCoding: the annotator checks how correct the model was
+    results: 8,
+    docJustification: 9, // let's just have the numbers go in order for ease of understanding
     // docJustification: have the annotator describe their thought process for the labels they provided
     
 }
