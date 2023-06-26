@@ -5,12 +5,13 @@ const states = {
     openCoding: 1,
     assistedGrouping: 2,
     // docJustification: have the annotator describe their thought process for the labels they provided
-    docJustification: 3, // let's just have the numbers go in order for ease of understanding
-    // todo: consider if we want to skip docJustification (old step4) and go right into step5
     // todo: generation (what the annotator thinks the model will output)
+    docGeneration: 3,
+    docVerification: 4,
     // todo: comparison (what the annotator thought vs the actual model output)
-    verification: 4, // openCoding: the annotator checks how correct the model was
-    results: 5,
+    verification: 5, // openCoding: the annotator checks how correct the model was
+    results: 6,
+    docJustification: 7, // let's just have the numbers go in order for ease of understanding
 }
 
 export default states;
