@@ -1,4 +1,12 @@
-import React, {Component} from 'react';
+// todo: consolidate / decide if we'll use routes or not.
+
+import {Component} from 'react';
+
+import {
+    BrowserRouter as Router,
+    Routes,
+    Route,
+} from "react-router-dom";
 
 import './App.css';
 
@@ -12,6 +20,11 @@ import Verification from './Pages/Verification/Verification';
 import Results from './Pages/Results/Results';
 // then have DocJustification come at the end
 import DocJustification from './Pages/DocJustification/DocJustification'
+
+// helpers for NLPDocTool
+// todo: if we change the paths for these, i.e. put them in their own page folders, change the paths here
+import DocResults from './Pages/DocGeneration/DocResults'
+import ViewDoc from './Pages/DocGeneration/ViewDoc'
 
 const fetch = require('node-fetch');
 
@@ -238,17 +251,18 @@ class App extends Component {
     return this.state.verificationAccuracies;
   }
 
-  getView(page) {
-    if (this.state.prepDataDone){
-    if (page === states.introduction) {
-      return <Introduction
+  // add render functions for each component with the arguments we want to pass for reusability
+  renderIntroduction() {
+    return <Introduction
         setOptionID = {this.setOptionID}
         updateState = {this.updateState}
         setConstants = {this.setConstants}
         postData = {this.postData}
         />;
-    } else if (page === states.openCoding) {
-      return <OpenCoding
+  }
+
+  renderOpenCoding() {
+    return <OpenCoding
         getOptionID = {this.getOptionID}
         getConstants = {this.getConstants}
         getDataWithParams = {this.getDataWithParams}
@@ -256,9 +270,11 @@ class App extends Component {
         saveAnnotations = {this.saveAnnotations}
         saveAnnotationState = {this.saveAnnotationState}
         updateState = {this.updateState}
-        />;
-    } else if (page === states.assistedGrouping) {
-      return <AssistedGrouping
+        />
+  }
+
+  renderAssistedGrouping() {
+    return <AssistedGrouping
         loadAnnotations = {this.loadAnnotations}
         getDataRows = {this.getDataRows}
         saveLabels = {this.saveLabels}
@@ -268,13 +284,20 @@ class App extends Component {
         saveLabelState = {this.saveLabelState}
         postData = {this.postData}
         />;
-    } else if (page === states.docGeneration) {
-        return <DocGeneration
+  }
+
+  renderDocGeneration() {
+    return <DocGeneration
             updateState = {this.updateState}
         />;
-        // todo: docComparison/results
-    } else if (page === states.verification) {
-      return <Verification
+  }
+
+  renderDocComparison() {
+    return <div>Still haven't implemented this / linked the pages... Come back later!</div>;
+  }
+
+  renderVerification() {
+    return <Verification
         loadLabelSet = {this.loadLabelSet}
         loadLabels = {this.loadLabels}
         saveLabels = {this.saveLabels}
@@ -287,17 +310,42 @@ class App extends Component {
         postData = {this.postData}
         saveAccuracy = {this.saveAccuracy}
         />;
-    } else if (page === states.results) {
-      return <Results
+  }
+
+  renderResults() {
+    return <Results
         updateState = {this.updateState}
         getOptionID = {this.getOptionID}
         getDataWithParams = {this.getDataWithParams}
         getAccuracy = {this.getAccuracy}
         />;
-    }  else if (page === states.docJustification) {
-        return <DocJustification
+  }
+
+  renderDocJustification() {
+    return <DocJustification
             updateState = {this.updateState}
         />;
+  }
+
+  getView(page) {
+    if (this.state.prepDataDone){
+    if (page === states.introduction) {
+      return this.renderIntroduction();
+    } else if (page === states.openCoding) {
+      return this.renderOpenCoding();
+    } else if (page === states.assistedGrouping) {
+      return this.renderAssistedGrouping();
+    } else if (page === states.docGeneration) {
+        return this.renderDocGeneration();
+        // todo: docComparison/results
+    } else if (page === states.docVerification) {
+        return this.renderDocVerification();
+    } else if (page === states.verification) {
+      return this.renderVerification();
+    } else if (page === states.results) {
+      return this.renderResults();
+    }  else if (page === states.docJustification) {
+      return this.renderDocJustification();
     } else {
       // default value if state transitions ever fail
       return <div/>;
@@ -316,7 +364,29 @@ class App extends Component {
   render() {
     return (
         <div style={{margin: '25px', height: '90vh', width: '90vw', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
-          {this.getView(this.state.pageState)}
+          {/*
+          // attempt using routers instead, where we just pass in getView(something as the component)
+          this.getView(this.state.pageState)
+          */}
+            <Router>
+                <Routes>
+                    {/* The / will probably be the only one that gets used. 
+                        But we can try and have the others as options to see what happens. */}
+                    <Route path='/' render={() => this.getView(this.state.pageState)} />
+                    {/* Since the old components don't use routers, we'll see if we need to add that to make that happen */}
+                    <Route path='/introduction' component={this.renderIntroduction} />
+                    <Route path='/openCoding' component={this.renderOpenCoding} />
+                    <Route path='/assistedGrouping' component={this.renderAssistedGrouping} />
+                    <Route path='/docGeneration' component={this.renderDocGeneration} />
+                    <Route path='/docComparison' component={this.renderDocComparison} />
+                    <Route path='/verification' component={this.renderVerification} />
+                    <Route path='/results' component={this.renderResults} />
+                    <Route path='/docVerification' component={this.renderDocVerification} />
+                    {/* Helpers for NLPDocTool */}
+                    <Route path="/NLPDocTool/results" element={<DocResults />} />
+                    <Route path="/NLPDocTool/viewDoc" element={<ViewDoc />} />
+                </Routes>
+            </Router>
         </div>
     );
   }

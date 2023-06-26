@@ -1,6 +1,5 @@
 // old step 5
 // note to self: any leftover import unused warnings, ignore them because we will use those imports later.
-// todo: link this page to AssistedGrouping
 
 // todo: add the next 2 steps of NLPDocTool to this branch and connect the pages.
 // import React, { Component } from "react";
@@ -38,6 +37,8 @@ import FormControl from "@mui/material/FormControl";
 import axios from "axios";
 import Link from "@mui/material/Link";
 
+// todo: come back and link to results page.
+import DocResults from './DocResults'
 // openCoding imports to keep things consistent (using the same mechanism to switch pages)
 import states from './../../Constants/States';
 
@@ -193,7 +194,7 @@ class DocGeneration extends Component {
                     // CALCULATE Similarity SCORES 
                 }} variant="contained">
                     Confirm
-                </LinkButton>
+                </LinkButton> 
                 </Stack>
                 </main>
             </Container>
