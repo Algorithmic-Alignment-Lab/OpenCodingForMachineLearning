@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 // import logo from './static/AAGLogo.png';
 import { AppBar } from '@mui/material';
 // import LinkButton from './../LinkButton.js'
-import LinkButton from './../Custom/LinkButton.js'
+// import LinkButton from './../Custom/LinkButton.js'
 import LogoDevIcon from '@mui/icons-material/LogoDev';
 
 function Header(props) {
@@ -20,7 +20,7 @@ function Header(props) {
     <React.Fragment>
       <AppBar color="secondary">
       <Toolbar variant="dense" sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <LinkButton size="medium" to="/NLPDocTool">Home</LinkButton>
+        {/* <LinkButton size="medium" to="/NLPDocTool">Home</LinkButton> */}
         <Typography
           component="h2"
           variant="h5"
