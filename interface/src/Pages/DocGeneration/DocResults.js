@@ -11,7 +11,7 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 // import Model from "./Model.js";
-import LinkButton from "./../../Custom/LinkButton.js";
+// import LinkButton from "./../../Custom/LinkButton.js";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -19,6 +19,11 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
+
+import states from './../../Constants/States';
+
+import CallbackKeyEventButton from '../../Custom/CallbackKeyEventButton';
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 // function createData(contextName, humanResponse, prediction, metricOne, metricTwo) {
 //     var metricTwoText = "YES";
@@ -63,8 +68,24 @@ class DocResults extends Component {
 				// 	: (Model.metricTwo.reduce((a, b) => a + b) / Model.metricTwo.length) *
 				// 	  100.0,
 			// ModelInfo: Model,
+            sectionComplete: true, /* TODO: interact with the page and decide when to allow the user to move on. */
 		};
 	}
+
+    onNextSubmit = () => {
+        this.props.updateState(/* TODO: set the next state here! */);
+        // pass in states.{something}
+    }
+
+    /**
+    * Callback function for next submit action.
+    */
+    // basically just have the option for the user to do a keyboard shortcut as well as button press.
+    handleNextKeyPress = (event) => {
+        if (event.key === ' ' && this.state.sectionComplete){
+            this.onNextSubmit();
+        }
+    };
 
 	createData(contextName, humanResponse, prediction, metricOne, metricTwo) {
 		var metricTwoText = "YES";
@@ -226,7 +247,7 @@ class DocResults extends Component {
 								</TableContainer>
 							</Box>
 
-							<LinkButton
+							{/* <LinkButton
 								to="/NLPDocTool/viewDoc"
 								onClick={() => {
 									// Model.processJustification = this.state.processJustification;
@@ -237,7 +258,15 @@ class DocResults extends Component {
 								variant="contained"
 							>
 								View Documentation
-							</LinkButton>
+							</LinkButton> */}
+                            <div style={{ marginTop: "15px", width: "100%" }}>
+                                <CallbackKeyEventButton
+                                    callBackFunc={this.handleNextKeyPress}
+                                    buttonAvailable={this.state.sectionComplete}
+                                    clickFunc={this.onNextSubmit}
+                                    text={"View Documentation (space)"}
+                                />
+                            </div>
 						</Stack>
 					</main>
 				</Container>
