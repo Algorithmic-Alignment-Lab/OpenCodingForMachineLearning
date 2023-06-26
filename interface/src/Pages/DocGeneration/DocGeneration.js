@@ -1,44 +1,43 @@
-// previously copied step4
-// verify this is the step I want to assign right after assisted grouping
-// maybe i should've copied step5, because I just want to have them generate the hypotheses
-
+// old step 5
 // todo: link this page to AssistedGrouping
 
 // todo: add the next 2 steps of NLPDocTool to this branch and connect the pages.
-import React, { Component } from "react";
+// import React, { Component } from "react";
+import  { Component } from "react";
 import CssBaseline from '@mui/material/CssBaseline';
 import Grid from '@mui/material/Grid'; // Grid version 1
 import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+// import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import Header from './blog/Header.js';
 
 import Footer from './blog/Footer.js';
-import { red } from '@mui/material/colors';
+// import { red } from '@mui/material/colors';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button'
 import theme from './blog/theme.js';
 import Typography from '@mui/material/Typography';
-import { IconButton } from "@mui/material";
-import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
+// import { IconButton } from "@mui/material";
+// import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
 import Box from '@mui/material/Box';
 import Popover from '@mui/material/Popover';
 import TextField from '@mui/material/TextField';
 import Model from './Model.js';
 import LinkButton from './LinkButton.js';
-import { Navigate } from "react-router-dom";
+// import { Navigate } from "react-router-dom";
 import ListItem from '@mui/material/ListItem';
 import List from '@mui/material/List';
 import ListItemText from '@mui/material/ListItemText';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+// import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
-import Divider from "@mui/material/Divider";
+// import Divider from "@mui/material/Divider";
 import axios from "axios";
 import Link from "@mui/material/Link";
 
-class Step5 extends Component {
+class DocGeneration extends Component {
     constructor(props) {
       super(props);
 
@@ -440,4 +439,5 @@ class Step5 extends Component {
     }
   }
   
-  export default Step5;
+// export default Step5;
+export default DocGeneration;

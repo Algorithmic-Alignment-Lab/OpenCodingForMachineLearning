@@ -6,9 +6,10 @@ import states from './Constants/States';
 import Introduction from './Pages/Introduction/Introduction'
 import OpenCoding from './Pages/OpenCoding/OpenCoding';
 import AssistedGrouping from './Pages/AssistedGrouping/AssistedGrouping';
+import DocGeneration from './Pages/DocGeneration/DocGeneration';
+// todo: docComparison/results
 import Verification from './Pages/Verification/Verification';
 import Results from './Pages/Results/Results';
-// todo: switch to using the DocGeneration step first
 // then have DocJustification come at the end
 import DocJustification from './Pages/DocJustification/DocJustification'
 
@@ -267,6 +268,11 @@ class App extends Component {
         saveLabelState = {this.saveLabelState}
         postData = {this.postData}
         />;
+    } else if (page === states.docGeneration) {
+        return <DocGeneration
+            updateState = {this.updateState}
+        />;
+        // todo: docComparison/results
     } else if (page === states.verification) {
       return <Verification
         loadLabelSet = {this.loadLabelSet}
@@ -288,7 +294,7 @@ class App extends Component {
         getDataWithParams = {this.getDataWithParams}
         getAccuracy = {this.getAccuracy}
         />;
-    } else if (page === states.docJustification) {
+    }  else if (page === states.docJustification) {
         return <DocJustification
             updateState = {this.updateState}
         />;

@@ -1,7 +1,7 @@
 // have th user justify the labels they provided previously
 // they're groups and open codes
 // will be step4 from nlp doc tool
-// previously step4
+// previously step4, now will be the last page we show.
 // todo: fix component naming
 // todo: link this page to AssistedGrouping
 
