@@ -72,7 +72,8 @@ class Results extends Component {
     * Next submit action. Updates UI page state.
     */
     onNextSubmit = () => {
-        this.props.updateState(states.introduction);
+        // this.props.updateState(states.introduction);
+        this.props.updateState(states.docJustification);
     }
 
     render() {

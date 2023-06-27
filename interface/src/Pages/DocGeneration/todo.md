@@ -4,6 +4,9 @@ so that we don't get locked out of the databse as we go through opencoding
 - pass in a prop to postData, getData, loadAnnotations, getOptionID
 // also investigate what the load, getOptionId props are used for in other pages
 - pass in a prop for loadAnnotations
+
+- consider placing NLPDocTool Results at the end of this combined tool
+
 # To fix this page
 - make sure Model is passed in or imported somehow
 - idea: use get_unlabeled_data method from backend for outputs to show to the user.
