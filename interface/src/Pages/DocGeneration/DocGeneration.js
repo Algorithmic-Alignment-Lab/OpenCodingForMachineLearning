@@ -1,6 +1,7 @@
 // old step 5
 // note to self: any leftover import unused warnings, ignore them because we will use those imports later.
 
+// todo: check that we can go to docResults and then 
 // todo: add the next 2 steps of NLPDocTool to this branch and connect the pages.
 // import React, { Component } from "react";
 import { Component } from "react";
@@ -234,7 +235,7 @@ class DocGeneration extends Component {
                                     callBackFunc={this.handleNextKeyPress}
                                     buttonAvailable={this.state.sectionComplete}
                                     clickFunc={this.onNextSubmit}
-                                    text={"Next (space)"}
+                                    text={"Confirm/Next Page (space)"}
                                 />
                             </div>
                             <div style={{ marginTop: "15px" }}>
