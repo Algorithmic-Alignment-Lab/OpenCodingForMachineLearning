@@ -6,6 +6,7 @@ so that we don't get locked out of the databse as we go through opencoding
 - pass in a prop for loadAnnotations
 # To fix this page
 - make sure Model is passed in or imported somehow
+- idea: use get_unlabeled_data method from backend for outputs to show to the user.
 # To link this page to the next NLPDocTool Page
 - change next page from verification to the next documentation page.
 // set up the componentDidMount the same way in case that is a reason things worked out.

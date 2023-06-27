@@ -91,6 +91,11 @@ class DocGeneration extends Component {
                 throw Error(data.statusText);
             }
 
+            // todo: begin considering how we'll gather which datas we should show for outputs
+            // i'm figuring unlabeled data because 
+            // const unlabeled_data = await this.props.getDataWithParams('/data/get_unlabeled_data', {"id": this.props.getOptionID()})
+            // but this requires adding a backend method, so i'll do that in another branch.
+
         } catch (error) {
             console.log(error);
         }
