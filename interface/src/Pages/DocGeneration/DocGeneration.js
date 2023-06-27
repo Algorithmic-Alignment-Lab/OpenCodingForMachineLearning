@@ -480,35 +480,35 @@ class DocGeneration extends Component {
                             </Button>
                             
                             <div>
-                                {/* <Button
-            variant="contained"
-            onClick={
-                () => {
-                    // todo: come back to this once we pass in our model
-                    // Model.predictions[this.state.selectedContext] = this.state.contextPrediction;
-                    // Model.metricOne[this.state.selectedContext] = this.state.similarityScore;
-                    // Model.resultJustification[this.state.selectedContext] = this.state.resultJustification;
-                    // Model.metricTwo[this.state.selectedContext] = this.state.binarySimilarity;
-                    // this.setState({
-                    //     selectedContext: this.state.selectedContext + 1,
-                    //     modelOutput: 'hidden',
-                    //     contextPrediction: "",
-                    //     humanResponse: "",
-                    //     humanResponseRationale: "",
-                    //     resultJustification: ""
-                    // })
+                                <Button
+                                    variant="contained"
+                                    onClick={
+                                        () => {
+                                            // todo: come back to this once we pass in our model
+                                            // Model.predictions[this.state.selectedContext] = this.state.contextPrediction;
+                                            // Model.metricOne[this.state.selectedContext] = this.state.similarityScore;
+                                            // Model.resultJustification[this.state.selectedContext] = this.state.resultJustification;
+                                            // Model.metricTwo[this.state.selectedContext] = this.state.binarySimilarity;
+                                            // this.setState({
+                                            //     selectedContext: this.state.selectedContext + 1,
+                                            //     modelOutput: 'hidden',
+                                            //     contextPrediction: "",
+                                            //     humanResponse: "",
+                                            //     humanResponseRationale: "",
+                                            //     resultJustification: ""
+                                            // })
 
-                    document.getElementById("HumanResponse").value = "";
-                    document.getElementById("Rationale").value = "";
-                    document.getElementById("ResultJustification").value = "";
+                                            document.getElementById("HumanResponse").value = "";
+                                            document.getElementById("Rationale").value = "";
+                                            document.getElementById("ResultJustification").value = "";
 
-                    document.getElementById("HumanResponse").disabled = false;
-                    document.getElementById("Rationale").disabled = false;
-                }
+                                            document.getElementById("HumanResponse").disabled = false;
+                                            document.getElementById("Rationale").disabled = false;
+                                        }
 
-            }
-        >Next</Button> 
-        */}
+                                    }
+                                >Next</Button> 
+       
                             </div>
                         </Stack>
                     </Stack>
