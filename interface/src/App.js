@@ -299,7 +299,14 @@ class App extends Component {
 	}
 
 	renderDocGeneration() {
-		return <DocGeneration updateState={this.updateState} />;
+        // make sure to pass the functions to post/get data
+		return <DocGeneration 
+                    updateState={this.updateState} 
+                    postData={this.postData}
+                    getDataWithParams={this.getDataWithParams}
+                    loadAnnotations={this.loadAnnotations}
+                    getOptionID={this.getOptionID}
+                />;
 	}
 
     renderDocResults() {

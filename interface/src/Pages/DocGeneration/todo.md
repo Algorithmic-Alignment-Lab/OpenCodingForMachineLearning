@@ -1,6 +1,11 @@
 # To link the openCoding pages to here
 - check how the previous methods interacted with post/get 
 so that we don't get locked out of the databse as we go through opencoding
+- pass in a prop to postData, getData, loadAnnotations, getOptionID
+// also investigate what the load, getOptionId props are used for in other pages
+- pass in a prop for loadAnnotations
+# To fix this page
+- make sure Model is passed in or imported somehow
 # To link this page to the next NLPDocTool Page
 - change next page from verification to the next documentation page.
 // set up the componentDidMount the same way in case that is a reason things worked out.
