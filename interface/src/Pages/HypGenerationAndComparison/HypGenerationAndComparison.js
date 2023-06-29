@@ -49,7 +49,7 @@ import LinearProgress from "@material-ui/core/LinearProgress";
 const progress = 62; // between 50 and 75 for now.
 // todo: when adding next NLPDocTool page, change this to 1/3 of the way between openCoding pages.
 
-class DocGeneration extends Component {
+class HypGenerationAndComparison extends Component {
 	constructor(props) {
 		super(props);
 
@@ -235,7 +235,7 @@ class DocGeneration extends Component {
 								Confirm
 							</LinkButton> */}
                             
-                            <div style={{ marginTop: "15px", width: "100%" }}>
+                            <div style={{ marginTop: "15px", width: "100%"}}>
                                 <CallbackKeyEventButton
                                     callBackFunc={this.handleNextKeyPress}
                                     buttonAvailable={this.state.sectionComplete}
@@ -527,4 +527,4 @@ class DocGeneration extends Component {
 }
 
 // export default Step5;
-export default DocGeneration;
+export default HypGenerationAndComparison;

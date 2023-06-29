@@ -4,9 +4,13 @@
 // previously step4, now will be the last page we show.
 // todo: fix component naming
 // todo: link this page to AssistedGrouping
+import states from './../../Constants/States';
+
+import CallbackKeyEventButton from '../../Custom/CallbackKeyEventButton';
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 // todo: add the next 2 steps of NLPDocTool to this branch and connect the pages.
-import React, { Component } from "react";
+import { Component } from "react";
 import CssBaseline from "@mui/material/CssBaseline";
 // import Grid from "@mui/material/Grid";
 import Container from "@mui/material/Container";
@@ -39,8 +43,11 @@ import List from "@mui/material/List";
 // import FormControl from "@mui/material/FormControl";
 // import Divider from "@mui/material/Divider";
 
+
+const progress =  58; // guess of intermediate value
+
 // class Step4 extends Component {
-class DocGeneration extends Component {
+class CodeJustification extends Component {
 	constructor(props) {
 		super(props);
 
@@ -51,8 +58,39 @@ class DocGeneration extends Component {
 			open: false,
 			id: undefined,
 			selectedContext: 0,
+            sectionComplete: true,
 		};
 	}
+
+    async componentDidMount () {
+        try {
+            // save the annotations before we ask for them
+            await this.props.postData('/data/save_annotations', {"rows": this.props.loadAnnotations(), "id": this.props.getOptionID()});
+            const data = await this.props.getDataWithParams('/data/get_annotations', {"id": this.props.getOptionID()});
+            
+            if (!data.ok) {
+                throw Error(data.statusText);
+            }
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    onNextSubmit = () => {
+        this.props.updateState(states.hypGenerationAndComparison);
+        // pass in states.{something}
+    }
+
+    /**
+    * Callback function for next submit action.
+    */
+    // basically just have the option for the user to do a keyboard shortcut as well as button press.
+    handleNextKeyPress = (event) => {
+        if (event.key === ' ' && this.state.sectionComplete){
+            this.onNextSubmit();
+        }
+    };
 
 	// fileInput = document.getElementById('input');
 
@@ -154,7 +192,7 @@ class DocGeneration extends Component {
 								</List>
 							</Box>
 
-							<LinkButton
+							{/* <LinkButton
 								to="/NLPDocTool/step5"
 								onClick={() => {
 									// console.log(Model);
@@ -162,7 +200,20 @@ class DocGeneration extends Component {
 								variant="contained"
 							>
 								Confirm
-							</LinkButton>
+							</LinkButton> */}
+                            <div style={{margin: '15px', width:'100%'}}>
+                                <div style={{alignItems:'end'}}>
+                                    <CallbackKeyEventButton
+                                        callBackFunc={this.handleNextKeyPress}
+                                        buttonAvailable={this.state.sectionComplete}
+                                        clickFunc={this.onNextSubmit}
+                                        text={'Next (space)'}
+                                    />
+                                </div>
+                            </div>
+                            <div style={{ margin: '15px'}}>
+                                <LinearProgress variant="determinate" value={progress}/>
+                            </div>
 						</Stack>
 					</main>
 				</Container>
@@ -225,4 +276,4 @@ class DocGeneration extends Component {
 }
 
 // export default Step4;
-export default DocGeneration;
+export default CodeJustification;

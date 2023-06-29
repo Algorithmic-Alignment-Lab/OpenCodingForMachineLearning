@@ -10,17 +10,16 @@ import states from "./Constants/States";
 import Introduction from "./Pages/Introduction/Introduction";
 import OpenCoding from "./Pages/OpenCoding/OpenCoding";
 import AssistedGrouping from "./Pages/AssistedGrouping/AssistedGrouping";
-import DocGeneration from "./Pages/DocGeneration/DocGeneration";
+import HypGenerationAndComparison from "./Pages/HypGenerationAndComparison/HypGenerationAndComparison.js";
 // todo: docComparison/results
 import Verification from "./Pages/Verification/Verification";
 import Results from "./Pages/Results/Results";
-// then have DocJustification come at the end
-import DocJustification from "./Pages/DocJustification/DocJustification";
+import CodeJustification from "./Pages/CodeJustification/CodeJustification";
 
 // helpers for NLPDocTool
 // todo: if we change the paths for these, i.e. put them in their own page folders, change the paths here
-import DocResults from "./Pages/DocGeneration/DocResults";
-import ViewDoc from "./Pages/DocGeneration/ViewDoc";
+import DocResults from "./Pages/HypGenerationAndComparison/DocResults";
+import ViewDoc from "./Pages/HypGenerationAndComparison/ViewDoc";
 
 const fetch = require("node-fetch");
 
@@ -298,9 +297,9 @@ class App extends Component {
 		);
 	}
 
-	renderDocGeneration() {
+	renderHypGenerationAndComparison() {
         // make sure to pass the functions to post/get data
-		return <DocGeneration 
+		return <HypGenerationAndComparison 
                     updateState={this.updateState} 
                     postData={this.postData}
                     getDataWithParams={this.getDataWithParams}
@@ -317,12 +316,14 @@ class App extends Component {
         return <ViewDoc/>
     }
 
-	renderDocComparison() {
-		return (
-			<div>
-				Still haven't implemented this / linked the pages... Come back later!
-			</div>
-		);
+	renderCodeJustification() {
+		return <CodeJustification 
+                    updateState={this.updateState} 
+                    postData={this.postData}
+                    getDataWithParams={this.getDataWithParams}
+                    loadAnnotations={this.loadAnnotations}
+                    getOptionID={this.getOptionID}
+                />;
 	}
 
 	renderVerification() {
@@ -354,10 +355,6 @@ class App extends Component {
 		);
 	}
 
-	renderDocJustification() {
-		return <DocJustification updateState={this.updateState} />;
-	}
-
 	getView(page) {
 		if (this.state.prepDataDone) {
 			if (page === states.introduction) {
@@ -367,24 +364,21 @@ class App extends Component {
 			} else if (page === states.assistedGrouping) {
 				return this.renderAssistedGrouping();
                 
-			} else if (page === states.docGeneration) {
-				return this.renderDocGeneration();
+			} else if (page === states.codeJustification) {
+				return this.renderCodeJustification();
+			} else if (page === states.hypGenerationAndComparison) {
+				return this.renderHypGenerationAndComparison();
                 // todo: docComparison/results
-            } else if (page === states.docResults) {
+            } else if (page === states.verification) {
+				return this.renderVerification();
+			} else if (page === states.results) {
+				return this.renderResults();
+			}  else if (page === states.docResults) {
                 return this.renderDocResults();
             } else if (page === states.docView) {
                 return this.renderViewDoc();
 
-            } else if (page === states.docComparison) {
-				return this.renderDocComparison();
-
-			} else if (page === states.verification) {
-				return this.renderVerification();
-			} else if (page === states.results) {
-				return this.renderResults();
-			} else if (page === states.docJustification) {
-				return this.renderDocJustification();
-			} else {
+            } else {
 				// default value if state transitions ever fail
 				return <div />;
 			}

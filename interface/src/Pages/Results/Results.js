@@ -73,7 +73,7 @@ class Results extends Component {
     */
     onNextSubmit = () => {
         // this.props.updateState(states.introduction);
-        this.props.updateState(states.docJustification);
+        this.props.updateState(states.docResults);
     }
 
     render() {
