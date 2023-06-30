@@ -11,6 +11,9 @@ import CallbackKeyEventButton from '../../Custom/CallbackKeyEventButton';
 import Loading from '../../Custom/Loading';
 
 const progress = 100;
+const ID_INDEX = 0;
+const ANNOTATION_INDEX = 1;
+const TEXT_INDEX = 2;
 
 class Results extends Component {
     constructor(props) {
@@ -19,6 +22,7 @@ class Results extends Component {
             isLoading: true,
             savedFilepath: '',
             sectionComplete: false,
+            userCodes: []
         }
     }
 
@@ -28,25 +32,46 @@ class Results extends Component {
     */
     async componentDidMount () {
         try {
+            console.log("========== MOUNTING RESULTS ==========")
             // since this step is to train the model, and we don't care about the labeling model anymore, commented out
             // const data = await this.props.getDataWithParams('/data/get_results', {"id": this.props.getOptionID()});
 
             // instead lets just grab the annotations
             const data = await this.props.getDataWithParams('/data/get_annotations', {"id": this.props.getOptionID()});
+            
+            console.log("Pulled the following data from get_annotations backend call:")
+            console.log(data);
+            console.log("");
+            // todo: figure out how to access all the groups, this only gets the 
 
             if (!data.ok) {
                 throw Error(data.statusText);
             }
 
+            // load the codes from the user (that we just pulled in data)
+            // place it in the state
+            
+            // template for when we know to extract particular things
+            // since react can render an array rather than an object
+            let userCodesExtracted = [];
+            for (let i = 0; i < data.rows.length; i++) {
+                // just try to extract everything that will be helpful
+                userCodesExtracted.push([data.rows[i].id, data.rows[i].annotation, data.rows[i].text]);
+            }
+            console.log("Extracted the data we pulled into this array: ");
+            console.log(userCodesExtracted);
+
             this.setState({
                 savedFilepath: data.saved,
                 isLoading: false,
-                sectionComplete: true
+                sectionComplete: true,
+                userCodes: userCodesExtracted
             });
 
         } catch (error) {
             console.log(error);
         }
+        console.log("====== DONE MOUNTING, SEE LOGS ABOVE ==========")
     }
 
     /**
@@ -76,6 +101,14 @@ class Results extends Component {
         return summation/this.props.getAccuracy().length;
     }
 
+    getSummary = () => {
+        // check Taylor's Step4 ListItem, Button Box as a way to make a table
+        // or look at grid component material UI
+        return (
+            this.state.userCodes.map((row) => <li>{row[ID_INDEX]} || {row[ANNOTATION_INDEX]} || {row[TEXT_INDEX]} </li>)
+        );
+    }
+
     /**
     * Next submit action. Updates UI page state.
     */
@@ -95,11 +128,13 @@ class Results extends Component {
                 </div>
                 <div>
                     Todo: place summary here!
+                    {this.getSummary()}
                 </div>
+
                 {/* <div style={{ display: 'flex', height: '75vh', width: '80vw', justifyContent: 'flex-start', alignItems: 'center', flexDirection: 'column'}}>
                         You have completed this labeling session in {this.getVerificationNum()} verification rounds with an average accuracy of {this.getVerificationAccAvg()}%. Please wait for the server to finish labeling your dataset.
                 </div> */}
-                {this.state.isLoading ? (
+                {/* {this.state.isLoading ? (
                     <div style={{ color: 'red', display: 'flex', height: '75vh', width: '80vw', justifyContent: 'flex-start', alignItems: 'center', flexDirection: 'column'}}>
                         <Loading/>
                     </div>
@@ -107,7 +142,7 @@ class Results extends Component {
                     <div style={{  color: 'green', display: 'flex', height: '75vh', width: '80vw', justifyContent: 'flex-start', alignItems: 'center', flexDirection: 'column'}}>
                         Prediction Complete! Find your results at ./results/{this.state.savedFilepath} 
                     </div>
-                )}
+                )} */}
                 <div style={{marginTop: '15px', width:'100%'}}>
                     <div style={{alignItems:'end'}}>
                         <CallbackKeyEventButton 
