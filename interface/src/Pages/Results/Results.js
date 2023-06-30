@@ -1,3 +1,7 @@
+// todo: have this page display a summary:
+// for now lets try one annotation per group
+// todo: figure out how to load in the groups, how they're stored.
+
 import React, {Component} from 'react';
 
 import states from './../../Constants/States';
@@ -24,7 +28,11 @@ class Results extends Component {
     */
     async componentDidMount () {
         try {
-            const data = await this.props.getDataWithParams('/data/get_results', {"id": this.props.getOptionID()});
+            // since this step is to train the model, and we don't care about the labeling model anymore, commented out
+            // const data = await this.props.getDataWithParams('/data/get_results', {"id": this.props.getOptionID()});
+
+            // instead lets just grab the annotations
+            const data = await this.props.getDataWithParams('/data/get_annotations', {"id": this.props.getOptionID()});
 
             if (!data.ok) {
                 throw Error(data.statusText);
@@ -73,7 +81,8 @@ class Results extends Component {
     */
     onNextSubmit = () => {
         // this.props.updateState(states.introduction);
-        this.props.updateState(states.docResults);
+        // todo: probably prompt them to save their contexts (i.e. prompts and groups) somewhere before they have to get there?
+        this.props.updateState(states.codeJustification);
     }
 
     render() {
@@ -84,9 +93,12 @@ class Results extends Component {
                         Results
                     </b>
                 </div>
-                <div style={{ display: 'flex', height: '75vh', width: '80vw', justifyContent: 'flex-start', alignItems: 'center', flexDirection: 'column'}}>
-                        You have completed this labeling session in {this.getVerificationNum()} verification rounds with an average accuracy of {this.getVerificationAccAvg()}%. Please wait for the server to finish labeling your dataset.
+                <div>
+                    Todo: place summary here!
                 </div>
+                {/* <div style={{ display: 'flex', height: '75vh', width: '80vw', justifyContent: 'flex-start', alignItems: 'center', flexDirection: 'column'}}>
+                        You have completed this labeling session in {this.getVerificationNum()} verification rounds with an average accuracy of {this.getVerificationAccAvg()}%. Please wait for the server to finish labeling your dataset.
+                </div> */}
                 {this.state.isLoading ? (
                     <div style={{ color: 'red', display: 'flex', height: '75vh', width: '80vw', justifyContent: 'flex-start', alignItems: 'center', flexDirection: 'column'}}>
                         <Loading/>

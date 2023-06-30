@@ -15,10 +15,12 @@ My todo
 - What we want to do in development (will do so on a different branch so I can leave all this alone)
     - have openCoding be back to right before NLPDocTool
 
-- **todo**: remove the verification step because we aren't interested in the extrapolated labels
-- **todo:** update the results slide to summarize the codes and groups the user provides
+- [ ] **todo**: remove the verification step because we aren't interested in the extrapolated labels
+- [ ] **todo:** update the results slide to summarize the codes and groups the user provides
 - i.e. show one code from each group to remind the user about the trends they've seen in the data. 
-- todo: also note whatever other potential layouts we believe will be good for displaying the results of their coding.
+- [ ] **todo:** also note whatever other potential layouts we believe will be good for displaying the results of their coding.
+
+- since we only care about the user interacting with the data, maybe we can remove steps that ask the user to select a model? 
 
 - consolidate getView and states to update pages vs Routing (make consistent.)
 

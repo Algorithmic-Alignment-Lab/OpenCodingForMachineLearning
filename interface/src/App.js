@@ -10,14 +10,13 @@ import states from "./Constants/States";
 import Introduction from "./Pages/Introduction/Introduction";
 import OpenCoding from "./Pages/OpenCoding/OpenCoding";
 import AssistedGrouping from "./Pages/AssistedGrouping/AssistedGrouping";
-import HypGenerationAndComparison from "./Pages/HypGenerationAndComparison/HypGenerationAndComparison.js";
-// todo: docComparison/results
-import Verification from "./Pages/Verification/Verification";
+// import Verification from "./Pages/Verification/Verification";
 import Results from "./Pages/Results/Results";
-import CodeJustification from "./Pages/CodeJustification/CodeJustification";
 
-// helpers for NLPDocTool
+// NLPDocTool Pages
 // todo: if we change the paths for these, i.e. put them in their own page folders, change the paths here
+import CodeJustification from "./Pages/CodeJustification/CodeJustification";
+import HypGenerationAndComparison from "./Pages/HypGenerationAndComparison/HypGenerationAndComparison.js";
 import DocResults from "./Pages/HypGenerationAndComparison/DocResults";
 import ViewDoc from "./Pages/HypGenerationAndComparison/ViewDoc";
 

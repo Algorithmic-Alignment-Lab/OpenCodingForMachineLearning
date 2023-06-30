@@ -269,8 +269,9 @@ class AssistedGrouping extends Component {
             }
         }
         this.props.saveLabelState(labeled);
-        // this.props.updateState(states.verification);
-        this.props.updateState(states.codeJustification);
+        // now just going straight to results because we don't care about getting labels from the users codes
+        // at least so far I don't think we do.
+        this.props.updateState(states.results);
     }
 
     /**
