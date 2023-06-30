@@ -10,7 +10,6 @@ import states from "./Constants/States";
 import Introduction from "./Pages/Introduction/Introduction";
 import OpenCoding from "./Pages/OpenCoding/OpenCoding";
 import AssistedGrouping from "./Pages/AssistedGrouping/AssistedGrouping";
-// import Verification from "./Pages/Verification/Verification";
 import Results from "./Pages/Results/Results";
 
 // NLPDocTool Pages
@@ -325,23 +324,6 @@ class App extends Component {
                 />;
 	}
 
-	renderVerification() {
-		return (
-			<Verification
-				loadLabelSet={this.loadLabelSet}
-				loadLabels={this.loadLabels}
-				saveLabels={this.saveLabels}
-				getLabels={this.getLabels}
-				retrainModel={this.retrainModel}
-				getDataRows={this.getDataRows}
-				updateState={this.updateState}
-				getOptionID={this.getOptionID}
-				getDataWithParams={this.getDataWithParams}
-				postData={this.postData}
-				saveAccuracy={this.saveAccuracy}
-			/>
-		);
-	}
 
 	renderResults() {
 		return (
@@ -368,9 +350,7 @@ class App extends Component {
 			} else if (page === states.hypGenerationAndComparison) {
 				return this.renderHypGenerationAndComparison();
                 // todo: docComparison/results
-            } else if (page === states.verification) {
-				return this.renderVerification();
-			} else if (page === states.results) {
+            } else if (page === states.results) {
 				return this.renderResults();
 			}  else if (page === states.docResults) {
                 return this.renderDocResults();
