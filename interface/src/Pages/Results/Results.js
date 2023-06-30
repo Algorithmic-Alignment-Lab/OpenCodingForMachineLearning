@@ -10,6 +10,8 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import CallbackKeyEventButton from '../../Custom/CallbackKeyEventButton';
 import Loading from '../../Custom/Loading';
 
+import DataTable from './DataTable'
+
 const progress = 100;
 const ID_INDEX = 0;
 const ANNOTATION_INDEX = 1;
@@ -23,7 +25,13 @@ class Results extends Component {
             savedFilepath: '',
             sectionComplete: false,
             userCodes: []
-        }
+        };
+        this.summaryTableColumns = [
+            	{ field: "id", headerName: "ID", width: 70 },
+            	{ field: "annotation", headerName: "Annotation", width: 130 },
+            	{ field: "text", headerName: "Text", width: 130 },
+        ];
+
     }
 
     /**
@@ -54,11 +62,12 @@ class Results extends Component {
             // template for when we know to extract particular things
             // since react can render an array rather than an object
             let userCodesExtracted = [];
-            for (let i = 0; i < data.rows.length; i++) {
-                // just try to extract everything that will be helpful
-                userCodesExtracted.push([data.rows[i].id, data.rows[i].annotation, data.rows[i].text]);
-            }
-            console.log("Extracted the data we pulled into this array: ");
+            // for (let i = 0; i < data.rows.length; i++) {
+            //     // just try to extract everything that will be helpful
+            //     userCodesExtracted.push([data.rows[i].id, data.rows[i].annotation, data.rows[i].text]);
+            // }
+            // console.log("Extracted the data we pulled into this array: ");
+            userCodesExtracted = data.rows.slice();
             console.log(userCodesExtracted);
 
             this.setState({
@@ -86,9 +95,9 @@ class Results extends Component {
     /**
     * Number of verification rounds.
     */
-    getVerificationNum = () => {
-        return this.props.getAccuracy().length;
-    }
+    // getVerificationNum = () => {
+    //     return this.props.getAccuracy().length;
+    // }
 
     /**
     * Average accuracy accross all verification rounds.
@@ -105,7 +114,11 @@ class Results extends Component {
         // check Taylor's Step4 ListItem, Button Box as a way to make a table
         // or look at grid component material UI
         return (
-            this.state.userCodes.map((row) => <li>{row[ID_INDEX]} || {row[ANNOTATION_INDEX]} || {row[TEXT_INDEX]} </li>)
+            // this.state.userCodes.map((row) => <li>{row[ID_INDEX]} || {row[ANNOTATION_INDEX]} || {row[TEXT_INDEX]} </li>)
+            <DataTable
+                rows={this.state.userCodes}
+                columns={this.summaryTableColumns}
+            />
         );
     }
 
