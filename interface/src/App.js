@@ -295,6 +295,19 @@ class App extends Component {
 		);
 	}
 
+    // place this here to reflect the actual order
+	renderResults() {
+		return (
+			<Results
+				updateState={this.updateState}
+				getOptionID={this.getOptionID}
+				getDataWithParams={this.getDataWithParams}
+				getAccuracy={this.getAccuracy}
+                getLabels={this.getLabels}
+			/>
+		);
+	}
+
 	renderHypGenerationAndComparison() {
         // make sure to pass the functions to post/get data
 		return <HypGenerationAndComparison 
@@ -325,16 +338,6 @@ class App extends Component {
 	}
 
 
-	renderResults() {
-		return (
-			<Results
-				updateState={this.updateState}
-				getOptionID={this.getOptionID}
-				getDataWithParams={this.getDataWithParams}
-				getAccuracy={this.getAccuracy}
-			/>
-		);
-	}
 
 	getView(page) {
 		if (this.state.prepDataDone) {
