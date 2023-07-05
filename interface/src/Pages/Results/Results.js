@@ -6,6 +6,9 @@ import React, {Component} from 'react';
 import { GridColDef } from '@mui/x-data-grid';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
+import { sizing } from '@mui/system';
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
 
 import states from './../../Constants/States';
 // import progress from './../../Constants/States';
@@ -30,9 +33,21 @@ class Results extends Component {
             userCodes: []
         };
         this.summaryTableColumns = [
-            	// { field: "id", headerName: "ID", width: 70 },
-            	{ field: "text", headerName: "Text", width: 700, resizable: true},
-                { field: "annotation", headerName: "Annotation", width: 130, resizable: true}
+            // { field: "id", headerName: "ID", width: 70 },
+            { field: "text", headerName: "Text", width: "600", 
+                // renderCell: (params) => (
+                // <Typography>
+                //     {params.value}
+                // </Typography>
+                // )
+            }, // , whiteSpace: "normal", wordWrap: "break-word"},
+            { field: "annotation", headerName: "Annotation", width: "200", 
+                // renderCell: (params) => (
+                // <Typography >
+                //     {params.value};
+                // </Typography>
+                // )
+            } // , whiteSpace: "normal", wordWrap: "break-word"}
         ];
 
     }
@@ -136,49 +151,49 @@ class Results extends Component {
 
     render() {
         return (
-            <Stack
-                justifyContent="center"
-                alignItems="center"
-                spacing={4}
-                sx={{ paddingTop: 5, paddingRight: 5, paddingLeft: 5 }}
-            >
-                <Box style={{ margin: '15px'}}>
-                    <b>
-                        Results
-                    </b>
-                </Box>
-                <Box sx={{width: "100%", maxWidth: 700}}>
-                    Todo: place summary here!
-                    {this.getSummary()}
-                </Box>
+            <Container>
+                <Stack
+                    justifyContent="center"
+                    alignItems="center"
+                    spacing={4}
+                    // sx={{ paddingTop: 5, paddingRight: 5, paddingLeft: 5 }}
+                >
+                    <Box style={{ margin: '15px'}}>
+                        <b>
+                            Results
+                        </b>
+                    </Box>
+                    <Box sx={{width: "100%"}}>
+                        {this.getSummary()}
+                    </Box>
 
-                {/* <div style={{ display: 'flex', height: '75vh', width: '80vw', justifyContent: 'flex-start', alignItems: 'center', flexDirection: 'column'}}>
-                        You have completed this labeling session in {this.getVerificationNum()} verification rounds with an average accuracy of {this.getVerificationAccAvg()}%. Please wait for the server to finish labeling your dataset.
-                </div> */}
-                {/* {this.state.isLoading ? (
-                    <div style={{ color: 'red', display: 'flex', height: '75vh', width: '80vw', justifyContent: 'flex-start', alignItems: 'center', flexDirection: 'column'}}>
-                        <Loading/>
+                    {/* <div style={{ display: 'flex', height: '75vh', width: '80vw', justifyContent: 'flex-start', alignItems: 'center', flexDirection: 'column'}}>
+                            You have completed this labeling session in {this.getVerificationNum()} verification rounds with an average accuracy of {this.getVerificationAccAvg()}%. Please wait for the server to finish labeling your dataset.
+                    </div> */}
+                    {/* {this.state.isLoading ? (
+                        <div style={{ color: 'red', display: 'flex', height: '75vh', width: '80vw', justifyContent: 'flex-start', alignItems: 'center', flexDirection: 'column'}}>
+                            <Loading/>
+                        </div>
+                    ) : (
+                        <div style={{  color: 'green', display: 'flex', height: '75vh', width: '80vw', justifyContent: 'flex-start', alignItems: 'center', flexDirection: 'column'}}>
+                            Prediction Complete! Find your results at ./results/{this.state.savedFilepath} 
+                        </div>
+                    )} */}
+                    <div style={{marginTop: '15px', width:'100%'}}>
+                        <div style={{alignItems:'end'}}>
+                            <CallbackKeyEventButton 
+                                callBackFunc={this.handleNextKeyPress}
+                                buttonAvailable={this.state.sectionComplete}
+                                clickFunc={this.onNextSubmit}
+                                text={'Finish (space)'}
+                            />
+                        </div>
                     </div>
-                ) : (
-                    <div style={{  color: 'green', display: 'flex', height: '75vh', width: '80vw', justifyContent: 'flex-start', alignItems: 'center', flexDirection: 'column'}}>
-                        Prediction Complete! Find your results at ./results/{this.state.savedFilepath} 
+                    <div style={{marginTop: '15px'}}>
+                        <LinearProgress variant="determinate" value={progress}/>
                     </div>
-                )} */}
-                <div style={{marginTop: '15px', width:'100%'}}>
-                    <div style={{alignItems:'end'}}>
-                        <CallbackKeyEventButton 
-                            callBackFunc={this.handleNextKeyPress}
-                            buttonAvailable={this.state.sectionComplete}
-                            clickFunc={this.onNextSubmit}
-                            text={'Finish (space)'}
-                        />
-                    </div>
-                </div>
-                <div style={{marginTop: '15px'}}>
-                    <LinearProgress variant="determinate" value={progress}/>
-                </div>
-            </Stack>
-
+                </Stack>
+            </Container>
         );
     }
 }
