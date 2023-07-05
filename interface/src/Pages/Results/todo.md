@@ -4,6 +4,8 @@
     - [ ] consider different ways we want to 
 
     - so far I'm just working off https://mui.com/material-ui/react-table/#data-table
+
+- [X] Fixed the following error by having DataTable only take in an argument called props and going from that.
 Current error: 
 ```
 Warning: Failed prop type: Invalid prop `columns` of type `object` supplied to `ForwardRef`, expected `array`.

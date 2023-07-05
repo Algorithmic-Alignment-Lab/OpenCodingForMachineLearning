@@ -27,9 +27,9 @@ class Results extends Component {
             userCodes: []
         };
         this.summaryTableColumns = [
-            	{ field: "id", headerName: "ID", width: 70 },
-            	{ field: "annotation", headerName: "Annotation", width: 130 },
-            	{ field: "text", headerName: "Text", width: 130 },
+            	// { field: "id", headerName: "ID", width: 70 },
+            	{ field: "text", headerName: "Text", width: 700 },
+                { field: "annotation", headerName: "Annotation", width: 130 }
         ];
 
     }

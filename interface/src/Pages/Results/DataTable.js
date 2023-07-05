@@ -34,12 +34,13 @@ import { DataGrid } from '@mui/x-data-grid';
 // 	{ id: 9, lastName: "Roxie", firstName: "Harvey", age: 65 },
 // ];
 
-export default function DataTable(rows, columns, height = 400, width = '100%', pageSize = 5, pageSizeOptions = [5, 10]) {
+export default function DataTable(props) {
+    let height = 400, width = '100%', pageSize = 8, pageSizeOptions = [5, 10];
     return (
         <div style={{ height: height, width: width }}>
             <DataGrid
-                rows={rows}
-                columns={columns}
+                rows={props.rows}
+                columns={props.columns}
                 initialState={{
                     pagination: {
                         paginationModel: { page: 0, pageSize: pageSize },
