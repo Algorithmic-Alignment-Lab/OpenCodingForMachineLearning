@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { DataGrid } from '@mui/x-data-grid';
+import Box from '@mui/material/Box';
 
 // const columns = [
 // 	{ field: "id", headerName: "ID", width: 70 },
@@ -37,7 +38,11 @@ import { DataGrid } from '@mui/x-data-grid';
 export default function DataTable(props) {
     let height = 400, width = '100%', pageSize = 8, pageSizeOptions = [5, 10];
     return (
-        <div style={{ height: height, width: width }}>
+        // apparently in material UI, you need to have the outer elements be also mui
+        // <div style={{ height: height, width: width }}>
+        <Box sx={{height: height,
+                  width: width}}
+        >
             <DataGrid
                 rows={props.rows}
                 columns={props.columns}
@@ -49,6 +54,7 @@ export default function DataTable(props) {
                 pageSizeOptions={pageSizeOptions}
                 checkboxSelection
             />
-        </div>
+        </Box>
+        // </div>
     );
 }
