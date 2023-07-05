@@ -9,6 +9,7 @@ import Stack from '@mui/material/Stack';
 import { sizing } from '@mui/system';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import ButtonGroup from '@mui/material/ButtonGroup';
 
 import states from './../../Constants/States';
 // import progress from './../../Constants/States';
@@ -59,16 +60,23 @@ class Results extends Component {
     async componentDidMount () {
         try {
             console.log("========== MOUNTING RESULTS ==========")
-            // since this step is to train the model, and we don't care about the labeling model anymore, commented out
-            // const data = await this.props.getDataWithParams('/data/get_results', {"id": this.props.getOptionID()});
+            // I believe this section will allow us to get the rest of the labels 
+            // does it have to do with the groups?
+            // todo: deal with errors from this
+            // const trainingResults = await this.props.getDataWithParams('/data/get_results', {"id": this.props.getOptionID()});
+
+            // if (!trainingResults.ok) {
+            //     throw Error(trainingResults.statusText);
+            // }
+            // todo: maybe see about having the data be sent here or maybe reread from the csv they saved the labels to?
 
             // instead lets just grab the annotations
             const data = await this.props.getDataWithParams('/data/get_annotations', {"id": this.props.getOptionID()});
             
-            console.log("Pulled the following data from get_annotations backend call:")
-            console.log(data);
-            console.log("");
-            // todo: figure out how to access all the groups, this only gets the 
+            // console.log("Pulled the following data from get_annotations backend call:")
+            // console.log(data);
+            // console.log("");
+            // todo: figure out how to access all the groups, this only gets the labels
 
             if (!data.ok) {
                 throw Error(data.statusText);
@@ -85,14 +93,22 @@ class Results extends Component {
             //     userCodesExtracted.push([data.rows[i].id, data.rows[i].annotation, data.rows[i].text]);
             // }
             // console.log("Extracted the data we pulled into this array: ");
+
+            // pull the groups from the prop function
+            let pulledLabels = this.props.getLabels();
+
             userCodesExtracted = data.rows.slice();
             console.log(userCodesExtracted);
+
+            console.log("Pulled labels (which hopefully contains the groups.)");
+            console.log(pulledLabels);
 
             this.setState({
                 savedFilepath: data.saved,
                 isLoading: false,
                 sectionComplete: true,
-                userCodes: userCodesExtracted
+                userCodes: userCodesExtracted,
+                groupsAndLabels: pulledLabels,
             });
 
         } catch (error) {
@@ -107,6 +123,8 @@ class Results extends Component {
     handleNextKeyPress = (event) => {
         if (event.key === ' ' && this.state.sectionComplete){
             this.onNextSubmit();
+        } else if (event.key == 'z') {
+            this.onPressBackToOpenCoding();
         }
     };
 
@@ -138,6 +156,10 @@ class Results extends Component {
                 columns={this.summaryTableColumns}
             />
         );
+    }
+
+    onPressBackToOpenCoding = () => {
+        this.props.updateState(states.openCoding);
     }
 
     /**
@@ -179,16 +201,31 @@ class Results extends Component {
                             Prediction Complete! Find your results at ./results/{this.state.savedFilepath} 
                         </div>
                     )} */}
-                    <div style={{marginTop: '15px', width:'100%'}}>
-                        <div style={{alignItems:'end'}}>
-                            <CallbackKeyEventButton 
-                                callBackFunc={this.handleNextKeyPress}
-                                buttonAvailable={this.state.sectionComplete}
-                                clickFunc={this.onNextSubmit}
-                                text={'Finish (space)'}
-                            />
+
+                    <Box display="flex" justifyContent="space-between">
+                        {/* Allow the user to go back to the beginning of the cycle if they want to do more coding */}
+                        <div style={{marginTop: '15px', width:'100%'}}>
+                            <div style={{alignItems:'end'}}>
+                                <CallbackKeyEventButton 
+                                    callBackFunc={this.handleNextKeyPress}
+                                    buttonAvailable={this.state.sectionComplete}
+                                    clickFunc={this.onPressBackToOpenCoding}
+                                    text={'Loop Back (z)'}
+                                />
+                            </div>
                         </div>
-                    </div>
+
+                        <div style={{marginTop: '15px', width:'100%'}}>
+                            <div style={{alignItems:'end'}}>
+                                <CallbackKeyEventButton 
+                                    callBackFunc={this.handleNextKeyPress}
+                                    buttonAvailable={this.state.sectionComplete}
+                                    clickFunc={this.onNextSubmit}
+                                    text={'Finish (space)'}
+                                />
+                            </div>
+                        </div>
+                    </Box>
                     <div style={{marginTop: '15px'}}>
                         <LinearProgress variant="determinate" value={progress}/>
                     </div>
