@@ -52,6 +52,7 @@ export default function DataTable(props) {
                 }}
                 pageSizeOptions={pageSizeOptions}
                 checkboxSelection={true}
+                sx={{whiteSpace: 'normal'}}
             />
         </Box>
         // </div>
