@@ -3,6 +3,9 @@
 // todo: figure out how to load in the groups, how they're stored.
 
 import React, {Component} from 'react';
+import { GridColDef } from '@mui/x-data-grid';
+import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
 
 import states from './../../Constants/States';
 // import progress from './../../Constants/States';
@@ -133,16 +136,21 @@ class Results extends Component {
 
     render() {
         return (
-            <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
-                <div style={{ margin: '15px'}}>
+            <Stack
+                justifyContent="center"
+                alignItems="center"
+                spacing={4}
+                sx={{ paddingTop: 5, paddingRight: 5, paddingLeft: 5 }}
+            >
+                <Box style={{ margin: '15px'}}>
                     <b>
                         Results
                     </b>
-                </div>
-                <div>
+                </Box>
+                <Box sx={{width: "100%", maxWidth: 700}}>
                     Todo: place summary here!
                     {this.getSummary()}
-                </div>
+                </Box>
 
                 {/* <div style={{ display: 'flex', height: '75vh', width: '80vw', justifyContent: 'flex-start', alignItems: 'center', flexDirection: 'column'}}>
                         You have completed this labeling session in {this.getVerificationNum()} verification rounds with an average accuracy of {this.getVerificationAccAvg()}%. Please wait for the server to finish labeling your dataset.
@@ -169,7 +177,7 @@ class Results extends Component {
                 <div style={{marginTop: '15px'}}>
                     <LinearProgress variant="determinate" value={progress}/>
                 </div>
-            </div>
+            </Stack>
 
         );
     }
