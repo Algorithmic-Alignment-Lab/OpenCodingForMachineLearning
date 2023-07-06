@@ -120,7 +120,9 @@ class Training extends Component {
 			this.setState({
 				isLoadingLabelSet: false,
 				labelOptions: rows,
+                sectionComplete: true, // done training, lets move on.
 			});
+
 		} catch (error) {
 			console.log(error);
 		}
@@ -376,160 +378,24 @@ class Training extends Component {
 						<Loading />
 					</div>
 				) : (
-					<div
-						style={{
-							display: "flex",
-							height: "75%",
-							width: "100%",
-							justifyContent: "flex-start",
-							alignItems: "center",
-							flexDirection: "column",
-						}}
-					>
-						<div
-							style={{
-								marginTop: "10px",
-								display: "flex",
-								alignItems: "center",
-								height: "15vh",
-							}}
-						>
-							{/* below is for centering purposes */}
-							<NextButton
-								buttonAvailable={false}
-								hidden={true}
-								handleNextButton={() => {}}
-								clickFunc={() => {}}
-								currIndex={this.state.maxItemIndex + 1}
-								maxIndex={this.state.maxItemIndex}
-								text={"<"}
-							/>
-							{/* above is for centering purposes */}
-							<div
-								style={{
-									marginRight: "10px",
-									marginLeft: "10px",
-									width: "80vw",
-								}}
-							>
-								<div style={{ marginBottom: "10px", textAlign: "center" }}>
-									{this.state.currentItem.text}
-								</div>
-								<div style={{ textAlign: "center" }}>
-									{"Label: "}
-									<i style={{ color: this.state.labelColor }}>
-										{this.state.currentLabel.label}
-									</i>
-								</div>
-								<div style={{ marginTop: "10px" }}>
-									<LinearProgress
-										variant="determinate"
-										value={this.state.progressPercent}
-									/>
-								</div>
-							</div>
-							<NextButton
-								buttonAvailable={this.state.nextArrowEnabled}
-								handleNextButton={this.handleNextButton}
-								clickFunc={this.onNextArrowClick}
-								currIndex={this.state.currentItemIndex}
-								maxIndex={this.state.maxItemIndex}
-								hidden={false}
-								text={">"}
-							/>
-						</div>
-						<div style={{ marginTop: "10px", textAlign: "center" }}>
-							{"Is the predicted label accurate?"}
-						</div>
-						<div
-							style={{
-								display: "flex",
-								marginTop: "25px",
-								width: "30vw",
-								justifyContent: "space-between",
-								alignItems: "flex-start",
-							}}
-						>
-							<div style={{ width: "15vw", widthmarginRight: "5px" }}>
-								<CallbackKeyEventButton
-									buttonAvailable={true}
-									clickFunc={this.onGoodClick}
-									callBackFunc={this.handleYesButton}
-									text={"Yes (y)"}
-								/>
-							</div>
-							<div style={{ width: "15vw", marginLeft: "5px" }}>
-								<div style={{ marginBottom: "10px" }}>
-									<Multiselect
-										ref={this.multiselectRef}
-										id={"newLabel"}
-										placeholder={"Select new label"}
-										hidePlaceholder={true}
-										options={this.state.labelOptions}
-										singleSelect={true}
-										onSelect={this.onSelect}
-										onRemove={this.onRemove}
-										displayValue="label"
-									/>
-								</div>
-								<CallbackKeyEventButton
-									callBackFunc={this.handleSubmitButton}
-									buttonAvailable={this.state.newLabel !== null}
-									clickFunc={this.onNewLabelSubmit}
-									text={"Submit (enter)"}
-								/>
-							</div>
-						</div>
-						<div
-							hidden={!this.state.modalEnabled}
-							style={{ marginTop: "25px" }}
-						>
-							<div>
-								<div>
-									{"The accuracy of the predictions was "}
-									{this.state.modalEnabled ? this.generateAccuracy() : 0}
-									{"%. Would you like to train again or continue?"}
-								</div>
-								<div
-									style={{
-										display: "flex",
-										marginTop: "25px",
-										width: "35vw",
-										justifyContent: "space-between",
-										alignItems: "center",
-									}}
-								>
-									<CallbackKeyEventButton
-										callBackFunc={this.handleTrainAgain}
-										buttonAvailable={this.state.modalEnabled}
-										clickFunc={this.retrain}
-										text={"Train again (t)"}
-									/>
-									<CallbackKeyEventButton
-										callBackFunc={this.handleContinue}
-										buttonAvailable={this.state.modalEnabled}
-										clickFunc={this.closeModal}
-										text={"Continue (c)"}
-									/>
-								</div>
-							</div>
-						</div>
-					</div>
-				)}
-				<div style={{ margin: "15px", width: "100%" }}>
-					<div style={{ alignItems: "end" }}>
-						<CallbackKeyEventButton
-							callBackFunc={this.handleNextKeyPress}
-							buttonAvailable={this.state.sectionComplete}
-							clickFunc={this.onNextSubmit}
-							text={"Next (space)"}
-						/>
-					</div>
-				</div>
-				<div style={{ margin: "15px" }}>
-					<LinearProgress variant="determinate" value={progress} />
-				</div>
-			</div>
+                    <div style={{height: "75%", width: "100%"}}>
+                        {/* Nothing now that we don't want the user to verify*/}
+                    </div>
+                )}
+                <div style={{ margin: "15px", width: "100%" }}>
+                        <div style={{ alignItems: "end" }}>
+                            <CallbackKeyEventButton
+                                callBackFunc={this.handleNextKeyPress}
+                                buttonAvailable={this.state.sectionComplete}
+                                clickFunc={this.onNextSubmit}
+                                text={"Next (space)"}
+                            />
+                        </div>
+                    </div>
+                    <div style={{ margin: "15px" }}>
+                        <LinearProgress variant="determinate" value={progress} />
+                    </div>
+                </div> 
 		);
 	}
 }
