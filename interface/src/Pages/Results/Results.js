@@ -63,11 +63,12 @@ class Results extends Component {
             // I believe this section will allow us to get the rest of the labels 
             // does it have to do with the groups?
             // todo: deal with errors from this
-            // const trainingResults = await this.props.getDataWithParams('/data/get_results', {"id": this.props.getOptionID()});
+            const trainingResults = await this.props.getDataWithParams('/data/get_results', {"id": this.props.getOptionID()});
 
-            // if (!trainingResults.ok) {
-            //     throw Error(trainingResults.statusText);
-            // }
+            if (!trainingResults.ok) {
+                throw Error(trainingResults.statusText);
+            }
+            console.log(`Training results:\n${trainingResults}`);
             // todo: maybe see about having the data be sent here or maybe reread from the csv they saved the labels to?
 
             // instead lets just grab the annotations
@@ -77,7 +78,7 @@ class Results extends Component {
             // console.log(data);
             // console.log("");
             // todo: figure out how to access all the groups, this only gets the labels
-
+            // or decide that we don't want to display those to the user
             if (!data.ok) {
                 throw Error(data.statusText);
             }

@@ -358,6 +358,14 @@ def open_coding_classification_finetune(model, tokenizer, max_length, num_epochs
     mapping = model.mappings
 
     converted_labels = convert_labels(labels, mapping)
+    # found problem: it's because I didn't run train then get label set like verification did.
+    # print("""
+    #       @@@@@@@@ DEBUG @@@@@@@@@
+    #       labels: {}
+    #       mapping: {}
+    #       converted_labels: {} [THIS IS THE PROBLEM RETURN]
+    #       @@@@@@@@@@@@@@@@@@@@@@@@
+    #       """.format(labels, mapping, converted_labels))
     inputs, input_labels = generate_tokenized(texts, converted_labels, tokenizer, max_length)
 
     train_data = PredictionDataset(inputs, input_labels)

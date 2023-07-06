@@ -10,6 +10,7 @@ import states from "./Constants/States";
 import Introduction from "./Pages/Introduction/Introduction";
 import OpenCoding from "./Pages/OpenCoding/OpenCoding";
 import AssistedGrouping from "./Pages/AssistedGrouping/AssistedGrouping";
+import Training from "./Pages/Training/Training";
 import Results from "./Pages/Results/Results";
 
 // NLPDocTool Pages
@@ -295,6 +296,22 @@ class App extends Component {
 		);
 	}
 
+    renderTraining() {
+        return <Training
+            loadLabelSet = {this.loadLabelSet}
+            loadLabels = {this.loadLabels}
+            saveLabels = {this.saveLabels}
+            getLabels = {this.getLabels}
+            retrainModel = {this.retrainModel}
+            getDataRows = {this.getDataRows}
+            updateState = {this.updateState}
+            getOptionID = {this.getOptionID}
+            getDataWithParams = {this.getDataWithParams}
+            postData = {this.postData}
+            saveAccuracy = {this.saveAccuracy}
+        />
+    }
+
     // place this here to reflect the actual order
 	renderResults() {
 		return (
@@ -348,14 +365,15 @@ class App extends Component {
 			} else if (page === states.assistedGrouping) {
 				return this.renderAssistedGrouping();
                 
+			} else if (page === states.training) {
+				return this.renderTraining();
+			} else if (page === states.results) {
+				return this.renderResults();
 			} else if (page === states.codeJustification) {
 				return this.renderCodeJustification();
 			} else if (page === states.hypGenerationAndComparison) {
 				return this.renderHypGenerationAndComparison();
-                // todo: docComparison/results
-            } else if (page === states.results) {
-				return this.renderResults();
-			}  else if (page === states.docResults) {
+            }  else if (page === states.docResults) {
                 return this.renderDocResults();
             } else if (page === states.docView) {
                 return this.renderViewDoc();

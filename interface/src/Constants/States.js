@@ -5,18 +5,15 @@ const states = {
     introduction: 0,
     openCoding: 1,
     assistedGrouping: 2,
-    // todo: generation (what the annotator thinks the model will output)
- 
-    // removing verification because now all we care about is openCoding, assistedGrouping
-    // verification: 3, // openCoding: the annotator checks how correct the model was
-    results: 3, 
+    training: 3, // used to be verification
+    results: 4, 
     
     // Justification: have the annotator describe their thought process for the labels they provided
-    codeJustification: 4, 
+    codeJustification: 5, 
     // Comparison (what the annotator thought vs the actual model output)
-    hypGenerationAndComparison: 5,
-    docResults: 6,
-    docView: 7, 
+    hypGenerationAndComparison: 6,
+    docResults: 7,
+    docView: 8, 
 }
 
 export default states;
