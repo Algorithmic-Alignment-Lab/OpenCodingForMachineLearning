@@ -14,7 +14,7 @@ from training.finetune_model import open_coding_finetune_model
 from training.predict_labels import call_predict
 from training.generate_pretrained_model import call_pretrain_model_distilbert_local
 
-
+DO_FINETUNING_BOOL = False
 
 @app.route('/', methods=['GET'])
 def test():
@@ -318,7 +318,15 @@ def get_results():
         label_id_mappings['label_to_id'][label] = id
 
     # finetune the model, return output filepath
-    output_name = open_coding_finetune_model(model_name, label_id_mappings, ([d['text'] for d in data_rows], [d['label'] for d in data_rows]), percent_train, batch_size, num_epochs)
+    # ^ original
+    # Now, i'm commenting out the finetuning.
+    if not DO_FINETUNING_BOOL:
+        output_name = f'open_coding_finetuned_{batch_size}_{num_epochs}_{percent_train}_{model_name}'
+    else:
+        output_name = open_coding_finetune_model(model_name, label_id_mappings, 
+                                                 ([d['text'] for d in data_rows], [d['label'] for d in data_rows]), 
+                                                 percent_train, batch_size, num_epochs)
+    
     name = get_option(option_id).replace(' ', '_')
 
     write_to_csv(kerb + '_labeled_' + name, data_rows)
