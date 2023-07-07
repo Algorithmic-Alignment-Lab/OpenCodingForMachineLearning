@@ -60,27 +60,23 @@ class Results extends Component {
     async componentDidMount () {
         try {
             console.log("========== MOUNTING RESULTS ==========")
-            // I believe this section will allow us to get the rest of the labels 
-            // does it have to do with the groups?
-            // todo: deal with errors from this
-            const trainingResults = await this.props.getDataWithParams('/data/get_results', {"id": this.props.getOptionID()});
-
-            if (!trainingResults.ok) {
-                throw Error(trainingResults.statusText);
+            const finalData = await this.props.getDataWithParams('/data/get_final_labels', {"id": this.props.getOptionID()});
+            if (!finalData.ok) {
+                throw Error(finalData.statusText)
             }
-            console.log(`Training results:\n${trainingResults}`);
-            // todo: maybe see about having the data be sent here or maybe reread from the csv they saved the labels to?
-
+            console.log("Pulled the labels from the backend / database csv");
+            console.log(finalData.final_labels);
+            
             // instead lets just grab the annotations
-            const data = await this.props.getDataWithParams('/data/get_annotations', {"id": this.props.getOptionID()});
+            const userCodeData = await this.props.getDataWithParams('/data/get_annotations', {"id": this.props.getOptionID()});
             
             // console.log("Pulled the following data from get_annotations backend call:")
             // console.log(data);
             // console.log("");
             // todo: figure out how to access all the groups, this only gets the labels
             // or decide that we don't want to display those to the user
-            if (!data.ok) {
-                throw Error(data.statusText);
+            if (!userCodeData.ok) {
+                throw Error(userCodeData.statusText);
             }
 
             // load the codes from the user (that we just pulled in data)
@@ -89,6 +85,9 @@ class Results extends Component {
             // template for when we know to extract particular things
             // since react can render an array rather than an object
             let userCodesExtracted = [];
+            userCodesExtracted = userCodeData.rows.slice();
+            console.log("Pulled user codes:")
+            console.log(userCodesExtracted);
             // for (let i = 0; i < data.rows.length; i++) {
             //     // just try to extract everything that will be helpful
             //     userCodesExtracted.push([data.rows[i].id, data.rows[i].annotation, data.rows[i].text]);
@@ -96,20 +95,17 @@ class Results extends Component {
             // console.log("Extracted the data we pulled into this array: ");
 
             // pull the groups from the prop function
-            let pulledLabels = this.props.getLabels();
-
-            userCodesExtracted = data.rows.slice();
-            console.log(userCodesExtracted);
-
-            console.log("Pulled labels (which hopefully contains the groups.)");
-            console.log(pulledLabels);
+            let pulledGroups = this.props.getLabels();
+            console.log("Pulled groups:");
+            console.log(pulledGroups);
 
             this.setState({
                 savedFilepath: data.saved,
                 isLoading: false,
                 sectionComplete: true,
                 userCodes: userCodesExtracted,
-                groupsAndLabels: pulledLabels,
+                groupsAndLabels: pulledGroups,
+                allLabels: finalData.final_labels
             });
 
         } catch (error) {

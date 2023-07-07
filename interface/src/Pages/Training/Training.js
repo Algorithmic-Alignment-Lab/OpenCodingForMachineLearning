@@ -16,7 +16,8 @@ class Training extends Component {
 		super(props);
 		this.multiselectRef = React.createRef();
 		this.state = {
-			isLoading: true,
+			isLoadingTraining: true,
+            isLoadingResults: false,
 			isLoadingLabelSet: true,
 			currentItemIndex: 0,
 			maxItemIndex: -1,
@@ -40,7 +41,8 @@ class Training extends Component {
 	 */
 	resetState = () => {
 		this.setState({
-			isLoading: true,
+			isLoadingTraining: true,
+            isLoadingResults: false,
 			currentItemIndex: 0,
 			maxItemIndex: -1,
 			currentItem: { id: -1, text: "" },
@@ -50,6 +52,7 @@ class Training extends Component {
 			predictedLabels: [],
 			nextArrowEnabled: false,
 			modalEnabled: false,
+            trainingComplete: false,
 			sectionComplete: false,
 			labelColor: "black",
 			progressPercent: 0,
@@ -78,7 +81,7 @@ class Training extends Component {
 			}
 
 			this.setState({
-				isLoading: false,
+				isLoadingTraining: false,
 				chosenRows: rows,
 				originalLabels: olabels,
 				predictedLabels: labels,
@@ -88,7 +91,7 @@ class Training extends Component {
 			});
 		} else {
 			this.setState({
-				isLoading: false,
+				isLoadingTraining: false,
 				currentItem: { id: -1, text: "Failed to Load" },
 				currentLabel: { id: -1, label: "Failed to Load" },
 			});
@@ -120,7 +123,7 @@ class Training extends Component {
 			this.setState({
 				isLoadingLabelSet: false,
 				labelOptions: rows,
-                sectionComplete: true, // done training, lets move on.
+                trainingComplete: true, // done training, lets move on.
 			});
 
 		} catch (error) {
@@ -280,6 +283,22 @@ class Training extends Component {
 		this.setState({ newLabel: null });
 	};
 
+    async getResults() {
+        this.setState({isLoadingResults: true});
+
+        const labelingResults = await this.props.getDataWithParams('/data/get_results', {"id": this.props.getOptionID()});
+
+        if (!labelingResults.ok) {
+            throw Error(labelingResults.statusText);
+        }
+        console.log(`Saved results to: ${labelingResults.saved}`)
+        this.setState({isLoadingResults: false, sectionComplete:true});
+    }
+
+    onGetResultsClick = () => {
+        this.getResults();
+    }
+
 	/**
 	 * Next submit action. Updates page UI state.
 	 */
@@ -348,7 +367,9 @@ class Training extends Component {
             // 7/7 10:40am this fix worked!
 			// this.props.saveLabels(this.state.predictedLabels);
 			this.onNextSubmit();
-		}
+		} else if (event.key == "/" && !this.state.isLoadingTraining) {
+            this.onGetResultsClick();
+        }
 	};
 
 	render() {
@@ -367,7 +388,7 @@ class Training extends Component {
                         Please wait while we train the model that generates the rest of the labels...
                     </div>
 				</div>
-				{this.state.isLoading ? (
+				{this.state.isLoadingTraining ? (
 					<div
 						style={{
 							height: "75%",
@@ -382,8 +403,29 @@ class Training extends Component {
 					</div>
 				) : (
                     <div style={{height: "75%", width: "100%"}}>
-                        {/* Nothing now that we don't want the user to verify*/}
+                            <CallbackKeyEventButton
+                                callBackFunc={this.handleNextKeyPress}
+                                buttonAvailable={!this.state.isLoadingTraining}
+                                clickFunc={this.onGetResultsClick}
+                                text={"Label Dataset (get results)"}
+                            />
                     </div>
+                )}
+                {this.state.isLoadingResults ? (
+                    <div
+						style={{
+							height: "75%",
+							width: "100%",
+							justifyContent: "flex-start",
+							alignItems: "center",
+							alignContent: "center",
+							flexDirection: "column",
+						}}
+					>
+						<Loading />
+					</div>
+                ) : (
+                    <div></div>
                 )}
                 <div style={{ margin: "15px", width: "100%" }}>
                         <div style={{ alignItems: "end" }}>
