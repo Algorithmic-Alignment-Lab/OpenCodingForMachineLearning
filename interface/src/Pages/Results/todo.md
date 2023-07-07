@@ -5,18 +5,45 @@
 
 
 7/6
-- Fix buttons rendering side by side
+- [ ] Fix buttons rendering side by side
+
+
+get_results places the final labels in a csv file,
+so we can add a method to read from there in the backend 
+for us to call.
 
 Data passing
-- [ ] Have the model predict the rest of the labels 
 
-    - continue looking at Verification.js to see how they ran the predictions.
-    // i already tried just getLabels (which just seems to load the codes, not the groups)
-    // with the format (id, annotation)
+- [X] investigate how to send the groups the user gave us from the app or the backend
+--> Learned that getLabels from App.js
+    just gets the groups from AssistedGrouping
+- So, so far we know how to get the annotations and the groups.
+    - how to retrieve the annotations the user provided
+    --> getDataWithParams(/data/get_annotations)
+    comes with format `[{id: _ , text: _ , annotation: _}...]`
+    - how to get the groups the user provided
+    --> pass in the getLabels() from App.js then call it from props
+    (since AssistedGrouping saves the groups there 
+    by using saveLabelState)
+        groups returned by getLabels is in the format: 
+        `[{id: _, true_label: ${group}, predicted_label: null}, ...]`
+    - [ ] TODO: possibly delete involving the groups in the results?
+        - Reasoning: the model does not use them,
+        after the user groups them, 
+        all that is left is the new set of labels, 
+        which do not have corresponding groups.
+    
+- [X] Have the model predict the rest of the labels 
+--> getDataWithParams(/data/get_results)
+- problem: takes a long time to finetune the model
+    - Taylor and I talked about it 7/6 and we think 
+    that finetuning is no longer necessary
+    
+- [ ] Remove finetuning to speed up get_results
+    // see /data/get_results in open_coding.py 
 
-    - [ ] investigate how to send the groups the user gave us from the app or the backend
-        - maybe try and pass the whole label set as a prop?
-        // lets check how verification did it
+- [ ] Add backend method to pull the resulting labels for us.
+
 
 After we manage to pass in the groups and understand how to match the ids up...
 - [ ] Add functions to calculate and display statistics about the users codes

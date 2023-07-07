@@ -345,6 +345,7 @@ class Training extends Component {
 			// save these labels
             // commenting out save labels because now that the user isn't verifying anything, this will be empty.
             // (attempting to fix 500 internal server error on post /data/save_labels)
+            // 7/7 10:40am this fix worked!
 			// this.props.saveLabels(this.state.predictedLabels);
 			this.onNextSubmit();
 		}
@@ -363,7 +364,7 @@ class Training extends Component {
 				<div style={{ margin: "15px" }}>
 					<b>Training</b>
                     <div>
-                        Please wait while we generate the rest of your labels...
+                        Please wait while we train the model that generates the rest of the labels...
                     </div>
 				</div>
 				{this.state.isLoading ? (
