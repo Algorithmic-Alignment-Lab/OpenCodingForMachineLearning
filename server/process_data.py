@@ -1,4 +1,5 @@
 import csv
+import json
 import os
 
 import numpy as np
@@ -251,5 +252,17 @@ def write_to_csv_annotations(output_filename, objects):
     return 'Finished Writing to CSV'
 
 
-
-
+def load_csv_to_json_object(csv_file_path, 
+                            field_names=('ID', 'TEXT', 'ANNOTATION')):
+    
+    assert os.path.exists(csv_file_path), \
+        f"Unable to load to json object from NONEXISTENT csv file: " \
+        f"{csv_file_path}"
+    
+    csv_dict_rows_list = []
+    with open(csv_file_path, 'r') as csv_file:
+        reader = csv.DictReader(f=csv_file, fieldnames=field_names)
+        for row in reader:
+            csv_dict_rows_list.append(row)
+    
+    return json.dumps(csv_dict_rows_list)

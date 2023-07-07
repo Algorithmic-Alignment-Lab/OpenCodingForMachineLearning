@@ -6,7 +6,7 @@ from flask import Flask, json, request
 
 app = Flask(__name__)
 
-from process_data import parse_options_into_db, find_pretrained_models, select_some, save_to_csv, write_to_csv, write_to_csv_annotations
+from process_data import parse_options_into_db, find_pretrained_models, select_some, save_to_csv, write_to_csv, write_to_csv_annotations, load_csv_to_json_object
 from database import instantiate_tables, fill_tables, get_options, get_option, get_option_data, set_annotation_data, get_annotation_data, create_constants, set_constants, get_constant, add_labels, get_label_set, get_table_rows_full, get_table_rows, get_labeled_data, get_unlabeled_data, get_label_set_data, create_labels
 
 from training.finetune_model import open_coding_finetune_model
@@ -358,6 +358,39 @@ def get_results():
         "model name": output_name,
     }
 
+    add_options(response)
+    return json.jsonify(response)
+
+
+@app.route('/data/get_final_labels')
+def get_final_labels():
+    """
+    Here I hope to extract the labels 
+    that were saved from get_results in a csv file
+    To send to the front end to be displayed.
+    
+    todo: even consider if we want to do the data processing here 
+    instead of in the frontend
+    """
+    option_id = request.args.get("id")
+    
+    labels_path = '../results/'
+    kerb = 'final'
+    name = get_option(option_id).replace(' ', '_')
+    result_labels_path = labels_path + kerb + '_labeled_' + name
+    
+    final_labels = []
+    
+    response = {
+        "final_labels": final_labels,
+    }
+    
+    try:
+        final_labels = load_csv_to_json_object(result_labels_path)
+    except AssertionError:
+        response["ok"] = False
+        return json.jsonify(response)
+    
     add_options(response)
     return json.jsonify(response)
 
