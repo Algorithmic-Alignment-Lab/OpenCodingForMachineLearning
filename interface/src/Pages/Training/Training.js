@@ -343,7 +343,9 @@ class Training extends Component {
 	handleNextKeyPress = (event) => {
 		if (event.key === " " && this.state.sectionComplete) {
 			// save these labels
-			this.props.saveLabels(this.state.predictedLabels);
+            // commenting out save labels because now that the user isn't verifying anything, this will be empty.
+            // (attempting to fix 500 internal server error on post /data/save_labels)
+			// this.props.saveLabels(this.state.predictedLabels);
 			this.onNextSubmit();
 		}
 	};
