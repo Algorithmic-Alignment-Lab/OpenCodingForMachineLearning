@@ -141,6 +141,10 @@ class Results extends Component {
     }
 
     getSummary = () => {
+        // actual summary function
+    }
+
+    getFinalLabelsTable = () => {
         // check Taylor's Step4 ListItem, Button Box as a way to make a table
         // or look at grid component material UI
         return (
@@ -181,6 +185,9 @@ class Results extends Component {
                     </Box>
                     <Box sx={{width: "100%"}}>
                         {this.getSummary()}
+                    </Box>
+                    <Box sx={{width: "100%"}}>
+                        {this.getFinalLabelsTable()}
                     </Box>
 
                     {/* <div style={{ display: 'flex', height: '75vh', width: '80vw', justifyContent: 'flex-start', alignItems: 'center', flexDirection: 'column'}}>
