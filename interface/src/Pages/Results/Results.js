@@ -31,18 +31,20 @@ class Results extends Component {
             isLoading: true,
             // savedFilepath: '',
             sectionComplete: false,
+            allLabels: [],
             userCodes: []
         };
-        this.summaryTableColumns = [
-            // { field: "id", headerName: "ID", width: 70 },
-            { field: "text", headerName: "Text", width: "600", 
+        this.labelTableColumns = [
+            // mui requires id in lowercase
+            { field: "id", headerName: "ID", width: 70 },
+            { field: "TEXT", headerName: "Text", width: "600", 
                 // renderCell: (params) => (
                 // <Typography>
                 //     {params.value}
                 // </Typography>
                 // )
             }, // , whiteSpace: "normal", wordWrap: "break-word"},
-            { field: "annotation", headerName: "Annotation", width: "200", 
+            { field: "ANNOTATION", headerName: "Annotation", width: "200", 
                 // renderCell: (params) => (
                 // <Typography >
                 //     {params.value};
@@ -67,14 +69,9 @@ class Results extends Component {
             console.log("Pulled the labels from the backend / database csv");
             console.log(finalData.final_labels);
             
-            // instead lets just grab the annotations
+            // still grab the user annotations
+            // in case we want to do something with the groups
             const userCodeData = await this.props.getDataWithParams('/data/get_annotations', {"id": this.props.getOptionID()});
-            
-            // console.log("Pulled the following data from get_annotations backend call:")
-            // console.log(data);
-            // console.log("");
-            // todo: figure out how to access all the groups, this only gets the labels
-            // or decide that we don't want to display those to the user
             if (!userCodeData.ok) {
                 throw Error(userCodeData.statusText);
             }
@@ -149,8 +146,8 @@ class Results extends Component {
         return (
             // this.state.userCodes.map((row) => <li>{row[ID_INDEX]} || {row[ANNOTATION_INDEX]} || {row[TEXT_INDEX]} </li>)
             <DataTable
-                rows={this.state.userCodes}
-                columns={this.summaryTableColumns}
+                rows={this.state.allLabels}
+                columns={this.labelTableColumns}
             />
         );
     }
