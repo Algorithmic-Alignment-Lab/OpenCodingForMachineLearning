@@ -275,3 +275,100 @@ def load_csv_to_json_object(csv_file_path,
     # but I meant to just have it be an object
     # the main call to this function should be able to encode it enough
     return csv_dict_rows_list
+
+
+def get_label_counts(labels_list):
+    """
+    Count how many of each label there is
+
+    :param labels_list: the result of what we read from the csv file
+    :type labels_list: list of dictionaries (csv Dict)
+    
+    :raises KeyError: if our assumption that you have the ANNOTATION key
+    is not met (i.e. you modified the save format somewhere 
+    or load format from load_csv_to_json)
+    
+    :return: each label and their corresponding count
+    :rtype: dict
+    """
+    label_counts = {}
+    for row in labels_list:
+        if not row.get("ANNOTATION"):
+            raise KeyError("Unable to count how many there are of each label.\n"
+                           f"Expected 'ANNOTATION' key. Got row = {row}")
+
+        current_label = row["ANNOTATION"]
+        if current_label not in label_counts:
+            label_counts[current_label] = 1
+        else:
+            label_counts[current_label] += 1
+            
+    return label_counts
+
+
+def sort_label_counts(label_counts_dict):
+    """
+    Place the {label: count} pairs in descending order
+    So that we can display it nicely in a table later
+
+    :param label_counts_dict: the result from get_label_counts 
+    :type label_counts_dict: dict ({label: count, ...})
+    :return: (reversed) {count: label, ... } pairs in descending order
+    :rtype: list of dictionaries
+    """
+    counts_dict = {} # reverse the key value pairing for easier sorting
+    for label_key in label_counts_dict:
+        count = label_counts_dict[label_key]
+        # handle potential duplicate counts
+        if count not in counts_dict:
+            counts_dict[count] = [label_key]
+        else:
+            counts_dict[count].append(label_key)
+    
+    # place the {label: count} pairs here based on the count order
+    sorted_label_counts = []
+    while counts_dict:
+        curr_max_count = max(list(counts_dict.keys()))
+        labels_with_that_count = sorted(counts_dict[curr_max_count])
+        
+        # don't forget about the possible duplicate counts
+        sorted_label_counts.append({labels_with_that_count[0]: curr_max_count})
+        for label in labels_with_that_count[1:]:  
+            sorted_label_counts.append({label: curr_max_count})
+            
+        del counts_dict[curr_max_count]
+        
+    return sorted_label_counts
+
+
+def tableify_label_counts(sorted_label_counts_list, 
+                          total_label_count):
+    """
+    Convert the list of {label: count} pairs to something we can display in a mui table easily
+
+    :param sorted_label_counts_dict: the result from sort_label_counts
+    :type sorted_label_counts_dict: list of dictionaries [{label: count}, ...]
+    
+    :param total_label_count: the total number of labels
+    :type total_label_count: int
+    
+    :return: table rows (each with the designated columns below)
+    :rtype: list of dictionaries
+    """
+    LABEL_KEY = "label"
+    COUNT_KEY = "count"
+    PERCENT_KEY = "percent"
+    label_counts_table_list = []
+        
+    # extracting each key and count from our sorted list of format
+    # [{label: count}, {label:count}, ...]
+    for label_and_count_dict in sorted_label_counts_list:
+        curr_label = list(label_and_count_dict.keys())[0]
+        curr_count = label_and_count_dict[curr_label]
+        label_counts_table_list.append({
+            LABEL_KEY: curr_label,
+            COUNT_KEY: curr_count,
+            PERCENT_KEY: curr_count / total_label_count
+        })
+    
+    return label_counts_table_list
