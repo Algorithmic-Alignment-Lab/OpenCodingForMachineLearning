@@ -14,7 +14,9 @@ from training.finetune_model import open_coding_finetune_model
 from training.predict_labels import call_predict
 from training.generate_pretrained_model import call_pretrain_model_distilbert_local
 
-DO_FINETUNING_BOOL = False
+from tqdm import tqdm as tq
+
+DO_FINETUNING_BOOL = True
 
 @app.route('/', methods=['GET'])
 def test():
@@ -333,11 +335,16 @@ def get_results():
 
     # gather all unlabeled texts, and predict
     unlabeled_data = get_unlabeled_data(option_id)
-
+    initial_unlabeled_data_size = len(unlabeled_data)
+    batch_size = 200
     # loop until all data has been written
-    while unlabeled_data != []:
-    
-        some_selected_data = select_some(unlabeled_data, 0, 200)
+    # while unlabeled_data != []:
+    print("Labeling data!")
+    for i in tq(range(0, initial_unlabeled_data_size, batch_size)):
+        if unlabeled_data == []:
+            break
+        
+        some_selected_data = select_some(unlabeled_data, 0, batch_size)
         predictions = call_predict(some_selected_data, output_name, label_id_mappings)
 
         full_labels = [{'id': pred['id'], 'true_label': pred['label'], 'predicted_label': pred['label']} for pred in predictions]
@@ -377,7 +384,8 @@ def get_final_labels():
     labels_path = '../results/'
     kerb = 'final'
     name = get_option(option_id).replace(' ', '_')
-    result_labels_path = labels_path + kerb + '_labeled_' + name
+    # accidentally forgot csv file extension last time
+    result_labels_path = labels_path + kerb + '_labeled_' + name + '.csv'
     
     final_labels = []
     
@@ -387,8 +395,9 @@ def get_final_labels():
     
     try:
         final_labels = load_csv_to_json_object(result_labels_path)
-    except AssertionError:
+    except Exception as e:
         response["ok"] = False
+        response["statusText"] = str(e)
         return json.jsonify(response)
     
     add_options(response)

@@ -17,7 +17,8 @@ class Training extends Component {
 		this.multiselectRef = React.createRef();
 		this.state = {
 			isLoadingTraining: true,
-            isLoadingResults: false,
+            pressedLabelDataset: false,
+            isLoadingResults: true,
 			isLoadingLabelSet: true,
 			currentItemIndex: 0,
 			maxItemIndex: -1,
@@ -296,6 +297,7 @@ class Training extends Component {
     }
 
     onGetResultsClick = () => {
+        this.state.pressedLabelDataset = true;
         this.getResults();
     }
 
@@ -384,49 +386,64 @@ class Training extends Component {
 			>
 				<div style={{ margin: "15px" }}>
 					<b>Training</b>
+                    
+				</div>
+                <div
+                    style={{
+                        height: "75%",
+                        width: "100%",
+                        justifyContent: "flex-start",
+                        alignItems: "center",
+                        alignContent: "center",
+                        flexDirection: "column",
+                    }}
+                >
+                {this.state.isLoadingTraining ? (
                     <div>
                         Please wait while we train the model that generates the rest of the labels...
-                    </div>
-				</div>
-				{this.state.isLoadingTraining ? (
-					<div
-						style={{
-							height: "75%",
-							width: "100%",
-							justifyContent: "flex-start",
-							alignItems: "center",
-							alignContent: "center",
-							flexDirection: "column",
-						}}
-					>
+                        <br/>
 						<Loading />
-					</div>
+                    </div>
+					
 				) : (
-                    <div style={{height: "75%", width: "100%"}}>
-                            <CallbackKeyEventButton
-                                callBackFunc={this.handleNextKeyPress}
-                                buttonAvailable={!this.state.isLoadingTraining}
-                                clickFunc={this.onGetResultsClick}
-                                text={"Label Dataset (get results)"}
-                            />
+                    <div>
+                        Training complete.
+                        <br/>
+                        <CallbackKeyEventButton
+                            callBackFunc={this.handleNextKeyPress}
+                            buttonAvailable={!this.state.isLoadingTraining}
+                            clickFunc={this.onGetResultsClick}
+                            text={"Label Dataset (get results)"}
+                        />
                     </div>
                 )}
-                {this.state.isLoadingResults ? (
-                    <div
-						style={{
-							height: "75%",
-							width: "100%",
-							justifyContent: "flex-start",
-							alignItems: "center",
-							alignContent: "center",
-							flexDirection: "column",
-						}}
-					>
-						<Loading />
-					</div>
-                ) : (
-                    <div></div>
-                )}
+                </div>
+                <div
+                    style={{
+                        height: "75%",
+                        width: "100%",
+                        justifyContent: "flex-start",
+                        alignItems: "center",
+                        alignContent: "center",
+                        flexDirection: "column",
+                    }}
+                > 
+                    {this.state.pressedLabelDataset ? (
+                        this.state.isLoadingResults ? (
+                            <div>
+                                Labeling ...
+                                <Loading />
+                            </div>
+                        ) : (
+                            <div>
+                                Labeling complete!
+                            </div>
+                        )
+                    ) : (
+                        <div/>
+                    )}
+                    
+                </div>
                 <div style={{ margin: "15px", width: "100%" }}>
                         <div style={{ alignItems: "end" }}>
                             <CallbackKeyEventButton

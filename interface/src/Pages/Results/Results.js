@@ -29,7 +29,7 @@ class Results extends Component {
         super(props);
         this.state = {
             isLoading: true,
-            savedFilepath: '',
+            // savedFilepath: '',
             sectionComplete: false,
             userCodes: []
         };
@@ -100,7 +100,7 @@ class Results extends Component {
             console.log(pulledGroups);
 
             this.setState({
-                savedFilepath: data.saved,
+                // savedFilepath: data.saved,
                 isLoading: false,
                 sectionComplete: true,
                 userCodes: userCodesExtracted,

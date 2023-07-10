@@ -569,7 +569,7 @@ def get_unlabeled_data(option_id):
         conn.close()
     else:
         print("Cannot establish database connection for get_label_set")
-    print(f'number of unlabeled examples:', len(unlabeled_data))
+    # print(f'number of unlabeled examples:', len(unlabeled_data))
     return unlabeled_data
 
 
