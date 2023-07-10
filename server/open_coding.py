@@ -387,14 +387,12 @@ def get_final_labels():
     # accidentally forgot csv file extension last time
     result_labels_path = labels_path + kerb + '_labeled_' + name + '.csv'
     
-    final_labels = []
-    
     response = {
-        "final_labels": final_labels,
+        "final_labels": [],
     }
     
     try:
-        final_labels = load_csv_to_json_object(result_labels_path)
+        response["final_labels"] = load_csv_to_json_object(result_labels_path)
     except Exception as e:
         response["ok"] = False
         response["statusText"] = str(e)
