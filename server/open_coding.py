@@ -15,8 +15,11 @@ from training.predict_labels import call_predict
 from training.generate_pretrained_model import call_pretrain_model_distilbert_local
 
 from tqdm import tqdm as tq
+import os
 
 DO_FINETUNING_BOOL = True
+# usage: we're just doing a demo and relabeling everything would be pointless
+DO_LABELING_BOOL = False 
 
 @app.route('/', methods=['GET'])
 def test():
@@ -331,34 +334,43 @@ def get_results():
     
     name = get_option(option_id).replace(' ', '_')
 
-    write_to_csv(kerb + '_labeled_' + name, data_rows)
+    labels_csv_file_name = kerb + '_labeled_' + name
+    do_labeling_bool = DO_LABELING_BOOL
+    if not do_labeling_bool:
+        labels_csv_file_path = './../results/' + labels_csv_file_name + '.csv'
+        if not os.path.exists(labels_csv_file_path):
+            print(f"Ignoring debugging rule DO_LABELING_BOOL since output file ({labels_csv_file_path}) does not exist")
+            do_labeling_bool = True
 
-    # gather all unlabeled texts, and predict
-    unlabeled_data = get_unlabeled_data(option_id)
-    initial_unlabeled_data_size = len(unlabeled_data)
-    batch_size = 200
-    # loop until all data has been written
-    # while unlabeled_data != []:
-    print("Labeling data!")
-    for i in tq(range(0, initial_unlabeled_data_size, batch_size)):
-        if unlabeled_data == []:
-            break
-        
-        some_selected_data = select_some(unlabeled_data, 0, batch_size)
-        predictions = call_predict(some_selected_data, output_name, label_id_mappings)
+    if do_labeling_bool:
+        write_to_csv(kerb + '_labeled_' + name, data_rows)
 
-        full_labels = [{'id': pred['id'], 'true_label': pred['label'], 'predicted_label': pred['label']} for pred in predictions]
-
-        # add all labels into the database and incrementally update results file
-        add_labels(option_id, full_labels)
-        write_to_csv(kerb + '_labeled_' + name, predictions, False)
-
+        # gather all unlabeled texts, and predict
         unlabeled_data = get_unlabeled_data(option_id)
+        initial_unlabeled_data_size = len(unlabeled_data)
+        batch_size = 200
+        # loop until all data has been written
+        # while unlabeled_data != []:
+        print("Labeling data!")
+        for i in tq(range(0, initial_unlabeled_data_size, batch_size)):
+            if unlabeled_data == []:
+                break
+            
+            some_selected_data = select_some(unlabeled_data, 0, batch_size)
+            predictions = call_predict(some_selected_data, output_name, label_id_mappings)
 
-    # also save annotations
-    annotations = get_annotation_data(option_id)
-    
-    write_to_csv_annotations(kerb + '_annotations_' + name, annotations)
+            full_labels = [{'id': pred['id'], 'true_label': pred['label'], 'predicted_label': pred['label']} for pred in predictions]
+
+            # add all labels into the database and incrementally update results file
+            add_labels(option_id, full_labels)
+            write_to_csv(kerb + '_labeled_' + name, predictions, False)
+
+            unlabeled_data = get_unlabeled_data(option_id)
+
+        # also save annotations
+        annotations = get_annotation_data(option_id)
+        
+        write_to_csv_annotations(kerb + '_annotations_' + name, annotations)
 
     response = {
         "saved": kerb + '_labeled_' + name,
