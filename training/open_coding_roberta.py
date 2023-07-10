@@ -2,7 +2,8 @@ import torch
 from torch import nn
 from torch.nn import BCEWithLogitsLoss, CrossEntropyLoss
 
-from transformers import RobertaPreTrainedModel, RobertaConfig, RobertaModel, RobertaTokenizer
+from transformers import RobertaPreTrainedModel, RobertaConfig, RobertaModel, RobertaTokenizer, logging
+logging.set_verbosity_error()
 from transformers.modeling_outputs import MaskedLMOutput, SequenceClassifierOutput
 from transformers.activations import gelu
 

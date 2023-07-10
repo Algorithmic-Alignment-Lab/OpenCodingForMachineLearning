@@ -5,7 +5,8 @@ import os
 
 import torch
 
-from transformers import DistilBertTokenizer, DistilBertModel, DistilBertConfig
+from transformers import DistilBertTokenizer, DistilBertModel, DistilBertConfig, logging
+logging.set_verbosity_error()
 
 # uncomment these imports for local running
 # from open_coding_utils import get_model

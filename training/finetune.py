@@ -10,7 +10,9 @@ import os
 
 import numpy as np
 
-from transformers import Trainer, TrainingArguments
+from transformers import Trainer, TrainingArguments, logging
+logging.set_verbosity_error()
+
 import torch
 
 # uncomment these imports for local running

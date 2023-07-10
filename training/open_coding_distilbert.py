@@ -1,7 +1,8 @@
 from torch import nn
 from torch.nn import BCEWithLogitsLoss
 
-from transformers import DistilBertPreTrainedModel, DistilBertConfig, DistilBertModel, DistilBertTokenizer
+from transformers import DistilBertPreTrainedModel, DistilBertConfig, DistilBertModel, DistilBertTokenizer, logging
+logging.set_verbosity_error()
 from transformers.modeling_outputs import MaskedLMOutput, SequenceClassifierOutput
 from transformers.activations import gelu
 

@@ -1,7 +1,8 @@
 import sys
 
 import torch
-from transformers import DistilBertTokenizer
+from transformers import DistilBertTokenizer, logging
+logging.set_verbosity_error()
 import os
 
 # import style required by FLASK
