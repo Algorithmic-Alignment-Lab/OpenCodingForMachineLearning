@@ -262,7 +262,16 @@ def load_csv_to_json_object(csv_file_path,
     csv_dict_rows_list = []
     with open(csv_file_path, 'r') as csv_file:
         reader = csv.DictReader(f=csv_file, fieldnames=field_names)
+        next(reader)  # skip the header
         for row in reader:
-            csv_dict_rows_list.append(row)
+            # mui requires id be in lowercase
+            row_copy = dict(row)
+            del row_copy["ID"]
+            row_copy["id"] = row["ID"]
+            csv_dict_rows_list.append(row_copy)
     
-    return json.dumps(csv_dict_rows_list)
+    # removed dumps because
+    # dumps convert the results into a string
+    # but I meant to just have it be an object
+    # the main call to this function should be able to encode it enough
+    return csv_dict_rows_list
