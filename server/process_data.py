@@ -341,7 +341,7 @@ def sort_label_counts(label_counts_dict):
     return sorted_label_counts
 
 
-def tableify_label_counts(sorted_label_counts_list, 
+def tableify_label_statistics(sorted_label_counts_list, 
                           total_label_count):
     """
     Convert the list of {label: count} pairs to something we can display in a mui table easily
@@ -371,4 +371,5 @@ def tableify_label_counts(sorted_label_counts_list,
             PERCENT_KEY: curr_count / total_label_count
         })
     
-    return label_counts_table_list
+    # columns, rows
+    return [LABEL_KEY, COUNT_KEY, PERCENT_KEY], label_counts_table_list

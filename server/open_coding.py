@@ -6,7 +6,7 @@ from flask import Flask, json, request
 
 app = Flask(__name__)
 
-from process_data import parse_options_into_db, find_pretrained_models, select_some, save_to_csv, write_to_csv, write_to_csv_annotations, load_csv_to_json_object
+from process_data import parse_options_into_db, find_pretrained_models, select_some, save_to_csv, write_to_csv, write_to_csv_annotations, load_csv_to_json_object, get_label_counts, sort_label_counts, tableify_label_statistics
 from database import instantiate_tables, fill_tables, get_options, get_option, get_option_data, set_annotation_data, get_annotation_data, create_constants, set_constants, get_constant, add_labels, get_label_set, get_table_rows_full, get_table_rows, get_labeled_data, get_unlabeled_data, get_label_set_data, create_labels
 
 from training.finetune_model import open_coding_finetune_model
@@ -381,7 +381,7 @@ def get_results():
     return json.jsonify(response)
 
 
-@app.route('/data/get_final_labels')
+@app.route('/data/get_final_labels_and_summaries')
 def get_final_labels():
     """
     Here I hope to extract the labels 
@@ -401,10 +401,24 @@ def get_final_labels():
     
     response = {
         "final_labels": [],
+        "model_summary_columns": [],
+        "model_summary_rows": [],  # will be ready and formatted to be displayed
     }
-    
+
     try:
+        # gather all the labels that were evaluated and saved earlier
         response["final_labels"] = load_csv_to_json_object(result_labels_path)
+        total_final_labels = len(response["final_labels"])
+        
+        # get summary statistics about that overall set of labels
+        model_label_counts = get_label_counts(response["final_labels"])
+        sorted_model_label_counts = sort_label_counts(model_label_counts)
+        stats_columns, stats_rows  = tableify_label_statistics(
+            sorted_model_label_counts, total_final_labels
+        )
+        response["model_summary_columns"] = stats_columns
+        response["model_summary_rows"] = stats_rows
+        
     except Exception as e:
         response["ok"] = False
         response["statusText"] = str(e)
