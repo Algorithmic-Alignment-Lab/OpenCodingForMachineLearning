@@ -38,7 +38,7 @@ import Box from '@mui/material/Box';
 
 
 export default function DataTable(props) {
-    let pageSize = 10, pageSizeOptions = [5, 10];
+    let pageSizeOptions = [5, 10];
 
     return (
         <Box sx={{height: props.height, width: props.width}}
@@ -46,15 +46,11 @@ export default function DataTable(props) {
             <DataGrid
                 rows={props.rows}
                 columns={props.columns}
-                initialState={{
-                    pagination: {
-                        paginationModel: { page: 0, pageSize: pageSize },
-                    },
-                }}
                 pageSizeOptions={pageSizeOptions}
                 checkboxSelection={true}
                 sx={{whiteSpace: 'normal'}}
-                getRowId={(row: any) => props.getRowId(row)}
+                pagination
+                autoPageSize
             />
         </Box>
     );
