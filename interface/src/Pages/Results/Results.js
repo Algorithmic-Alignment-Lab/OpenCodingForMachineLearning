@@ -38,7 +38,12 @@ class Results extends Component {
         this.allLabels = [];
         this.userCodes = [];
         this.modelSummaryRows = [];
-        this.modelSummaryColumns = [];
+        // table (somewhat) renders now that I used the mui column definition!
+        this.modelSummaryColumns = [
+            {field: "label", headerName: "Label", width: 200},
+            {field: "count", headerName: "Count", width: 200},
+            {field: "percent", headerName: "Percent", width: 200}
+        ];
         this.labelTableColumns = [
             // mui requires id in lowercase
             { field: "id", headerName: "ID", width: 70 },
@@ -88,10 +93,8 @@ class Results extends Component {
             console.log(finalData.final_labels);
             
             console.log("Pulled model summary statistics:");
-            console.log(finalData.model_summary_columns);
             console.log(finalData.model_summary_rows);
             
-            this.modelSummaryColumns = finalData.model_summary_columns;
             this.modelSummaryRows = finalData.model_summary_rows;
             this.setState({
                 isLoadingModelSummary: false
@@ -174,6 +177,12 @@ class Results extends Component {
             );
         }
         // actual summary function
+        // console.log("Rendering summary with:");
+        // console.log(`Rows:`);
+        // for (let row in this.modelSummaryRows) {
+        //     console.log(this.modelSummaryRows[row]);
+        // }
+        // console.log(`Columns: ${this.modelSummaryColumns}`);
         return (
             <DataTable
                 rows={this.modelSummaryRows}
@@ -227,10 +236,10 @@ class Results extends Component {
                 <Stack
                     justifyContent="center"
                     alignItems="center"
-                    spacing={4}
+                    spacing={1}
                     // sx={{ paddingTop: 5, paddingRight: 5, paddingLeft: 5 }}
                 >
-                    <Box style={{ margin: '15px', width: "100%", height: "12vh"}}>
+                    <Box style={{ margin: '15px', width: "100%", height: "1vh"}}>
                         <b>
                             Results
                         </b>
@@ -257,26 +266,22 @@ class Results extends Component {
 
                     <Box display="flex" justifyContent="space-between" height="12vh">
                         {/* Allow the user to go back to the beginning of the cycle if they want to do more coding */}
-                        <div style={{marginTop: '15px', width:'100%'}}>
-                            <div style={{alignItems:'end'}}>
-                                <CallbackKeyEventButton 
-                                    callBackFunc={this.handleNextKeyPress}
-                                    buttonAvailable={this.state.sectionComplete}
-                                    clickFunc={this.onPressBackToOpenCoding}
-                                    text={'Loop Back (z)'}
-                                />
-                            </div>
+                        <div style={{marginTop: '15px', width:'100%', alignItems:'left'}}>
+                            <CallbackKeyEventButton 
+                                callBackFunc={this.handleNextKeyPress}
+                                buttonAvailable={this.state.sectionComplete}
+                                clickFunc={this.onPressBackToOpenCoding}
+                                text={'Loop Back (z)'}
+                            />
                         </div>
 
-                        <div style={{marginTop: '15px', width:'100%'}}>
-                            <div style={{alignItems:'end'}}>
-                                <CallbackKeyEventButton 
-                                    callBackFunc={this.handleNextKeyPress}
-                                    buttonAvailable={this.state.sectionComplete}
-                                    clickFunc={this.onNextSubmit}
-                                    text={'Finish (space)'}
-                                />
-                            </div>
+                        <div style={{marginTop: '15px', width:'100%', alignItems:'right'}}>
+                            <CallbackKeyEventButton 
+                                callBackFunc={this.handleNextKeyPress}
+                                buttonAvailable={this.state.sectionComplete}
+                                clickFunc={this.onNextSubmit}
+                                text={'Finish (space)'}
+                            />
                         </div>
                     </Box>
                     <div style={{marginTop: '15px', height: '10vh'}}>
