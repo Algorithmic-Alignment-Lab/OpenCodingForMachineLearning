@@ -35,12 +35,13 @@ import Box from '@mui/material/Box';
 // 	{ id: 9, lastName: "Roxie", firstName: "Harvey", age: 65 },
 // ];
 
+
+
 export default function DataTable(props) {
-    let height = 450, width = '100%', pageSize = 10, pageSizeOptions = [5, 10];
+    let pageSize = 10, pageSizeOptions = [5, 10];
+
     return (
-        // apparently in material UI, you need to have the outer elements be also mui
-        // <div style={{ height: height, width: width }}>
-        <Box sx={{height: height, width: width}}
+        <Box sx={{height: props.height, width: props.width}}
         >
             <DataGrid
                 rows={props.rows}
@@ -53,8 +54,8 @@ export default function DataTable(props) {
                 pageSizeOptions={pageSizeOptions}
                 checkboxSelection={true}
                 sx={{whiteSpace: 'normal'}}
+                getRowId={(row: any) => props.getRowId(row)}
             />
         </Box>
-        // </div>
     );
 }
