@@ -30,10 +30,15 @@ class Results extends Component {
         this.state = {
             isLoading: true,
             // savedFilepath: '',
+            isLoadingModelSummary: true,
+            isLoadingAllLabels: true,
             sectionComplete: false,
-            allLabels: [],
-            userCodes: []
         };
+        // since these won't change as the user interacts
+        this.allLabels = [];
+        this.userCodes = [];
+        this.modelSummaryRows = [];
+        this.modelSummaryColumns = [];
         this.labelTableColumns = [
             // mui requires id in lowercase
             { field: "id", headerName: "ID", width: 70 },
@@ -55,6 +60,19 @@ class Results extends Component {
 
     }
 
+    getRowID(row) {
+        if ("id" in row) {
+            return row["id"];
+        }
+
+        let resultRowID = "";
+        for (let key in Object.keys(row)) {
+            resultRowID.concat(key);
+            resultRowID.concat(row[key]);
+        }
+        return resultRowID;
+    }
+
     /**
     * When the component mounts, we prompt the server to start generating our full results, 
     * and we get the csv file which holds our results.
@@ -62,13 +80,23 @@ class Results extends Component {
     async componentDidMount () {
         try {
             console.log("========== MOUNTING RESULTS ==========")
-            const finalData = await this.props.getDataWithParams('/data/get_final_labels', {"id": this.props.getOptionID()});
+            const finalData = await this.props.getDataWithParams('/data/get_final_labels_and_summaries', {"id": this.props.getOptionID()});
             if (!finalData.ok) {
                 throw Error(finalData.statusText)
             }
             console.log("Pulled the labels from the backend / database csv");
             console.log(finalData.final_labels);
             
+            console.log("Pulled model summary statistics:");
+            console.log(finalData.model_summary_columns);
+            console.log(finalData.model_summary_rows);
+            
+            this.modelSummaryColumns = finalData.model_summary_columns;
+            this.modelSummaryRows = finalData.model_summary_rows;
+            this.setState({
+                isLoadingModelSummary: false
+            });
+
             // still grab the user annotations
             // in case we want to do something with the groups
             const userCodeData = await this.props.getDataWithParams('/data/get_annotations', {"id": this.props.getOptionID()});
@@ -76,22 +104,19 @@ class Results extends Component {
                 throw Error(userCodeData.statusText);
             }
 
-            // load the codes from the user (that we just pulled in data)
-            // place it in the state
-            
-            // template for when we know to extract particular things
-            // since react can render an array rather than an object
+            // load the codes from the user (they provided in openCoding)
             let userCodesExtracted = [];
             userCodesExtracted = userCodeData.rows.slice();
             console.log("Pulled user codes:")
             console.log(userCodesExtracted);
-            // for (let i = 0; i < data.rows.length; i++) {
-            //     // just try to extract everything that will be helpful
-            //     userCodesExtracted.push([data.rows[i].id, data.rows[i].annotation, data.rows[i].text]);
-            // }
-            // console.log("Extracted the data we pulled into this array: ");
+            
 
-            // pull the groups from the prop function
+            this.allLabels = finalData.final_labels;
+            this.setState({
+                isLoadingAllLabels: false
+            });
+
+            // pull the groups from assistedGrouping
             let pulledGroups = this.props.getLabels();
             console.log("Pulled groups:");
             console.log(pulledGroups);
@@ -100,10 +125,9 @@ class Results extends Component {
                 // savedFilepath: data.saved,
                 isLoading: false,
                 sectionComplete: true,
-                userCodes: userCodesExtracted,
-                groupsAndLabels: pulledGroups,
-                allLabels: finalData.final_labels
             });
+            this.userCodes = userCodesExtracted;
+            this.groupsAndLabels = pulledGroups;
 
         } catch (error) {
             console.log(error);
@@ -141,17 +165,45 @@ class Results extends Component {
     }
 
     getSummary = () => {
+        if (this.state.isLoadingModelSummary) {
+            return (
+                <div>
+                    Loading Model Summary
+                    <Loading/>
+                </div>
+            );
+        }
         // actual summary function
+        return (
+            <DataTable
+                rows={this.modelSummaryRows}
+                columns={this.modelSummaryColumns}
+                getRowId={this.getRowID}
+                height={"100%"}
+                width={"100%"}
+            />
+        );
     }
 
     getFinalLabelsTable = () => {
+        if (this.state.isLoadingAllLabels) {
+            return (
+                <div>
+                    Loading rest of the labels
+                    <Loading/>
+                </div>
+            );
+        }
         // check Taylor's Step4 ListItem, Button Box as a way to make a table
         // or look at grid component material UI
         return (
             // this.state.userCodes.map((row) => <li>{row[ID_INDEX]} || {row[ANNOTATION_INDEX]} || {row[TEXT_INDEX]} </li>)
             <DataTable
-                rows={this.state.allLabels}
+                rows={this.allLabels}
                 columns={this.labelTableColumns}
+                getRowId={this.getRowID}
+                height={"100%"}
+                width={"100%"}
             />
         );
     }
@@ -178,15 +230,15 @@ class Results extends Component {
                     spacing={4}
                     // sx={{ paddingTop: 5, paddingRight: 5, paddingLeft: 5 }}
                 >
-                    <Box style={{ margin: '15px'}}>
+                    <Box style={{ margin: '15px', width: "100%", height: "12vh"}}>
                         <b>
                             Results
                         </b>
                     </Box>
-                    <Box sx={{width: "100%"}}>
+                    <Box sx={{width: "100%", height: "25vh"}}>
                         {this.getSummary()}
                     </Box>
-                    <Box sx={{width: "100%"}}>
+                    <Box sx={{width: "100%", height:"40vh"}}>
                         {this.getFinalLabelsTable()}
                     </Box>
 
@@ -203,7 +255,7 @@ class Results extends Component {
                         </div>
                     )} */}
 
-                    <Box display="flex" justifyContent="space-between">
+                    <Box display="flex" justifyContent="space-between" height="12vh">
                         {/* Allow the user to go back to the beginning of the cycle if they want to do more coding */}
                         <div style={{marginTop: '15px', width:'100%'}}>
                             <div style={{alignItems:'end'}}>
@@ -227,7 +279,7 @@ class Results extends Component {
                             </div>
                         </div>
                     </Box>
-                    <div style={{marginTop: '15px'}}>
+                    <div style={{marginTop: '15px', height: '10vh'}}>
                         <LinearProgress variant="determinate" value={progress}/>
                     </div>
                 </Stack>
