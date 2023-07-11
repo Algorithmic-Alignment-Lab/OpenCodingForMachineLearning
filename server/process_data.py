@@ -371,5 +371,6 @@ def tableify_label_statistics(sorted_label_counts_list,
             PERCENT_KEY: curr_count / total_label_count
         })
     
-    # columns, rows
-    return [LABEL_KEY, COUNT_KEY, PERCENT_KEY], label_counts_table_list
+    # no need to return the columns, 
+    # we have to have them in the mui format anyway (GridColDef)
+    return label_counts_table_list

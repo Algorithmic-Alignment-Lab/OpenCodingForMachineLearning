@@ -413,10 +413,10 @@ def get_final_labels():
         # get summary statistics about that overall set of labels
         model_label_counts = get_label_counts(response["final_labels"])
         sorted_model_label_counts = sort_label_counts(model_label_counts)
-        stats_columns, stats_rows  = tableify_label_statistics(
+        stats_rows  = tableify_label_statistics(
             sorted_model_label_counts, total_final_labels
         )
-        response["model_summary_columns"] = stats_columns
+        # the frontend has to have its own column definition
         response["model_summary_rows"] = stats_rows
         
     except Exception as e:
