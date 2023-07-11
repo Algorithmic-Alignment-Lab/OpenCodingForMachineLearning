@@ -355,6 +355,7 @@ def tableify_label_statistics(sorted_label_counts_list,
     :return: table rows (each with the designated columns below)
     :rtype: list of dictionaries
     """
+    ID_KEY = "id"
     LABEL_KEY = "label"
     COUNT_KEY = "count"
     PERCENT_KEY = "percent"
@@ -362,14 +363,17 @@ def tableify_label_statistics(sorted_label_counts_list,
         
     # extracting each key and count from our sorted list of format
     # [{label: count}, {label:count}, ...]
+    id = 1
     for label_and_count_dict in sorted_label_counts_list:
         curr_label = list(label_and_count_dict.keys())[0]
         curr_count = label_and_count_dict[curr_label]
         label_counts_table_list.append({
+            ID_KEY: id,
             LABEL_KEY: curr_label,
             COUNT_KEY: curr_count,
             PERCENT_KEY: curr_count / total_label_count
         })
+        id += 1 # have the ids generated here so mui will be happy
     
     # no need to return the columns, 
     # we have to have them in the mui format anyway (GridColDef)

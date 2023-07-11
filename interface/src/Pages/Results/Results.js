@@ -40,21 +40,21 @@ class Results extends Component {
         this.modelSummaryRows = [];
         // table (somewhat) renders now that I used the mui column definition!
         this.modelSummaryColumns = [
-            {field: "label", headerName: "Label", width: 200},
             {field: "count", headerName: "Count", width: 200},
+            {field: "label", headerName: "Label", width: 200},
             {field: "percent", headerName: "Percent", width: 200}
         ];
         this.labelTableColumns = [
             // mui requires id in lowercase
-            { field: "id", headerName: "ID", width: 70 },
-            { field: "TEXT", headerName: "Text", width: "600", 
+            { field: "id", headerName: "ID", width: 100 },
+            { field: "TEXT", headerName: "Text", width: 600, 
                 // renderCell: (params) => (
                 // <Typography>
                 //     {params.value}
                 // </Typography>
                 // )
             }, // , whiteSpace: "normal", wordWrap: "break-word"},
-            { field: "ANNOTATION", headerName: "Annotation", width: "200", 
+            { field: "ANNOTATION", headerName: "Annotation", width: 200, 
                 // renderCell: (params) => (
                 // <Typography >
                 //     {params.value};
@@ -63,19 +63,6 @@ class Results extends Component {
             } // , whiteSpace: "normal", wordWrap: "break-word"}
         ];
 
-    }
-
-    getRowID(row) {
-        if ("id" in row) {
-            return row["id"];
-        }
-
-        let resultRowID = "";
-        for (let key in Object.keys(row)) {
-            resultRowID.concat(key);
-            resultRowID.concat(row[key]);
-        }
-        return resultRowID;
     }
 
     /**
@@ -135,7 +122,7 @@ class Results extends Component {
         } catch (error) {
             console.log(error);
         }
-        console.log("====== DONE MOUNTING, SEE LOGS ABOVE ==========")
+        console.log("====== DONE MOUNTING, SEE LOGS ABOVE ==========");
     }
 
     /**
@@ -167,27 +154,31 @@ class Results extends Component {
         return summation/this.props.getAccuracy().length;
     }
 
+    displayListOfDicts = (l) => {
+        for (let i in l) {
+            console.log(l[i]);
+        }
+    }
+
     getSummary = () => {
         if (this.state.isLoadingModelSummary) {
             return (
                 <div>
-                    Loading Model Summary
+                    Loading...
                     <Loading/>
                 </div>
             );
         }
         // actual summary function
-        // console.log("Rendering summary with:");
-        // console.log(`Rows:`);
-        // for (let row in this.modelSummaryRows) {
-        //     console.log(this.modelSummaryRows[row]);
-        // }
-        // console.log(`Columns: ${this.modelSummaryColumns}`);
+        console.log("Rendering summary with:");
+        console.log(`Rows:`);
+        this.displayListOfDicts(this.modelSummaryRows);
+        console.log(`Columns:`);
+        this.displayListOfDicts(this.modelSummaryColumns);
         return (
             <DataTable
                 rows={this.modelSummaryRows}
                 columns={this.modelSummaryColumns}
-                getRowId={this.getRowID}
                 height={"100%"}
                 width={"100%"}
             />
@@ -198,7 +189,7 @@ class Results extends Component {
         if (this.state.isLoadingAllLabels) {
             return (
                 <div>
-                    Loading rest of the labels
+                    Loading...
                     <Loading/>
                 </div>
             );
@@ -210,7 +201,6 @@ class Results extends Component {
             <DataTable
                 rows={this.allLabels}
                 columns={this.labelTableColumns}
-                getRowId={this.getRowID}
                 height={"100%"}
                 width={"100%"}
             />
@@ -236,18 +226,21 @@ class Results extends Component {
                 <Stack
                     justifyContent="center"
                     alignItems="center"
-                    spacing={1}
-                    // sx={{ paddingTop: 5, paddingRight: 5, paddingLeft: 5 }}
+                    spacing={2}
+                    sx={{ paddingTop: 5, paddingRight: 5, paddingLeft: 5 }}
                 >
-                    <Box style={{ margin: '15px', width: "100%", height: "1vh"}}>
+                    <Box style={{ margin: '15px', height: "5vh"}}>
                         <b>
                             Results
                         </b>
                     </Box>
-                    <Box sx={{width: "100%", height: "25vh"}}>
+                    <Box sx={{width: "100%", height: "35vh"}}>
+                        <b>Model label statistics:</b>
                         {this.getSummary()}
                     </Box>
-                    <Box sx={{width: "100%", height:"40vh"}}>
+                    <hr/>
+                    <Box sx={{width: "100%", height:"35vh", paddingTop: 2.5}}>
+                        <b>All labels:</b>
                         {this.getFinalLabelsTable()}
                     </Box>
 
@@ -264,7 +257,7 @@ class Results extends Component {
                         </div>
                     )} */}
 
-                    <Box display="flex" justifyContent="space-between" height="12vh">
+                    <Box display="flex" justifyContent="space-between" height="10vh">
                         {/* Allow the user to go back to the beginning of the cycle if they want to do more coding */}
                         <div style={{marginTop: '15px', width:'100%', alignItems:'left'}}>
                             <CallbackKeyEventButton 
@@ -284,10 +277,10 @@ class Results extends Component {
                             />
                         </div>
                     </Box>
-                    <div style={{marginTop: '15px', height: '10vh'}}>
-                        <LinearProgress variant="determinate" value={progress}/>
-                    </div>
                 </Stack>
+                <div style={{ margin: "15px" }}>
+                    <LinearProgress variant="determinate" value={progress}/>
+                </div>
             </Container>
         );
     }
