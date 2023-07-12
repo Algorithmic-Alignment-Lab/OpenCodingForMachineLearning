@@ -39,8 +39,10 @@ class Results extends Component {
         // since these won't change as the user interacts
         this.allLabels = [];
         this.userCodes = [];
+        this.userGroups = [];
 
-        this.userSummaryRows = [];
+        this.userSummaryRows = []; // <- just the codes (backup)
+        this.userGroupSummaryRows = [];  // should be groups and codes combined
 
         this.modelSummaryRows = [];
         // table (somewhat) renders now that I used the mui column definition!
@@ -99,6 +101,7 @@ class Results extends Component {
             
             this.modelSummaryRows = finalData.model_summary_rows;
             this.userSummaryRows = finalData.user_summary_rows;
+            this.userGroupSummaryRows = finalData.user_group_summary_row;
             this.setState({
                 isLoadingModelSummary: false
             });
@@ -199,7 +202,7 @@ class Results extends Component {
         this.displayListOfDicts(this.summaryColumns);
         return (
             <Stack  direction="row" 
-                    gap={5}
+                    gap={2}
                     width="100%" 
                     alignContent="center"
                     alignItems="center"
@@ -213,7 +216,7 @@ class Results extends Component {
                     height={SUMMARY_TABLES_DIV_HEIGHT}
                     initialPageSize={3}
                     pageSizeOptions={[3, 5, 10]}
-                    width={"50%"}
+                    width={"34%"}
                 />
                 <DataTable
                     title={<Typography align="center">User annotations summary</Typography>}
@@ -222,7 +225,16 @@ class Results extends Component {
                     height={SUMMARY_TABLES_DIV_HEIGHT}
                     initialPageSize={3}
                     pageSizeOptions={[3, 5, 10]}
-                    width={"50%"}
+                    width={"34%"}
+                />
+                <DataTable
+                    title={<Typography align="center">User GROUPS summary</Typography>}
+                    rows={this.userGroupSummaryRows}
+                    columns={this.summaryColumns}
+                    height={SUMMARY_TABLES_DIV_HEIGHT}
+                    initialPageSize={3}
+                    pageSizeOptions={[3, 5, 10]}
+                    width={"34%"}
                 />
             </Stack>
         );
