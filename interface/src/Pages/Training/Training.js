@@ -392,7 +392,6 @@ class Training extends Component {
                     style={{
                         height: "75%",
                         width: "100%",
-                        justifyContent: "flex-start",
                         alignItems: "center",
                         alignContent: "center",
                         flexDirection: "column",
@@ -422,7 +421,6 @@ class Training extends Component {
                     style={{
                         height: "75%",
                         width: "100%",
-                        justifyContent: "flex-start",
                         alignItems: "center",
                         alignContent: "center",
                         flexDirection: "column",
