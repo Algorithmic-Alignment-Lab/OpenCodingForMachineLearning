@@ -45,9 +45,14 @@ class Results extends Component {
         this.modelSummaryRows = [];
         // table (somewhat) renders now that I used the mui column definition!
         this.summaryColumns = [
-            {field: "count", headerName: "Count", width: 200},
-            {field: "label", headerName: "Label", width: 200},
-            {field: "percent", headerName: "Percent", width: 200}
+            // attempted to add flexible column width, but setting flex didn't *seem* to do anything
+            {field: "label", headerName: "Label", minWidth: 150}, //flex: 1}, //
+            {field: "count", headerName: "Count", minWidth: 120},
+            {field: "percent", headerName: "Percent", minWidth:130, 
+                valueFormatter: (params) => {
+                    return (params.value * 100).toFixed(1).toString() + '%';
+                }
+            }
         ];
         this.labelTableColumns = [
             // mui requires id in lowercase
@@ -194,23 +199,29 @@ class Results extends Component {
         this.displayListOfDicts(this.summaryColumns);
         return (
             <Stack  direction="row" 
-                    width="90%" 
+                    gap={5}
+                    width="100%" 
+                    alignContent="center"
                     alignItems="center"
                     justifyContent="space-between" 
                     height={SUMMARY_TABLES_DIV_HEIGHT}
             >
                 <DataTable
-                    title={<b>Model labels summary</b>}
+                    title={<Typography align="center">Model labels summary</Typography>}
                     rows={this.modelSummaryRows}
                     columns={this.summaryColumns}
                     height={SUMMARY_TABLES_DIV_HEIGHT}
+                    initialPageSize={3}
+                    pageSizeOptions={[3, 5, 10]}
                     width={"50%"}
                 />
                 <DataTable
-                    title={<b>User annotations summary</b>}
+                    title={<Typography align="center">User annotations summary</Typography>}
                     rows={this.userSummaryRows}
                     columns={this.summaryColumns}
                     height={SUMMARY_TABLES_DIV_HEIGHT}
+                    initialPageSize={3}
+                    pageSizeOptions={[3, 5, 10]}
                     width={"50%"}
                 />
             </Stack>
@@ -271,8 +282,7 @@ class Results extends Component {
                     <Box sx={{width: "100%", height: {SUMMARY_TABLES_DIV_HEIGHT}, justifyContent: "center", alignItems: "center", alignContent: "center"}}>
                         {this.getSummary()}
                     </Box>
-                    <hr/>
-                    <Box sx={{width: "100%", height: 300, paddingTop: 2.5}}>
+                    <Box sx={{width: "100%", height: 300, paddingTop: 1}}>
                         {this.getFinalLabelsTable()}
                     </Box>
 
