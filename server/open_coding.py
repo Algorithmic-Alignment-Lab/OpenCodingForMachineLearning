@@ -6,7 +6,7 @@ from flask import Flask, json, request
 
 app = Flask(__name__)
 
-from process_data import parse_options_into_db, find_pretrained_models, select_some, save_to_csv, write_to_csv, write_to_csv_annotations, load_csv_to_json_object, get_label_counts, sort_label_counts, tableify_label_statistics
+from process_data import parse_options_into_db, find_pretrained_models, select_some, save_to_csv, write_to_csv, write_to_csv_annotations, load_csv_to_json_object, get_label_counts, sort_label_counts, tableify_label_statistics, parse_annotation_data, get_summary_rows
 from database import instantiate_tables, fill_tables, get_options, get_option, get_option_data, set_annotation_data, get_annotation_data, create_constants, set_constants, get_constant, add_labels, get_label_set, get_table_rows_full, get_table_rows, get_labeled_data, get_unlabeled_data, get_label_set_data, create_labels
 
 from training.finetune_model import open_coding_finetune_model
@@ -137,10 +137,7 @@ def get_annotations():
     option_id = request.args.get("id")
     annotations = get_annotation_data(option_id)
 
-    parsed_options = []
-    for id in annotations:
-        parsed_options.append({"id": int(id), "text": annotations[id]["text"], "annotation": annotations[id]["annotation"]})
-
+    parsed_options = parse_annotation_data(annotations)
     response = {
         "rows": parsed_options
     }
@@ -382,7 +379,7 @@ def get_results():
 
 
 @app.route('/data/get_final_labels_and_summaries')
-def get_final_labels():
+def get_final_labels_and_summaries():
     """
     Here I hope to extract the labels 
     that were saved from get_results in a csv file
@@ -401,23 +398,26 @@ def get_final_labels():
     
     response = {
         "final_labels": [],
-        "model_summary_columns": [],
         "model_summary_rows": [],  # will be ready and formatted to be displayed
+        
+        "user_annotations": [],
+        "user_summary_rows": []
     }
 
     try:
-        # gather all the labels that were evaluated and saved earlier
+        # gather all the labels that were evaluated and saved earlier -> summarize
         response["final_labels"] = load_csv_to_json_object(result_labels_path)
-        total_final_labels = len(response["final_labels"])
+        response["model_summary_rows"] = get_summary_rows(response["final_labels"])
         
-        # get summary statistics about that overall set of labels
-        model_label_counts = get_label_counts(response["final_labels"])
-        sorted_model_label_counts = sort_label_counts(model_label_counts)
-        stats_rows  = tableify_label_statistics(
-            sorted_model_label_counts, total_final_labels
-        )
-        # the frontend has to have its own column definition
-        response["model_summary_rows"] = stats_rows
+        # gather the users annotations and summarize that as well
+        annotations = get_annotation_data(option_id)
+        response["user_annotations"] = parse_annotation_data(annotations)
+        response["user_summary_rows"] = get_summary_rows(response["user_annotations"])
+        
+        # todo: consider if we can interact with the groups in backend
+        # i.e. have them actually be saved during AssistedGrouping then we can pull them here
+        # or post them to the backend and then we can just process them!
+         
         
     except Exception as e:
         response["ok"] = False

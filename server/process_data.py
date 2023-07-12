@@ -121,6 +121,16 @@ def parse_options_into_db():
     return annotation_objects
 
 
+def parse_annotation_data(annotations):
+    # param comes from annotations = get_annotation_data(option_id)
+
+    parsed_options = []
+    for id in annotations:
+        parsed_options.append({"id": int(id), "text": annotations[id]["text"], "annotation": annotations[id]["annotation"]})
+
+    return parsed_options
+
+
 def find_pretrained_models(data_dict):
     '''
     Searches through all directories in ./../training/models and finds pre-trained models that correspond to each dataset option.
@@ -293,11 +303,12 @@ def get_label_counts(labels_list):
     """
     label_counts = {}
     for row in labels_list:
-        if not row.get("ANNOTATION"):
+        # accept either upper or lower case
+        if not row.get("ANNOTATION") and not row.get("annotation"):
             raise KeyError("Unable to count how many there are of each label.\n"
                            f"Expected 'ANNOTATION' key. Got row = {row}")
 
-        current_label = row["ANNOTATION"]
+        current_label = row.get("ANNOTATION") if "ANNOTATION" in row else row.get("annotation")
         if current_label not in label_counts:
             label_counts[current_label] = 1
         else:
@@ -378,3 +389,15 @@ def tableify_label_statistics(sorted_label_counts_list,
     # no need to return the columns, 
     # we have to have them in the mui format anyway (GridColDef)
     return label_counts_table_list
+
+
+def get_summary_rows(labels_list):
+    
+    total_final_labels = len(labels_list)
+    # get summary statistics about that overall set of labels
+    model_label_counts = get_label_counts(labels_list)
+    sorted_model_label_counts = sort_label_counts(model_label_counts)
+    stats_rows  = tableify_label_statistics(
+        sorted_model_label_counts, total_final_labels
+    )
+    return stats_rows
