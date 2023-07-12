@@ -9,6 +9,8 @@ import LinearProgress from "@material-ui/core/LinearProgress";
 import Multiselect from "multiselect-react-dropdown";
 import Loading from "../../Custom/Loading";
 
+import Stack from "@mui/material/Stack";
+
 const progress = 75;
 
 class Training extends Component {
@@ -398,23 +400,34 @@ class Training extends Component {
                     }}
                 >
                 {this.state.isLoadingTraining ? (
-                    <div>
-                        Please wait while we train the model that generates the rest of the labels...
-                        <br/>
+                    <Stack 
+                        direction="column"
+                        alignItems="center"
+                        justifyContent="space-between"
+                    >
+                        <div>
+                            Please wait while we train the model that generates the rest of the labels...
+                        </div>
+                        
 						<Loading />
-                    </div>
+                    </Stack>
 					
 				) : (
-                    <div>
-                        Training complete.
-                        <br/>
+                    <Stack 
+                        direction="column"
+                        alignItems="center"
+                        justifyContent="space-between"
+                    >
+                        <div>
+                            Training complete.
+                        </div>
                         <CallbackKeyEventButton
                             callBackFunc={this.handleNextKeyPress}
                             buttonAvailable={!this.state.isLoadingTraining}
                             clickFunc={this.onGetResultsClick}
                             text={"Label Dataset (get results)"}
                         />
-                    </div>
+                    </Stack>
                 )}
                 </div>
                 <div
@@ -428,14 +441,26 @@ class Training extends Component {
                 > 
                     {this.state.pressedLabelDataset ? (
                         this.state.isLoadingResults ? (
-                            <div>
-                                Labeling ...
+                            <Stack 
+                                direction="column"
+                                alignItems="center"
+                                justifyContent="space-between"
+                            >
+                                <div>
+                                    Labeling ...
+                                </div>
                                 <Loading />
-                            </div>
+                            </Stack>
                         ) : (
-                            <div>
-                                Labeling complete!
-                            </div>
+                            <Stack
+                                direction="column"
+                                alignItems="center"
+                                justifyContent="space-between"
+                            >
+                                <div>
+                                    Labeling complete!
+                                </div>
+                            </Stack>
                         )
                     ) : (
                         <div/>
