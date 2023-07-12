@@ -5,6 +5,7 @@
 import React, {Component} from 'react';
 import { GridColDef } from '@mui/x-data-grid';
 import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import { sizing } from '@mui/system';
 import Typography from '@mui/material/Typography';
@@ -23,6 +24,7 @@ const progress = 100;
 const ID_INDEX = 0;
 const ANNOTATION_INDEX = 1;
 const TEXT_INDEX = 2;
+const SUMMARY_TABLES_DIV_HEIGHT = 300;
 
 class Results extends Component {
     constructor(props) {
@@ -37,9 +39,12 @@ class Results extends Component {
         // since these won't change as the user interacts
         this.allLabels = [];
         this.userCodes = [];
+
+        this.userSummaryRows = [];
+
         this.modelSummaryRows = [];
         // table (somewhat) renders now that I used the mui column definition!
-        this.modelSummaryColumns = [
+        this.summaryColumns = [
             {field: "count", headerName: "Count", width: 200},
             {field: "label", headerName: "Label", width: 200},
             {field: "percent", headerName: "Percent", width: 200}
@@ -74,7 +79,12 @@ class Results extends Component {
             console.log("========== MOUNTING RESULTS ==========")
             const finalData = await this.props.getDataWithParams('/data/get_final_labels_and_summaries', {"id": this.props.getOptionID()});
             if (!finalData.ok) {
-                throw Error(finalData.statusText)
+                throw Error(finalData.statusText);
+                this.setState({
+                    isLoadingModelSummary: false,
+                    isLoadingAllLabels: false,
+                });
+
             }
             console.log("Pulled the labels from the backend / database csv");
             console.log(finalData.final_labels);
@@ -83,20 +93,21 @@ class Results extends Component {
             console.log(finalData.model_summary_rows);
             
             this.modelSummaryRows = finalData.model_summary_rows;
+            this.userSummaryRows = finalData.user_summary_rows;
             this.setState({
                 isLoadingModelSummary: false
             });
 
             // still grab the user annotations
             // in case we want to do something with the groups
-            const userCodeData = await this.props.getDataWithParams('/data/get_annotations', {"id": this.props.getOptionID()});
-            if (!userCodeData.ok) {
-                throw Error(userCodeData.statusText);
-            }
+            // const userCodeData = await this.props.getDataWithParams('/data/get_annotations', {"id": this.props.getOptionID()});
+            // if (!userCodeData.ok) {
+            //     throw Error(userCodeData.statusText);
+            // }
 
             // load the codes from the user (they provided in openCoding)
-            let userCodesExtracted = [];
-            userCodesExtracted = userCodeData.rows.slice();
+            let userCodesExtracted = finalData.user_annotations;
+            // userCodesExtracted = userCodeData.rows.slice();
             console.log("Pulled user codes:")
             console.log(userCodesExtracted);
             
@@ -170,18 +181,39 @@ class Results extends Component {
             );
         }
         // actual summary function
-        console.log("Rendering summary with:");
+        console.log("MODEL SUMMARY with:");
         console.log(`Rows:`);
         this.displayListOfDicts(this.modelSummaryRows);
         console.log(`Columns:`);
-        this.displayListOfDicts(this.modelSummaryColumns);
+        this.displayListOfDicts(this.summaryColumns);
+
+        console.log("USER SUMMARY with:");
+        console.log(`Rows:`);
+        this.displayListOfDicts(this.userSummaryRows);
+        console.log(`Columns:`);
+        this.displayListOfDicts(this.summaryColumns);
         return (
-            <DataTable
-                rows={this.modelSummaryRows}
-                columns={this.modelSummaryColumns}
-                height={"100%"}
-                width={"100%"}
-            />
+            <Stack  direction="row" 
+                    width="90%" 
+                    alignItems="center"
+                    justifyContent="space-between" 
+                    height={SUMMARY_TABLES_DIV_HEIGHT}
+            >
+                <DataTable
+                    title={<b>Model labels summary</b>}
+                    rows={this.modelSummaryRows}
+                    columns={this.summaryColumns}
+                    height={SUMMARY_TABLES_DIV_HEIGHT}
+                    width={"50%"}
+                />
+                <DataTable
+                    title={<b>User annotations summary</b>}
+                    rows={this.userSummaryRows}
+                    columns={this.summaryColumns}
+                    height={SUMMARY_TABLES_DIV_HEIGHT}
+                    width={"50%"}
+                />
+            </Stack>
         );
     }
 
@@ -199,6 +231,7 @@ class Results extends Component {
         return (
             // this.state.userCodes.map((row) => <li>{row[ID_INDEX]} || {row[ANNOTATION_INDEX]} || {row[TEXT_INDEX]} </li>)
             <DataTable
+                title={<b>All labels</b>}
                 rows={this.allLabels}
                 columns={this.labelTableColumns}
                 height={"100%"}
@@ -224,23 +257,22 @@ class Results extends Component {
         return (
             <Container>
                 <Stack
+                    direction="column"
                     justifyContent="center"
                     alignItems="center"
-                    spacing={2}
+                    spacing={5}
                     sx={{ paddingTop: 5, paddingRight: 5, paddingLeft: 5 }}
                 >
-                    <Box style={{ margin: '15px', height: "5vh"}}>
-                        <b>
+                    <Box sx={{ width: 100, height: 15}}>
+                        <h3>
                             Results
-                        </b>
+                        </h3>
                     </Box>
-                    <Box sx={{width: "100%", height: "35vh"}}>
-                        <b>Model label statistics:</b>
+                    <Box sx={{width: "100%", height: {SUMMARY_TABLES_DIV_HEIGHT}, justifyContent: "center", alignItems: "center", alignContent: "center"}}>
                         {this.getSummary()}
                     </Box>
                     <hr/>
-                    <Box sx={{width: "100%", height:"35vh", paddingTop: 2.5}}>
-                        <b>All labels:</b>
+                    <Box sx={{width: "100%", height: 300, paddingTop: 2.5}}>
                         {this.getFinalLabelsTable()}
                     </Box>
 
@@ -257,7 +289,7 @@ class Results extends Component {
                         </div>
                     )} */}
 
-                    <Box display="flex" justifyContent="space-between" height="10vh">
+                    <Box display="flex" justifyContent="space-between" height={100}>
                         {/* Allow the user to go back to the beginning of the cycle if they want to do more coding */}
                         <div style={{marginTop: '15px', width:'100%', alignItems:'left'}}>
                             <CallbackKeyEventButton 

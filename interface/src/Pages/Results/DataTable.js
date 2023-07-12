@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import Box from '@mui/material/Box';
-
+import Grid from '@mui/material/Grid';
 // const columns = [
 // 	{ field: "id", headerName: "ID", width: 70 },
 // 	{ field: "firstName", headerName: "First name", width: 130 },
@@ -43,14 +43,18 @@ export default function DataTable(props) {
     return (
         <Box sx={{height: props.height, width: props.width}}
         >
+            {props.title}
             <DataGrid
                 rows={props.rows}
                 columns={props.columns}
                 pageSizeOptions={pageSizeOptions}
                 checkboxSelection={true}
                 sx={{whiteSpace: 'normal'}}
-                pagination
-                autoPageSize
+                initialState={{
+                    pagination: {
+                        paginationModel: { page: 0, pageSize: pageSizeOptions[0] },
+                    },
+                }}
             />
         </Box>
     );
