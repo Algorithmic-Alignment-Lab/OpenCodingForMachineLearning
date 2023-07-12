@@ -6,7 +6,7 @@ from flask import Flask, json, request
 
 app = Flask(__name__)
 
-from process_data import parse_options_into_db, find_pretrained_models, select_some, save_to_csv, write_to_csv, write_to_csv_annotations, load_csv_to_json_object, get_label_counts, sort_label_counts, tableify_label_statistics, parse_annotation_data, get_summary_rows
+from process_data import parse_options_into_db, find_pretrained_models, select_some, save_to_csv, write_to_csv, write_to_csv_annotations, load_csv_to_json_object, get_label_counts, sort_label_counts, tableify_label_statistics, parse_annotation_data, get_summary_rows, custom_save_to_csv
 from database import instantiate_tables, fill_tables, get_options, get_option, get_option_data, set_annotation_data, get_annotation_data, create_constants, set_constants, get_constant, add_labels, get_label_set, get_table_rows_full, get_table_rows, get_labeled_data, get_unlabeled_data, get_label_set_data, create_labels
 
 from training.finetune_model import open_coding_finetune_model
@@ -378,7 +378,7 @@ def get_results():
     return json.jsonify(response)
 
 
-@app.route('/data/get_final_labels_and_summaries')
+@app.route('/data/get_final_labels_and_summaries', methods=['GET'])
 def get_final_labels_and_summaries():
     """
     Here I hope to extract the labels 
@@ -390,18 +390,22 @@ def get_final_labels_and_summaries():
     """
     option_id = request.args.get("id")
     
-    labels_path = '../results/'
+    results_path = '../results/'
     kerb = 'final'
     name = get_option(option_id).replace(' ', '_')
     # accidentally forgot csv file extension last time
-    result_labels_path = labels_path + kerb + '_labeled_' + name + '.csv'
+    result_labels_path = results_path + kerb + '_labeled_' + name + '.csv'
+    user_groups_path = results_path + 'groups.csv'
     
     response = {
         "final_labels": [],
         "model_summary_rows": [],  # will be ready and formatted to be displayed
         
         "user_annotations": [],
-        "user_summary_rows": []
+        "user_summary_rows": [],
+        
+        "user_groups": [],
+        "user_group_summary_rows": []
     }
 
     try:
@@ -417,13 +421,42 @@ def get_final_labels_and_summaries():
         # todo: consider if we can interact with the groups in backend
         # i.e. have them actually be saved during AssistedGrouping then we can pull them here
         # or post them to the backend and then we can just process them!
+        response["user_groups"] = load_csv_to_json_object(user_groups_path)
+        response["user_group_summary_rows"] = get_summary_rows(response["user_groups"])
          
-        
     except Exception as e:
         response["ok"] = False
         response["statusText"] = str(e)
         return json.jsonify(response)
     
+    add_options(response)
+    return json.jsonify(response)
+
+
+@app.route("/data/save_groups", methods=['POST'])
+def save_groups():
+    option_id = request.args.get("id")
+    response = {}
+    
+    content_type = request.headers.get('Content-Type')
+    if (content_type == 'application/json'):
+        try:
+            json_data = request.get_json()
+            group_outputs_file_name = "groups"
+
+            rows = json_data['rows']
+            # todo: with groups, and how we want to display final results table
+            # maybe add a function to match up the result labels with these that have been grouped and annotated?
+            custom_save_to_csv(group_outputs_file_name, rows, ["id", "text", "annotation", "true_label"])
+            
+            response['msg'] = 'Success'
+        except Exception as e:
+            response['msg'] = str(e)
+            response['ok'] = False
+    else:
+        response['msg'] = 'Content-Type not supported!'
+        response['ok'] = False
+
     add_options(response)
     return json.jsonify(response)
 

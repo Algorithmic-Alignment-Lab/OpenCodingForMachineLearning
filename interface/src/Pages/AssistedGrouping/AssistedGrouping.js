@@ -254,21 +254,47 @@ class AssistedGrouping extends Component {
         }
     }
 
+
+
+    async saveLabels(labeled) {
+        let response = await this.props.postData('/data/save_groups', {"rows": labeled, "id": this.props.getOptionID()});
+        if (!response.ok) {
+            console.log(response.msg);
+        }
+    }
     /**
      * Function for pressing "Next" button.
      * 
      * Saves the labels created and updates the UI state.
      */
     onNextSubmit = () => {
-        let labeled = [];
+        let labeled = []; // todo: maybe getLabelState so groups add on to one another
 
+        // these logs are for me to have investigated the structure of the groupRows
+        // so i can save whatever i desire from there
+        // console.log("In AssistedGrouping.onNextSubmit");
+        // console.log("Group rows: ");
+        // console.log(this.state.groupRows);
         for (let j = 0; j < this.state.groupRows.length; j ++){
             for (let i = 0; i < this.state.groupRows[j].subRows.length; i++){
-                // we want the trueid (aka the database mapping)
-                labeled.push({id: this.state.groupRows[j].subRows[i].trueid, true_label: this.state.groupRows[j].text, predicted_label: null});
+                // save the corresponding texts and codes the user provided 
+                // so we can just display all this info at once if they want it.
+                labeled.push({
+                    // we want the trueid (aka the database mapping)
+                    id: this.state.groupRows[j].subRows[i].trueid, 
+                    text: this.state.groupRows[j].subRows[i].text, 
+                    annotation: this.state.groupRows[j].subRows[i].annotation,
+                    // note to self:
+                    // true_label is the group because thats the focused code (rather than the general thoughts from OC)
+                    true_label: this.state.groupRows[j].text, predicted_label: null
+                });
             }
         }
-        this.props.saveLabelState(labeled);
+        this.props.saveLabelState(labeled); // <- just a backup now if we cannot get post working
+        
+        this.saveLabels(labeled);
+        
+        console.log("Exiting AssistedGrouping.onNextSubmit");
         // attempting to go to what used to be verification but is now just stripped down as a loading page for generating the rest of the model
         this.props.updateState(states.training);
     }

@@ -1,6 +1,7 @@
 import csv
 import json
 import os
+import warnings
 
 import numpy as np
 
@@ -212,6 +213,34 @@ def save_to_csv(output_filename, objects):
     return 'Finished Writing to CSV'
 
 
+# instead of changing the above which seems to be for a very specific format
+# I will just utilize my own
+def custom_save_to_csv(output_filename, objects, field_names):
+    path = './../results/'
+    csv_path = path + output_filename + '.csv'
+    write_header = False
+    if not os.path.exists(csv_path):
+        write_header = True
+        
+    with open(csv_path, 'a+') as f:
+        csv_dict_writer = csv.DictWriter(f=f, fieldnames=field_names)
+        if write_header:
+            csv_dict_writer.writeheader()
+        
+        # iterate through the objects they provided and make sure they have the fields specified
+        for obj in objects:
+            row = {}
+            for field in field_names:
+                if not obj.get(field):
+                    warnings.warn(f"JSON/Dict object missing a field `{field}`" + 
+                                  f"\n\tobject: {obj}")
+                row[field] = obj.get(field)
+                
+            csv_dict_writer.writerow(row)
+    
+    return "Finished writing object using custom save_to_csv"
+
+
 def write_to_csv(output_filename, objects, first_line = True):
     '''
     Takes the given labeled objects and writes them to a csv file.
@@ -276,8 +305,13 @@ def load_csv_to_json_object(csv_file_path,
         for row in reader:
             # mui requires id be in lowercase
             row_copy = dict(row)
-            del row_copy["ID"]
-            row_copy["id"] = row["ID"]
+            if not row_copy.get("ID") and row_copy.get("id"):
+                raise KeyError("Expected ID or id from csv row (since mui requires unique ids)."
+                               f"\nSaw row = {row}")
+            if row_copy.get("ID"):
+                del row_copy["ID"]
+                row_copy["id"] = row["ID"]
+                
             csv_dict_rows_list.append(row_copy)
     
     # removed dumps because
@@ -287,7 +321,7 @@ def load_csv_to_json_object(csv_file_path,
     return csv_dict_rows_list
 
 
-def get_label_counts(labels_list):
+def get_label_counts(labels_list, key_to_check="annotation"):
     """
     Count how many of each label there is
 
@@ -304,11 +338,11 @@ def get_label_counts(labels_list):
     label_counts = {}
     for row in labels_list:
         # accept either upper or lower case
-        if not row.get("ANNOTATION") and not row.get("annotation"):
+        if not row.get(key_to_check.upper()) and not row.get(key_to_check):
             raise KeyError("Unable to count how many there are of each label.\n"
                            f"Expected 'ANNOTATION' key. Got row = {row}")
 
-        current_label = row.get("ANNOTATION") if "ANNOTATION" in row else row.get("annotation")
+        current_label = row.get(key_to_check) if key_to_check in row else row.get(key_to_check.upper())
         if current_label not in label_counts:
             label_counts[current_label] = 1
         else:
