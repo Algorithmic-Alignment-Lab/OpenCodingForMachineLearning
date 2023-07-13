@@ -429,7 +429,7 @@ def get_summary_rows(labels_list, key_to_check="annotation"):
     
     total_final_labels = len(labels_list)
     # get summary statistics about that overall set of labels
-    model_label_counts = get_label_counts(labels_list)
+    model_label_counts = get_label_counts(labels_list, key_to_check)
     sorted_model_label_counts = sort_label_counts(model_label_counts)
     stats_rows  = tableify_label_statistics(
         sorted_model_label_counts, total_final_labels

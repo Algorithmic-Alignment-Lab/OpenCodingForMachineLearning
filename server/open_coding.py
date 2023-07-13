@@ -421,17 +421,13 @@ def get_final_labels_and_summaries():
         response["user_annotations"] = parse_annotation_data(annotations)
         response["user_summary_rows"] = get_summary_rows(response["user_annotations"])
         
-        # todo: consider if we can interact with the groups in backend
-        # i.e. have them actually be saved during AssistedGrouping then we can pull them here
-        # or post them to the backend and then we can just process them!
         # fix to the json `TypeError: '<' not supported between instances of 'NoneType' and 'str'`
         # was that I forgot to specify the correct fieldnames here 
         response["user_groups"] = load_csv_to_json_object(user_groups_path, GROUP_CSV_FIELDNAMES)
-        print("USER GROUPS TO SUMMARIZE")
-        print(response["user_groups"])
         # note groups are saved as true label
+        # resolved why the labels were being displayed instead of the groups,
+        # i didn't pass the key_to_check to the function it needed to be passed to in process_data 
         response["user_group_summary_rows"] = get_summary_rows(response["user_groups"], key_to_check="true_label")
-        # ^ ruled out that this has a none key
          
     except Exception as e:
         response["ok"] = False
