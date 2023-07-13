@@ -78,7 +78,7 @@ class docResults extends Component {
     createData (contextName, humanResponse, prediction, metricOne, metricTwo) {
         var metricTwoText = "YES";
         if (metricTwo == 0){
-            metricTwoText == "NO";
+            metricTwoText = "NO";
         }
         return { contextName, humanResponse, prediction, metricOne, metricTwoText};
     }

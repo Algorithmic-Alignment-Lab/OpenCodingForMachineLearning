@@ -24,9 +24,14 @@ import Model from './Model.js';
 import LinkButton from './LinkButton.js';
 import { Navigate } from "react-router-dom";
 
+import states from './../../Constants/States';
 
+import CallbackKeyEventButton from './../../Custom/CallbackKeyEventButton';
+import LinearProgress from '@material-ui/core/LinearProgress';
 
-function Step1Content() {
+const progress = 0;
+
+function Step1Content(props) {
 
   const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -48,7 +53,21 @@ function Step1Content() {
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
 
-  
+    const onNextSubmit = () => {
+        props.updateState(/* TODO: set the next state here! */);
+    // pass in states.{something}
+    }
+
+    /**
+    * Callback function for next submit action.
+    */
+    // basically just have the option for the user to do a keyboard shortcut as well as button press.
+    const handleNextKeyPress = (event) => {
+        if (event.key === ' ') { //&& this.state.sectionComplete){
+            onNextSubmit();
+        }
+    };
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -150,7 +169,9 @@ class Step1 extends Component {
 
   render() {
     return (
-      <Step1Content/>
+      <Step1Content 
+        props={this.props}
+      />
     );
   }
 }

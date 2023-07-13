@@ -60,7 +60,7 @@ class Step3 extends Component {
 
     addParameter = (event) => {
         console.log(Model.parameters);
-        fieldParameters[0] = event.target.value
+        this.state.fieldParameters[0] = event.target.value
 
     }
 
@@ -211,7 +211,7 @@ class Step3 extends Component {
 
                         )
                         
-                        Model.contextNames
+                        // Model.contextNames
                         console.log(Model);
                     }
                 }

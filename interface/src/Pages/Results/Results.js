@@ -296,7 +296,7 @@ class Results extends Component {
     onNextSubmit = () => {
         // this.props.updateState(states.introduction);
         // todo: probably prompt them to save their contexts (i.e. prompts and groups) somewhere before they have to get there?
-        this.props.updateState(states.codeJustification);
+        this.props.updateState(states.docStep1);
     }
 
     render() {

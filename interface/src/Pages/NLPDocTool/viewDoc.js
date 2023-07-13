@@ -56,7 +56,7 @@ class ViewDoc extends Component {
     createData (contextName, csvInput, humanResponse, prediction, metricOne, metricTwo, humanResponseRationale, resultJustification) {
         var metricTwoText = "YES";
         if (metricTwo == 0){
-            metricTwoText == "NO";
+            metricTwoText = "NO";
         }
         return { contextName, csvInput, humanResponse, prediction, metricOne, metricTwoText, humanResponseRationale, resultJustification};
     }
