@@ -39,7 +39,7 @@ import Grid from '@mui/material/Grid';
 
 export default function DataTable(props) {
     return (
-        <Box sx={{height: props.height, width: props.width}}
+        <Grid item xs="auto" sx={{height: props.height, width: props.width}}
         >
             {props.title}
             <DataGrid
@@ -54,6 +54,6 @@ export default function DataTable(props) {
                     },
                 }}
             />
-        </Box>
+        </Grid>
     );
 }

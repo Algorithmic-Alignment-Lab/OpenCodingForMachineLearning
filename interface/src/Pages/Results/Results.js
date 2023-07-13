@@ -24,7 +24,7 @@ const progress = 100;
 const ID_INDEX = 0;
 const ANNOTATION_INDEX = 1;
 const TEXT_INDEX = 2;
-const SUMMARY_TABLES_DIV_HEIGHT = 300;
+const SUMMARY_TABLES_DIV_HEIGHT = 290;
 
 class Results extends Component {
     constructor(props) {
@@ -33,6 +33,8 @@ class Results extends Component {
             isLoading: true,
             // savedFilepath: '',
             isLoadingModelSummary: true,
+            isLoadingUserAnnotationSummary: true,
+            isLoadingUserGroupSummary: true,
             isLoadingAllLabels: true,
             sectionComplete: false,
         };
@@ -48,9 +50,9 @@ class Results extends Component {
         // table (somewhat) renders now that I used the mui column definition!
         this.summaryColumns = [
             // attempted to add flexible column width, but setting flex didn't *seem* to do anything
-            {field: "label", headerName: "Label", minWidth: 150}, //flex: 1}, //
+            {field: "label", headerName: "Label", minWidth: 120}, //flex: 1}, //
             {field: "count", headerName: "Count", minWidth: 120},
-            {field: "percent", headerName: "Percent", minWidth:130, 
+            {field: "percent", headerName: "Percent", minWidth:120, 
                 valueFormatter: (params) => {
                     return (params.value * 100).toFixed(1).toString() + '%';
                 }
@@ -84,26 +86,39 @@ class Results extends Component {
     async componentDidMount () {
         try {
             console.log("========== MOUNTING RESULTS ==========")
+            // todo: consider breaking this function up into several backend functions,
+            // so that we can load our tables up one at a time
             const finalData = await this.props.getDataWithParams('/data/get_final_labels_and_summaries', {"id": this.props.getOptionID()});
             if (!finalData.ok) {
                 throw Error(finalData.statusText);
+                // todo: display something when we are unable to load summaries
                 this.setState({
                     isLoadingModelSummary: false,
+                    isLoadingUserAnnotationSummary: false,
+                    isLoadingUserGroupSummary: false,
                     isLoadingAllLabels: false,
                 });
 
             }
-            console.log("Pulled the labels from the backend / database csv");
-            console.log(finalData.final_labels);
+            // console.log("Pulled the labels from the backend / database csv");
+            // console.log(finalData.final_labels);
             
             console.log("Pulled model summary statistics:");
             console.log(finalData.model_summary_rows);
-            
             this.modelSummaryRows = finalData.model_summary_rows;
+
+            console.log("Pulled user summary statistics:");
+            console.log(finalData.user_summary_rows);
+
+            console.log("Pulled user group statistics:");
+            console.log(finalData.user_group_summary_rows);
+
             this.userSummaryRows = finalData.user_summary_rows;
-            this.userGroupSummaryRows = finalData.user_group_summary_row;
+            this.userGroupSummaryRows = finalData.user_group_summary_rows;
             this.setState({
-                isLoadingModelSummary: false
+                isLoadingModelSummary: false,
+                isLoadingUserAnnotationSummary: false,
+                isLoadingUserGroupSummary: false
             });
 
             // still grab the user annotations
@@ -179,7 +194,8 @@ class Results extends Component {
         }
     }
 
-    getSummary = () => {
+
+    getModelSummary = () => {
         if (this.state.isLoadingModelSummary) {
             return (
                 <div>
@@ -188,56 +204,63 @@ class Results extends Component {
                 </div>
             );
         }
-        // actual summary function
-        console.log("MODEL SUMMARY with:");
-        console.log(`Rows:`);
-        this.displayListOfDicts(this.modelSummaryRows);
-        console.log(`Columns:`);
-        this.displayListOfDicts(this.summaryColumns);
-
-        console.log("USER SUMMARY with:");
-        console.log(`Rows:`);
-        this.displayListOfDicts(this.userSummaryRows);
-        console.log(`Columns:`);
-        this.displayListOfDicts(this.summaryColumns);
         return (
-            <Stack  direction="row" 
-                    gap={2}
-                    width="100%" 
-                    alignContent="center"
-                    alignItems="center"
-                    justifyContent="space-between" 
-                    height={SUMMARY_TABLES_DIV_HEIGHT}
-            >
-                <DataTable
-                    title={<Typography align="center">Model labels summary</Typography>}
-                    rows={this.modelSummaryRows}
-                    columns={this.summaryColumns}
-                    height={SUMMARY_TABLES_DIV_HEIGHT}
-                    initialPageSize={3}
-                    pageSizeOptions={[3, 5, 10]}
-                    width={"34%"}
-                />
-                <DataTable
-                    title={<Typography align="center">User annotations summary</Typography>}
-                    rows={this.userSummaryRows}
-                    columns={this.summaryColumns}
-                    height={SUMMARY_TABLES_DIV_HEIGHT}
-                    initialPageSize={3}
-                    pageSizeOptions={[3, 5, 10]}
-                    width={"34%"}
-                />
-                <DataTable
-                    title={<Typography align="center">User GROUPS summary</Typography>}
-                    rows={this.userGroupSummaryRows}
-                    columns={this.summaryColumns}
-                    height={SUMMARY_TABLES_DIV_HEIGHT}
-                    initialPageSize={3}
-                    pageSizeOptions={[3, 5, 10]}
-                    width={"34%"}
-                />
-            </Stack>
+            <DataTable
+                title={<Typography align="center">Model labels summary</Typography>}
+                rows={this.modelSummaryRows}
+                columns={this.summaryColumns}
+                height={SUMMARY_TABLES_DIV_HEIGHT}
+                initialPageSize={3}
+                pageSizeOptions={[3, 5, 10]}
+                width={"100%"}
+                // width={"34%"}
+            />
         );
+    }
+
+    getUserAnnotationSummary = () => { 
+        if (this.state.isLoadingUserAnnotationSummary) {
+            return (
+                <div>
+                    Loading...
+                    <Loading/>
+                </div>
+            );
+        }
+        return (
+            <DataTable
+                title={<Typography align="center">User annotations summary</Typography>}
+                rows={this.userSummaryRows}
+                columns={this.summaryColumns}
+                height={SUMMARY_TABLES_DIV_HEIGHT}
+                initialPageSize={3}
+                pageSizeOptions={[3, 5, 10]}
+                width={"100%"}
+            />
+        );
+    }
+
+    getUserGroupSummary = () => {
+        if (this.state.isLoadingUserGroupSummary) {
+            return (
+                <div>
+                    Loading...
+                    <Loading/>
+                </div>
+            );
+        }
+        return (
+            <DataTable
+                title={<Typography align="center">User GROUPS summary</Typography>}
+                rows={this.userGroupSummaryRows}
+                columns={this.summaryColumns}
+                height={SUMMARY_TABLES_DIV_HEIGHT}
+                initialPageSize={3}
+                pageSizeOptions={[3, 5, 10]}
+                width={"100%"}
+            />
+        );
+        
     }
 
     getFinalLabelsTable = () => {
@@ -257,7 +280,7 @@ class Results extends Component {
                 title={<b>All labels</b>}
                 rows={this.allLabels}
                 columns={this.labelTableColumns}
-                height={"100%"}
+                height={200}
                 width={"100%"}
             />
         );
@@ -278,25 +301,36 @@ class Results extends Component {
 
     render() {
         return (
-            <Container>
-                <Stack
-                    direction="column"
-                    justifyContent="center"
+                <Grid container
+                    // rowSpacing={8}
+                    columnSpacing={{ xs: 1, sm: 2, md: 3 }}
+                    direction="row"
+                    justifyContent="space-evenly"
                     alignItems="center"
                     spacing={5}
-                    sx={{ paddingTop: 5, paddingRight: 5, paddingLeft: 5 }}
+                    sx={{ pt: 8, pr: 3, pl: 3 }}
                 >
-                    <Box sx={{ width: 100, height: 15}}>
-                        <h3>
+                    <Grid item xs={12}>
+                        <div align="center"><b>
                             Results
-                        </h3>
-                    </Box>
-                    <Box sx={{width: "100%", height: {SUMMARY_TABLES_DIV_HEIGHT}, justifyContent: "center", alignItems: "center", alignContent: "center"}}>
-                        {this.getSummary()}
-                    </Box>
-                    <Box sx={{width: "100%", height: 300, paddingTop: 1}}>
+                        </b></div>
+                    </Grid>
+                    {/* <Box sx={{width: "100%", height: {SUMMARY_TABLES_DIV_HEIGHT}, justifyContent: "center", alignItems: "center", alignContent: "center"}}> */}
+                    <Grid item xs={4}>
+                        {this.getModelSummary()}
+                    </Grid>
+                    <Grid item xs={4}>
+                        {this.getUserAnnotationSummary()}
+                    </Grid>
+                    <Grid item xs={4}>
+                        {this.getUserGroupSummary()}
+                    </Grid>
+                    {/* </Box> */}
+                    {/* <Box sx={{width: "100%", height: 250, paddingTop: 1}}> */}
+                    <Grid item xs={12} sx={{pt: 3}}>
                         {this.getFinalLabelsTable()}
-                    </Box>
+                    </Grid>
+                    {/* </Box> */}
 
                     {/* <div style={{ display: 'flex', height: '75vh', width: '80vw', justifyContent: 'flex-start', alignItems: 'center', flexDirection: 'column'}}>
                             You have completed this labeling session in {this.getVerificationNum()} verification rounds with an average accuracy of {this.getVerificationAccAvg()}%. Please wait for the server to finish labeling your dataset.
@@ -311,31 +345,35 @@ class Results extends Component {
                         </div>
                     )} */}
 
-                    <Box display="flex" justifyContent="space-between" height={100}>
+                    {/* <Box display="flex" justifyContent="space-between" height={100}> */}
                         {/* Allow the user to go back to the beginning of the cycle if they want to do more coding */}
-                        <div style={{marginTop: '15px', width:'100%', alignItems:'left'}}>
+                    <Grid item container sx={{pt: 5}} direction="row" justifyContent="space-between">
+                        <Grid item>
                             <CallbackKeyEventButton 
                                 callBackFunc={this.handleNextKeyPress}
                                 buttonAvailable={this.state.sectionComplete}
                                 clickFunc={this.onPressBackToOpenCoding}
                                 text={'Loop Back (z)'}
                             />
-                        </div>
+                        </Grid>
 
-                        <div style={{marginTop: '15px', width:'100%', alignItems:'right'}}>
+                        <Grid item>
                             <CallbackKeyEventButton 
                                 callBackFunc={this.handleNextKeyPress}
                                 buttonAvailable={this.state.sectionComplete}
                                 clickFunc={this.onNextSubmit}
                                 text={'Finish (space)'}
                             />
-                        </div>
-                    </Box>
-                </Stack>
-                <div style={{ margin: "15px" }}>
+                        </Grid>
+                    </Grid>
+                    {/* </Box> */}
+                
+                {/* <div style={{ margin: "15px" }}> */}
+                <Grid item xs={12}>
                     <LinearProgress variant="determinate" value={progress}/>
-                </div>
-            </Container>
+                </Grid>
+                {/* </div> */}
+            </Grid>
         );
     }
 }
