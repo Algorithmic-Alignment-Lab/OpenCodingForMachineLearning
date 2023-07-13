@@ -62,6 +62,10 @@ class OpenCoding extends Component {
         }
     };
 
+    onSkipToResults = () => {
+        this.props.updateState(states.results);
+    }
+
     /**
     * Callback function for our customized table object.
     * 
@@ -138,7 +142,7 @@ class OpenCoding extends Component {
                         </div>
                 </div>
                 <div style={{marginTop: '15px', width:'100%'}}>
-                    <div style={{display: 'flex', alignItems:'space-between'}}>
+                    <div style={{display: 'flex', alignItems:'space-between', xs:6}}>
                         <CallbackKeyEventButton
                             callBackFunc={this.handleNextKeyPress}
                             buttonAvailable={this.state.sectionComplete}
@@ -146,6 +150,15 @@ class OpenCoding extends Component {
                             text={'Next (space)'}
                         />
                     </div> 
+                    <div style={{alignItems:'end', backgroundColor: 'pink', xs:6}}>
+                        <CallbackKeyEventButton
+                            buttonAvailable={true}
+                            callBackFunc={this.handleNextKeyPress}
+                            clickFunc={this.onSkipToResults}
+                            text={'Debug (skip to results)'}
+                            keyMatch={' '}
+                        />
+                    </div>
                 </div>
                 <div style={{ marginTop: '15px'}}>
                     <LinearProgress variant="determinate" value={progress}/>
