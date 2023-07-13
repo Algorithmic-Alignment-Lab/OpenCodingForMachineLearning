@@ -21,6 +21,9 @@ DO_FINETUNING_BOOL = True
 # usage: we're just doing a demo and relabeling everything would be pointless
 DO_LABELING_BOOL = False 
 
+# normal constants
+GROUP_CSV_FIELDNAMES = ["id", "text", "annotation", "true_label"]
+
 @app.route('/', methods=['GET'])
 def test():
     
@@ -421,14 +424,24 @@ def get_final_labels_and_summaries():
         # todo: consider if we can interact with the groups in backend
         # i.e. have them actually be saved during AssistedGrouping then we can pull them here
         # or post them to the backend and then we can just process them!
-        response["user_groups"] = load_csv_to_json_object(user_groups_path)
-        response["user_group_summary_rows"] = get_summary_rows(response["user_groups"])
+        # fix to the json `TypeError: '<' not supported between instances of 'NoneType' and 'str'`
+        # was that I forgot to specify the correct fieldnames here 
+        response["user_groups"] = load_csv_to_json_object(user_groups_path, GROUP_CSV_FIELDNAMES)
+        print("USER GROUPS TO SUMMARIZE")
+        print(response["user_groups"])
+        # note groups are saved as true label
+        response["user_group_summary_rows"] = get_summary_rows(response["user_groups"], key_to_check="true_label")
+        # ^ ruled out that this has a none key
          
     except Exception as e:
         response["ok"] = False
         response["statusText"] = str(e)
+        # print("IN EXCEPT ON GET_SUMMARY_STATS_AND_LABELS")
+        # print(f"response: {response}")
         return json.jsonify(response)
     
+    # print("in *SUCCESS* on GET_SUMMARY_STATS_AND_LABELS")
+    # print(f"response: {response}")
     add_options(response)
     return json.jsonify(response)
 
@@ -447,7 +460,7 @@ def save_groups():
             rows = json_data['rows']
             # todo: with groups, and how we want to display final results table
             # maybe add a function to match up the result labels with these that have been grouped and annotated?
-            custom_save_to_csv(group_outputs_file_name, rows, ["id", "text", "annotation", "true_label"])
+            custom_save_to_csv(group_outputs_file_name, rows, GROUP_CSV_FIELDNAMES)
             
             response['msg'] = 'Success'
         except Exception as e:

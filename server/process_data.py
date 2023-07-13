@@ -231,7 +231,7 @@ def custom_save_to_csv(output_filename, objects, field_names):
         for obj in objects:
             row = {}
             for field in field_names:
-                if not obj.get(field):
+                if field not in obj:
                     warnings.warn(f"JSON/Dict object missing a field `{field}`" + 
                                   f"\n\tobject: {obj}")
                 row[field] = obj.get(field)
@@ -305,7 +305,7 @@ def load_csv_to_json_object(csv_file_path,
         for row in reader:
             # mui requires id be in lowercase
             row_copy = dict(row)
-            if not row_copy.get("ID") and row_copy.get("id"):
+            if not row_copy.get("ID") and not row_copy.get("id"):
                 raise KeyError("Expected ID or id from csv row (since mui requires unique ids)."
                                f"\nSaw row = {row}")
             if row_copy.get("ID"):
@@ -425,7 +425,7 @@ def tableify_label_statistics(sorted_label_counts_list,
     return label_counts_table_list
 
 
-def get_summary_rows(labels_list):
+def get_summary_rows(labels_list, key_to_check="annotation"):
     
     total_final_labels = len(labels_list)
     # get summary statistics about that overall set of labels
