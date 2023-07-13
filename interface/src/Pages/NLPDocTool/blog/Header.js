@@ -1,16 +1,15 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import Toolbar from '@mui/material/Toolbar';
-// import Button from '@mui/material/Button';
+import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
-// import SearchIcon from '@mui/icons-material/Search';
+import SearchIcon from '@mui/icons-material/Search';
 import Typography from '@mui/material/Typography';
-// import Link from '@mui/material/Link';
-// import Avatar from '@mui/material/Avatar';
-// import logo from './static/AAGLogo.png';
+import Link from '@mui/material/Link';
+import Avatar from '@mui/material/Avatar';
+import logo from './static/AAGLogo.png';
 import { AppBar } from '@mui/material';
-// import LinkButton from './../LinkButton.js'
-// import LinkButton from './../Custom/LinkButton.js'
+import LinkButton from './../LinkButton.js'
 import LogoDevIcon from '@mui/icons-material/LogoDev';
 
 function Header(props) {
@@ -20,7 +19,7 @@ function Header(props) {
     <React.Fragment>
       <AppBar color="secondary">
       <Toolbar variant="dense" sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        {/* <LinkButton size="medium" to="/NLPDocTool">Home</LinkButton> */}
+        <LinkButton size="medium" to="/NLPDocTool">Home</LinkButton>
         <Typography
           component="h2"
           variant="h5"

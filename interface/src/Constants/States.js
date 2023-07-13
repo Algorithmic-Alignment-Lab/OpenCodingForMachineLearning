@@ -7,13 +7,13 @@ const states = {
     assistedGrouping: 2,
     training: 3, // used to be verification
     results: 4, 
-    
-    // Justification: have the annotator describe their thought process for the labels they provided
-    codeJustification: 5, 
-    // Comparison (what the annotator thought vs the actual model output)
-    hypGenerationAndComparison: 6,
-    docResults: 7,
-    docView: 8, 
+    docStep1: 5,
+    docStep2: 6,
+    docStep3: 7,
+    docStep4: 8,
+    docStep5: 9,
+    docResults: 10,
+    docView: 11
 }
 
 export default states;

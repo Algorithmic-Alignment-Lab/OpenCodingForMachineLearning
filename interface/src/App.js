@@ -14,11 +14,13 @@ import Training from "./Pages/Training/Training";
 import Results from "./Pages/Results/Results";
 
 // NLPDocTool Pages
-// todo: if we change the paths for these, i.e. put them in their own page folders, change the paths here
-import CodeJustification from "./Pages/CodeJustification/CodeJustification";
-import HypGenerationAndComparison from "./Pages/HypGenerationAndComparison/HypGenerationAndComparison.js";
-import DocResults from "./Pages/HypGenerationAndComparison/DocResults";
-import ViewDoc from "./Pages/HypGenerationAndComparison/ViewDoc";
+import Step1 from "./Pages/NLPDocTool/Step1";
+import Step2 from "./Pages/NLPDocTool/Step2";
+import Step3 from "./Pages/NLPDocTool/Step3";
+import Step4 from "./Pages/NLPDocTool/Step4";
+import Step5 from "./Pages/NLPDocTool/Step5";
+import docResults from "./Pages/NLPDocTool/docResults";
+import viewDoc from "./Pages/NLPDocTool/viewDoc";
 
 const fetch = require("node-fetch");
 
@@ -325,35 +327,34 @@ class App extends Component {
 		);
 	}
 
-	renderHypGenerationAndComparison() {
-        // make sure to pass the functions to post/get data
-		return <HypGenerationAndComparison 
-                    updateState={this.updateState} 
-                    postData={this.postData}
-                    getDataWithParams={this.getDataWithParams}
-                    loadAnnotations={this.loadAnnotations}
-                    getOptionID={this.getOptionID}
-                />;
+	renderDocStep1() {
+		return <Step1/>
 	}
 
-    renderDocResults() {
-        return <DocResults/>
-    }
+    renderDocStep2() {
+		return <Step2/>
+	}
+
+    renderDocStep3() {
+		return <Step3/>
+	}
+
+    renderDocStep4() {
+		return <Step4/>
+	}
+
+    renderDocStep5() {
+		return <Step5/>
+	}
+
 
     renderViewDoc() {
-        return <ViewDoc/>
+        return <viewDoc/>
     }
 
-	renderCodeJustification() {
-		return <CodeJustification 
-                    updateState={this.updateState} 
-                    postData={this.postData}
-                    getDataWithParams={this.getDataWithParams}
-                    loadAnnotations={this.loadAnnotations}
-                    getOptionID={this.getOptionID}
-                />;
-	}
-
+    renderDocResults() {
+        return <docResults/>
+    }
 
 
 	getView(page) {
@@ -369,15 +370,20 @@ class App extends Component {
 				return this.renderTraining();
 			} else if (page === states.results) {
 				return this.renderResults();
-			} else if (page === states.codeJustification) {
-				return this.renderCodeJustification();
-			} else if (page === states.hypGenerationAndComparison) {
-				return this.renderHypGenerationAndComparison();
-            }  else if (page === states.docResults) {
+			} else if (page === states.docStep1) {
+                return this.renderDocStep1();
+            } else if (page === states.docStep2) {
+                return this.renderDocStep2();
+            } else if (page === states.docStep3) {
+                return this.renderDocStep3();
+            } else if (page === states.docStep4) {
+                return this.renderDocStep4();
+            } else if (page === states.docStep5) {
+                return this.renderDocStep5();
+            } else if (page === states.docResults) {
                 return this.renderDocResults();
             } else if (page === states.docView) {
                 return this.renderViewDoc();
-
             } else {
 				// default value if state transitions ever fail
 				return <div />;
