@@ -307,27 +307,27 @@ class Results extends Component {
                     direction="row"
                     justifyContent="space-evenly"
                     alignItems="center"
-                    spacing={5}
-                    sx={{ pt: 8, pr: 3, pl: 3 }}
+                    sx={{ pr: 3, pl: 3 }}
                 >
-                    <Grid item xs={12}>
+                    <Grid item xs={12} sx={{pt: 3}}>
                         <div align="center"><b>
                             Results
                         </b></div>
                     </Grid>
                     {/* <Box sx={{width: "100%", height: {SUMMARY_TABLES_DIV_HEIGHT}, justifyContent: "center", alignItems: "center", alignContent: "center"}}> */}
-                    <Grid item xs={4}>
+                    {/* Note to self, trying to place all three of these in a container makes the spacing between disappear */}
+                    <Grid item xs={4} sx={{pt: 3}}>
                         {this.getModelSummary()}
                     </Grid>
-                    <Grid item xs={4}>
+                    <Grid item xs={4} sx={{pt: 3}}>
                         {this.getUserAnnotationSummary()}
                     </Grid>
-                    <Grid item xs={4}>
+                    <Grid item xs={4} sx={{pt: 3}}>
                         {this.getUserGroupSummary()}
                     </Grid>
                     {/* </Box> */}
                     {/* <Box sx={{width: "100%", height: 250, paddingTop: 1}}> */}
-                    <Grid item xs={12} sx={{pt: 3}}>
+                    <Grid item xs={12} sx={{pt: 6}}>
                         {this.getFinalLabelsTable()}
                     </Grid>
                     {/* </Box> */}
