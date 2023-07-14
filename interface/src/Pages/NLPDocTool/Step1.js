@@ -20,6 +20,14 @@ import Box from '@mui/material/Box';
 import Popover from '@mui/material/Popover';
 import TextField from '@mui/material/TextField';
 import Link from '@mui/material/Link';
+
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormLabel from '@mui/material/FormLabel';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import { useRadioGroup } from '@mui/material/RadioGroup';
+
 import Model from './Model.js';
 import LinkButton from './LinkButton.js';
 import { Navigate } from "react-router-dom";
@@ -32,7 +40,7 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 const progress = 0;
 
 function Step1Content(props) {
-
+    console.log(props);
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const [textInput, setTextInput] = React.useState(null);
@@ -48,6 +56,26 @@ function Step1Content(props) {
   const handleText = (event) => {
     setTextInput(event.target.value);
     Model.apiLink=textInput;
+  }
+
+  const handleUrlText = (event) => {
+    setTextInput(event.target.value);
+    this.props.setUserModelLink(textInput);
+  }
+
+  const handlePortText = (event) => {
+    setTextInput(event.target.value);
+    this.props.setUserModelPort(textInput);
+  }
+
+  const handleTrainEndpointText = (event) => {
+    setTextInput(event.target.value);
+    this.props.setUserModelTrainEndpoint(textInput);
+  }
+
+  const handlePredictEndpointText = (event) => {
+    setTextInput(event.target.value);
+    this.props.setUserModelPredictEndpoint(textInput);
   }
 
   const open = Boolean(anchorEl);
@@ -87,9 +115,10 @@ function Step1Content(props) {
             <Typography variant="h6" sx={{ fontWeight: 1000, display: 'inline' }} noWrap={false}>
             Step 1: </Typography>
             <Typography variant="h6" sx={{ fontWeight: 400, display: 'inline' }}>Customize your documentation by linking to a model</Typography>
-            <Typography paragraph>Note: At this time, only models that are hosted on the Hugging Face Model Hub are supported.</Typography>
+            {/* <Typography paragraph>Note: At this time, only models that are hosted on the Hugging Face Model Hub are supported.</Typography>
             <Typography paragraph>For more information about the models avaiable please see </Typography>
-            <Link href="https://huggingface.co/docs/huggingface_hub/index">Hugging Face Hub</Link>
+            <Link href="https://huggingface.co/docs/huggingface_hub/index">Hugging Face Hub</Link> */}
+            <Typography paragraph>Note: At this time, only models that are hosted locally are supported.</Typography>
             </Box>
             
             <Button
@@ -111,17 +140,19 @@ function Step1Content(props) {
           vertical: 'center',
           horizontal: 'center',
         }}
+        // this popup was too small, couldn't see everything
+        // so I made the dimensions inside larger
         id={id}
         open={open}
         anchorEl={anchorEl}
         onClose={handleClose}
       >
-        <Box component="div" sx={{minWidth: 300}}>
+        <Box component="div" sx={{minWidth: 450, minHeight: 450}}>
         <Stack
           justifyContent="center"
           alignItems="center"
           spacing={4}
-          sx={{ paddingTop: 10, paddingRight: 5, paddingLeft: 5 }}
+          sx={{ paddingTop: 5, paddingRight: 5, paddingLeft: 5 }}
           >
             <Typography variant="h6">Select a Model to Link From Hugging Face</Typography>
             
@@ -129,13 +160,45 @@ function Step1Content(props) {
             <Typography paragraph >Additionally, only generative NLP models are supported</Typography>
             
             <TextField 
-            id="API" 
-            label="API Link" 
-            variant="filled" 
-            fullWidth
-            defaultValue="https://api-inference.huggingface.co/models"
-            onChange={handleText}
+                id="URL" 
+                label="URL Link" 
+                variant="filled" 
+                fullWidth
+                defaultValue={props.getUserModelLink()}
+                onChange={handleUrlText}
             />
+            <TextField 
+                id="TRAIN" 
+                label="Train endpoint" 
+                variant="filled" 
+                fullWidth
+                defaultValue={props.getUserModelTrainEndpoint()}
+                onChange={handleTrainEndpointText}
+            />
+            <TextField 
+                id="PREDICT" 
+                label="Predict endpoint" 
+                variant="filled" 
+                fullWidth
+                defaultValue={props.getUserModelPredictEndpoint()}
+                onChange={handlePredictEndpointText}
+            />
+            {/* Considered using radio buttons instead of text box, 
+                but this is more effort than its worth. Gonna go back to just using text boxes instead.
+                If I need to use these later, I'll know how at least*/}
+            {/* <FormControl>
+            <FormLabel id="radio-buttons-label">Prefix</FormLabel>
+                <RadioGroup
+                    aria-labelledby="radio-buttons-group-label"
+                    defaultValue={1}
+                    name="radio-buttons-group"
+                    row
+                >
+                    <FormControlLabel value={1} control={<Radio />} label="http://" />
+                    <FormControlLabel value={2} control={<Radio />} label="https:// (secure)" />
+                </RadioGroup>
+            </FormControl> */}
+            
             {/* <Button onClick={() => {console.log({textInput})}}>TEST</Button> */}
             {/* <LinkButton to="/NLPDocTool/step2"
             onClick= {
@@ -149,18 +212,18 @@ function Step1Content(props) {
             }
             >Confirm</LinkButton> */}
 
+            <Box sx={{alignItems:'end'}}>
+                <CallbackKeyEventButton
+                    callBackFunc={handleNextKeyPress}
+                    buttonAvailable={true} // todo: come back and change this => only available later
+                    clickFunc={onNextSubmit}
+                    text={'Next (space)'}
+                />
+            </Box>
         </Stack>
         </Box>
-
       </Popover> 
-      <Box sx={{alignItems:'end'}}>
-            <CallbackKeyEventButton
-                callBackFunc={handleNextKeyPress}
-                buttonAvailable={true} // todo: come back and change this => only available later
-                clickFunc={onNextSubmit}
-                text={'Next (space)'}
-            />
-        </Box>
+      
 
       <Footer
         title="Designed By"
@@ -180,10 +243,21 @@ class Step1 extends Component {
   render() {
     return (
       <Step1Content 
-        updateState={this.props.updateState}
-        getOptionID={this.props.getOptionID}
-        getDataWithParams={this.props.getDataWithParams}
-        postData={this.props.postData}
+            updateState={this.props.updateState}
+            getOptionID={this.props.getOptionID}
+            getDataWithParams={this.props.getDataWithParams}
+            postData={this.props.postData}
+            
+            getUserModelToDocument={this.props.getUserModelToDocument}
+            
+            getUserModelLink={this.props.getUserModelLink}
+            setUserModelLink={this.props.setUserModelLink}
+
+            getUserModelTrainEndpoint={this.props.getUserModelTrainEndpoint}
+            setUserModelTrainEndpoint={this.props.setUserModelTrainEndpoint}
+
+            getUserModelPredictEndpoint={this.props.getUserModelPredictEndpoint}
+            setUserModelPredictEndpoint={this.props.setUserModelPredictEndpoint}
       />
     );
   }

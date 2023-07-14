@@ -38,6 +38,14 @@ class App extends Component {
 			constants: null,
 			verificationAccuracies: [],
 			prepDataDone: false,
+            // Remember user's model hosting information
+            // todo: consider if this would need to be structured different
+            // if they were using a website instead of localhost
+            user_model_to_document: {
+                link:"http://localhost:PORT", // have them specify everything here
+                train_endpoint: "/train",
+                predict_endpoint: "/predict",
+            },
 		};
 	}
 
@@ -116,6 +124,61 @@ class App extends Component {
 			console.log(error);
 		}
 	}
+
+    getUserModelLink = () => {
+        return this.state.user_model_to_document.link;
+    }
+
+    getUserModelTrainEndpoint = () => {
+        return this.state.user_model_to_document.train_endpoint;
+    }
+
+    getUserModelPredictEndpoint = () => {
+        return this.state.user_model_to_document.predict_endpoint;
+    }
+
+    // get a copy we can manipulate before doing set state
+    getUserModelToDocument = () => {
+        return {
+            link: this.getUserModelLink(),
+            train_endpoint: this.getUserModelTrainEndpoint(),
+            predict_endpoint: this.getUserModelPredictEndpoint(),
+        };
+    }
+
+    setUserModelLink = (link) => {
+        const updated_user_model_to_document = this.getUserModelToDocument();
+        
+        // todo: ping the link they say and try to see if that works :0
+        
+        updated_user_model_to_document.link = link;
+        this.setState({
+            user_model_to_document: updated_user_model_to_document,
+        });
+    }
+
+    setUserModelTrainEndpoint = (trainEndpoint) => {
+        const updated_user_model_to_document = this.getUserModelToDocument();
+        
+        // todo: ping the link they say and try to see if that works :0
+        
+        updated_user_model_to_document.train_endpoint = trainEndpoint;
+        this.setState({
+            user_model_to_document: updated_user_model_to_document,
+        });
+    }
+
+    setUserModelPredictEndpoint = (predictEndpoint) => {
+        const updated_user_model_to_document = this.getUserModelToDocument();
+        
+        // todo: ping the link they say and try to see if that works :0
+        
+        updated_user_model_to_document.predict_endpoint = predictEndpoint;
+        this.setState({
+            user_model_to_document: updated_user_model_to_document,
+        });
+    }
+
 
 	// data rows are an array of {id: uid, text: string}
 	setDataRows = (rows) => {
@@ -339,6 +402,16 @@ class App extends Component {
             getOptionID={this.getOptionID}
             getDataWithParams={this.getDataWithParams}
             postData={this.postData}
+            getUserModelToDocument={this.getUserModelToDocument}
+            
+            getUserModelLink={this.getUserModelLink}
+            setUserModelLink={this.setUserModelLink}
+           
+            getUserModelTrainEndpoint={this.getUserModelTrainEndpoint}
+            setUserModelTrainEndpoint={this.setUserModelTrainEndpoint}
+
+            getUserModelPredictEndpoint={this.getUserModelPredictEndpoint}
+            setUserModelPredictEndpoint={this.setUserModelPredictEndpoint}
         />
 	}
 

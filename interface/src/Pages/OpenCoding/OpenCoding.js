@@ -60,12 +60,16 @@ class OpenCoding extends Component {
         if (event.key === ' ' && this.state.sectionComplete){
             this.onNextSubmit();
         } else if (event.key == 'a') { // add a key shortcut for skipping
-            this.onSkipToResults();
+            this.onSkipToNLPDocTool(); // got tired of seeing the results page boot
         }
     };
 
     onSkipToResults = () => {
         this.props.updateState(states.results);
+    }
+
+    onSkipToNLPDocTool = () => {
+        this.props.updateState(states.docStep1);
     }
 
     /**
@@ -156,8 +160,9 @@ class OpenCoding extends Component {
                         <CallbackKeyEventButton
                             buttonAvailable={true}
                             callBackFunc={this.handleNextKeyPress}
-                            clickFunc={this.onSkipToResults}
-                            text={'Debug (skip to results)'}
+                            // clickFunc={this.onSkipToResults}
+                            clickFunc={this.onSkipToNLPDocTool}
+                            text={'Skip to NLPDocTool [a]'}
                             keyMatch={' '}
                         />
                     </div>
