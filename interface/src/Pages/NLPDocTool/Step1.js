@@ -25,7 +25,7 @@ import LinkButton from './LinkButton.js';
 import { Navigate } from "react-router-dom";
 
 import states from './../../Constants/States';
-
+import {useState} from 'react'; // to allow the function to know what its props are
 import CallbackKeyEventButton from './../../Custom/CallbackKeyEventButton';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
@@ -54,7 +54,8 @@ function Step1Content(props) {
   const id = open ? 'simple-popover' : undefined;
 
     const onNextSubmit = () => {
-        props.updateState(/* TODO: set the next state here! */);
+        console.log(props);
+        props.updateState(states.docStep2);
     // pass in states.{something}
     }
 
@@ -136,7 +137,7 @@ function Step1Content(props) {
             onChange={handleText}
             />
             {/* <Button onClick={() => {console.log({textInput})}}>TEST</Button> */}
-            <LinkButton to="/NLPDocTool/step2"
+            {/* <LinkButton to="/NLPDocTool/step2"
             onClick= {
               () => {
                 if(Model.apiLink == null){
@@ -146,11 +147,20 @@ function Step1Content(props) {
                 }
               }
             }
-            >Confirm</LinkButton>
+            >Confirm</LinkButton> */}
+
         </Stack>
         </Box>
 
-      </Popover>
+      </Popover> 
+      <Box sx={{alignItems:'end'}}>
+            <CallbackKeyEventButton
+                callBackFunc={handleNextKeyPress}
+                buttonAvailable={true}
+                clickFunc={onNextSubmit}
+                text={'Next (space)'}
+            />
+        </Box>
 
       <Footer
         title="Designed By"
@@ -170,7 +180,10 @@ class Step1 extends Component {
   render() {
     return (
       <Step1Content 
-        props={this.props}
+        updateState={this.props.updateState}
+        getOptionID={this.props.getOptionID}
+        getDataWithParams={this.props.getDataWithParams}
+        postData={this.props.postData}
       />
     );
   }

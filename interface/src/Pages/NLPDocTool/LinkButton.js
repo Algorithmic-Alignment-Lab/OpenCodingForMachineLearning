@@ -42,5 +42,4 @@ import React from 'react'
 // }
 
 // export default LinkButton
-const LinkButton = (props) => { return (); }
-export default LinkButton
+export default function LinkButton(props) { return (<div/>); }

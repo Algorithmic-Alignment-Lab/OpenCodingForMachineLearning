@@ -328,7 +328,12 @@ class App extends Component {
 	}
 
 	renderDocStep1() {
-		return <Step1/>
+		return <Step1
+            updateState={this.updateState}
+            getOptionID={this.getOptionID}
+            getDataWithParams={this.getDataWithParams}
+            postData={this.postData}
+        />
 	}
 
     renderDocStep2() {
