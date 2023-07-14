@@ -19,8 +19,9 @@ import Step2 from "./Pages/NLPDocTool/Step2";
 import Step3 from "./Pages/NLPDocTool/Step3";
 import Step4 from "./Pages/NLPDocTool/Step4";
 import Step5 from "./Pages/NLPDocTool/Step5";
-import docResults from "./Pages/NLPDocTool/docResults";
-import viewDoc from "./Pages/NLPDocTool/viewDoc";
+// note to self: react doesn't like lowercase component names
+import DocResults from "./Pages/NLPDocTool/DocResults";
+import ViewDoc from "./Pages/NLPDocTool/ViewDoc";
 
 const fetch = require("node-fetch");
 
@@ -270,6 +271,7 @@ class App extends Component {
 	}
 
 	renderOpenCoding() {
+        console.log('In renderOpenCoding()');
 		return (
 			<OpenCoding
 				getOptionID={this.getOptionID}
@@ -284,6 +286,7 @@ class App extends Component {
 	}
 
 	renderAssistedGrouping() {
+        console.log('In renderAssistedGrouping()');
 		return (
 			<AssistedGrouping
 				loadAnnotations={this.loadAnnotations}
@@ -299,6 +302,7 @@ class App extends Component {
 	}
 
     renderTraining() {
+        console.log('In renderTraining()');
         return <Training
             loadLabelSet = {this.loadLabelSet}
             loadLabels = {this.loadLabels}
@@ -316,6 +320,7 @@ class App extends Component {
 
     // place this here to reflect the actual order
 	renderResults() {
+        console.log('In renderResults()');
 		return (
 			<Results
 				updateState={this.updateState}
@@ -328,6 +333,7 @@ class App extends Component {
 	}
 
 	renderDocStep1() {
+        console.log('In renderDocStep1()');
 		return <Step1
             updateState={this.updateState}
             getOptionID={this.getOptionID}
@@ -337,28 +343,64 @@ class App extends Component {
 	}
 
     renderDocStep2() {
-		return <Step2/>
+        console.log('In renderDocStep2()');
+		return <Step2
+            updateState={this.updateState}
+            getOptionID={this.getOptionID}
+            getDataWithParams={this.getDataWithParams}
+            postData={this.postData}
+        />
 	}
 
     renderDocStep3() {
-		return <Step3/>
+        console.log('In renderDocStep3()');
+		return <Step3
+            updateState={this.updateState}
+            getOptionID={this.getOptionID}
+            getDataWithParams={this.getDataWithParams}
+            postData={this.postData}
+        />
 	}
 
     renderDocStep4() {
-		return <Step4/>
+        console.log('In renderDocStep4()');
+		return <Step4
+            updateState={this.updateState}
+            getOptionID={this.getOptionID}
+            getDataWithParams={this.getDataWithParams}
+            postData={this.postData}
+        />
 	}
 
     renderDocStep5() {
-		return <Step5/>
+        console.log('In renderDocStep5()');
+		return <Step5
+            updateState={this.updateState}
+            getOptionID={this.getOptionID}
+            getDataWithParams={this.getDataWithParams}
+            postData={this.postData}
+        />
 	}
 
-
-    renderViewDoc() {
-        return <viewDoc/>
+    // fix order so that we can visually see this comes before view doc
+    renderDocResults() {
+        console.log('In renderDocResults()');
+        return <DocResults
+            updateState={this.updateState}
+            getOptionID={this.getOptionID}
+            getDataWithParams={this.getDataWithParams}
+            postData={this.postData}
+        />
     }
 
-    renderDocResults() {
-        return <docResults/>
+    renderViewDoc() {
+        console.log('In renderViewDoc()');
+        return <ViewDoc
+            updateState={this.updateState}
+            getOptionID={this.getOptionID}
+            getDataWithParams={this.getDataWithParams}
+            postData={this.postData}
+        />
     }
 
 

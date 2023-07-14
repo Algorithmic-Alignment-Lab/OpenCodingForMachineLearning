@@ -59,6 +59,8 @@ class OpenCoding extends Component {
         // console.log(`next possible: %s, section complete %s`, this.state.nextPossible, this.state.sectionComplete);
         if (event.key === ' ' && this.state.sectionComplete){
             this.onNextSubmit();
+        } else if (event.key == 'a') { // add a key shortcut for skipping
+            this.onSkipToResults();
         }
     };
 

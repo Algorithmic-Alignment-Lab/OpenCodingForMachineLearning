@@ -37,6 +37,13 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import ListSubheader from '@mui/material/ListSubheader';
 
+import states from './../../Constants/States';
+
+import CallbackKeyEventButton from '../../Custom/CallbackKeyEventButton';
+import LinearProgress from '@material-ui/core/LinearProgress';
+
+const progress = 100;
+
 // function createData(contextName, humanResponse, prediction, metricOne, metricTwo) {
 //     var metricTwoText = "YES";
 //     if (metricTwo == 0){
@@ -58,7 +65,7 @@ import ListSubheader from '@mui/material/ListSubheader';
 // const avgSimScoreParam = Model.metricOne.length <= 0? 0 : Model.metricOne.reduce((a, b) => a + b) / Model.metricOne.length;
 // const avgSuffSimParam = Model.metricOne.length <= 0? 0 : Model.metricTwo.reduce((a, b) => a + b) / Model.metricTwo.length * 100.0;
 
-class docResults extends Component {
+class DocResults extends Component {
     constructor(props) {
       super(props);
 
@@ -71,9 +78,23 @@ class docResults extends Component {
         deploymentJustification: "",
         avgSimScore:  Model.metricOne.length <= 0? 0 : Model.metricOne.reduce((a, b) => a + b) / Model.metricOne.length,
         avgSuffSim: Model.metricOne.length <= 0? 0 : Model.metricTwo.reduce((a, b) => a + b) / Model.metricTwo.length * 100.0,
-        ModelInfo: Model
+        ModelInfo: Model,
+        sectionComplete: true, // todo: come back and change it so this is only available later
       }
     }
+
+    onNextSubmit = () => {
+        this.props.updateState(states.docView);
+    }
+
+    /**
+    * Callback function for next submit action.
+    */
+    handleNextKeyPress = (event) => {
+        if (event.key === ' ' && this.state.sectionComplete){
+            this.onNextSubmit();
+        }
+    };
 
     createData (contextName, humanResponse, prediction, metricOne, metricTwo) {
         var metricTwoText = "YES";
@@ -213,13 +234,24 @@ class docResults extends Component {
 
                 </Box>
                 
-                <LinkButton to="/NLPDocTool/viewDoc" onClick={()=>{
+                {/* <LinkButton to="/NLPDocTool/viewDoc" onClick={()=>{
                     Model.processJustification = this.state.processJustification;
                     Model.deploymentJustification = this.state.deploymentJustification;
                     console.log(Model);
                 }} variant="contained">
                     View Documentation
-                </LinkButton>
+                </LinkButton> */}
+                <Box sx={{margin: '15px', width:'100%'}}>
+                    <CallbackKeyEventButton
+                        callBackFunc={this.handleNextKeyPress}
+                        buttonAvailable={this.state.sectionComplete}
+                        clickFunc={this.onNextSubmit}
+                        text={'Next (space)'}
+                    />
+                </Box>
+                <Box sx={{ margin: '15px'}}>
+                    <LinearProgress variant="determinate" value={progress}/>
+                </Box>
                 </Stack>
                 </main>
             </Container>
@@ -235,4 +267,4 @@ class docResults extends Component {
     }
   }
   
-  export default docResults;
+  export default DocResults;

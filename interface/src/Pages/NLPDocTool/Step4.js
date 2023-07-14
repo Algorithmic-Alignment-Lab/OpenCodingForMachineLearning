@@ -29,6 +29,13 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Divider from "@mui/material/Divider";
 
+import states from './../../Constants/States';
+
+import CallbackKeyEventButton from '../../Custom/CallbackKeyEventButton';
+import LinearProgress from '@material-ui/core/LinearProgress';
+
+const progress = 60;
+
 class Step4 extends Component {
     constructor(props) {
       super(props);
@@ -39,11 +46,25 @@ class Step4 extends Component {
           anchorEl: null,
           open: false,
           id: undefined,
-          selectedContext: 0
+          selectedContext: 0,
+          sectionComplete: true, // todo: come back and change it so this is only available later
           
       }
     }
+
+    onNextSubmit = () => {
+        this.props.updateState(states.docStep5);
+    }
   
+    /**
+    * Callback function for next submit action.
+    */
+    handleNextKeyPress = (event) => {
+        if (event.key === ' ' && this.state.sectionComplete){
+            this.onNextSubmit();
+        }
+    };
+    
     // fileInput = document.getElementById('input');
     
     // open = Boolean(this.state.anchorEl);
@@ -143,11 +164,22 @@ class Step4 extends Component {
 
                 </Box>
                 
-                <LinkButton to="/NLPDocTool/step5" onClick={()=>{
+                {/* <LinkButton to="/NLPDocTool/step5" onClick={()=>{
                     console.log(Model);
                 }} variant="contained">
                     Confirm
-                </LinkButton>
+                </LinkButton> */}
+                <Box sx={{margin: '15px', width:'100%'}}>
+                    <CallbackKeyEventButton
+                        callBackFunc={this.handleNextKeyPress}
+                        buttonAvailable={this.state.sectionComplete}
+                        clickFunc={this.onNextSubmit}
+                        text={'Next (space)'}
+                    />
+                </Box>
+                <Box sx={{ margin: '15px'}}>
+                    <LinearProgress variant="determinate" value={progress}/>
+                </Box>
                 </Stack>
                 </main>
             </Container>

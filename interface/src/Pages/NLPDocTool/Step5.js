@@ -31,6 +31,13 @@ import Divider from "@mui/material/Divider";
 import axios from "axios";
 import Link from "@mui/material/Link";
 
+import states from './../../Constants/States';
+
+import CallbackKeyEventButton from '../../Custom/CallbackKeyEventButton';
+import LinearProgress from '@material-ui/core/LinearProgress';
+
+const progress = 80;
+
 class Step5 extends Component {
     constructor(props) {
       super(props);
@@ -50,9 +57,23 @@ class Step5 extends Component {
         binarySimilarity: 0,
 
         contextPrediction: "",
-        similarityScore: 0
+        similarityScore: 0,
+        sectionComplete: true, // todo: come back and change it so this is only available later
       }
     }
+
+    onNextSubmit = () => {
+        this.props.updateState(states.docResults);
+    }
+
+    /**
+    * Callback function for next submit action.
+    */
+    handleNextKeyPress = (event) => {
+        if (event.key === ' ' && this.state.sectionComplete){
+            this.onNextSubmit();
+        }
+    };
   
     // fileInput = document.getElementById('input');
     
@@ -157,13 +178,24 @@ class Step5 extends Component {
 
                 </Box>
                 
-                <LinkButton to="/NLPDocTool/results" onClick={()=>{
+                {/* <LinkButton to="/NLPDocTool/results" onClick={()=>{
                     console.log(Model);
                     // CALL THE PREDICTIONS AND POPULATE MODEL PREDICTIONS
                     // CALCULATE Similarity SCORES 
                 }} variant="contained">
                     Confirm
-                </LinkButton>
+                </LinkButton> */}
+                <Box sx={{margin: '15px', width:'100%'}}>
+                    <CallbackKeyEventButton
+                        callBackFunc={this.handleNextKeyPress}
+                        buttonAvailable={this.state.sectionComplete}
+                        clickFunc={this.onNextSubmit}
+                        text={'Next (space)'}
+                    />
+                </Box>
+                <Box sx={{ margin: '15px'}}>
+                    <LinearProgress variant="determinate" value={progress}/>
+                </Box>
                 </Stack>
                 </main>
             </Container>

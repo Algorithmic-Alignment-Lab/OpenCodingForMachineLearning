@@ -30,6 +30,13 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 
 // import App from './App.js';
+import states from './../../Constants/States';
+
+import CallbackKeyEventButton from '../../Custom/CallbackKeyEventButton';
+import LinearProgress from '@material-ui/core/LinearProgress';
+
+const progress = 40; /* TODO: set this to the intermediate value between previous progress and next progress*/
+
 
 class Step3 extends Component {
     constructor(props) {
@@ -38,9 +45,25 @@ class Step3 extends Component {
           fieldArray:[],
           fieldParameters: [],
           selectedFile: undefined,
-          objectArray:[]
+          objectArray:[],
+          sectionComplete: true, // todo: come back and change it so this is only available later
       }
     }
+
+    onNextSubmit = () => {
+        this.props.updateState(states.docStep4);
+        // pass in states.{something}
+    }
+
+    /**
+    * Callback function for next submit action.
+    */
+    // basically just have the option for the user to do a keyboard shortcut as well as button press.
+    handleNextKeyPress = (event) => {
+        if (event.key === ' ' && this.state.sectionComplete){
+            this.onNextSubmit();
+        }
+    };
   
     // fileInput = document.getElementById('input');
      
@@ -197,7 +220,7 @@ class Step3 extends Component {
 
                 </Box>
 
-                <LinkButton to="/NLPDocTool/step4" variant="contained"
+                {/* <LinkButton to="/NLPDocTool/step4" variant="contained"
                 onClick={
                     () => {
                         this.state.fieldParameters[0] = "ContextName";
@@ -217,7 +240,18 @@ class Step3 extends Component {
                 }
                 >
                     Confirm
-                </LinkButton>
+                </LinkButton> */}
+                <Box sx={{margin: '15px', width:'100%'}}>
+                    <CallbackKeyEventButton
+                        callBackFunc={this.handleNextKeyPress}
+                        buttonAvailable={this.state.sectionComplete}
+                        clickFunc={this.onNextSubmit}
+                        text={'Next (space)'}
+                    />
+                </Box>
+                <Box sx={{ margin: '15px'}}>
+                    <LinearProgress variant="determinate" value={progress}/>
+                </Box>
                 </Stack>
                 </main>
             </Container>

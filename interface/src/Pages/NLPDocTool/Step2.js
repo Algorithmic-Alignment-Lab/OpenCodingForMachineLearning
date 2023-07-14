@@ -27,6 +27,12 @@ import List from '@mui/material/List';
 import ListItemText from '@mui/material/ListItemText';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
+import states from './../../Constants/States';
+
+import CallbackKeyEventButton from '../../Custom/CallbackKeyEventButton';
+import LinearProgress from '@material-ui/core/LinearProgress';
+
+const progress = 20;
 
 class Step2 extends Component {
     constructor(props) {
@@ -40,9 +46,23 @@ class Step2 extends Component {
           outputs: [],
           nameO: "",
           typeO: "",
-          outputIndex: 1
+          outputIndex: 1,
+          sectionComplete: true, // todo: come back and change it so this is only available later
       }
     }
+
+    onNextSubmit = () => {
+        this.props.updateState(states.docStep3);
+    }
+
+    /**
+    * Callback function for next submit action.
+    */
+    handleNextKeyPress = (event) => {
+        if (event.key === ' ' && this.state.sectionComplete){
+            this.onNextSubmit();
+        }
+    };
 
     handleTextEndpoint = (event) => {
       this.setState({
@@ -219,7 +239,7 @@ class Step2 extends Component {
                       <CheckCircleIcon />
                     </IconButton>
                   </Box>
-                  <LinkButton to="/NLPDocTool/step3" variant="contained"
+                  {/* <LinkButton to="/NLPDocTool/step3" variant="contained"
                   onClick={
                     () => {
                       Model.parameters = this.state.parameters;
@@ -230,7 +250,18 @@ class Step2 extends Component {
                   }
                   >
                     Confirm
-                  </LinkButton>
+                  </LinkButton> */}
+                    <Box sx={{margin: '15px', width:'100%'}}>
+                        <CallbackKeyEventButton
+                            callBackFunc={this.handleNextKeyPress}
+                            buttonAvailable={this.state.sectionComplete}
+                            clickFunc={this.onNextSubmit}
+                            text={'Next (space)'}
+                        />
+                    </Box>
+                    <Box sx={{ margin: '15px'}}>
+                        <LinearProgress variant="determinate" value={progress}/>
+                    </Box>
                 </Stack>
                 </main>
             </Container>

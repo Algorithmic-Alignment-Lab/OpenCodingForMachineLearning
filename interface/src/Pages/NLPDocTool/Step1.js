@@ -156,7 +156,7 @@ function Step1Content(props) {
       <Box sx={{alignItems:'end'}}>
             <CallbackKeyEventButton
                 callBackFunc={handleNextKeyPress}
-                buttonAvailable={true}
+                buttonAvailable={true} // todo: come back and change this => only available later
                 clickFunc={onNextSubmit}
                 text={'Next (space)'}
             />
