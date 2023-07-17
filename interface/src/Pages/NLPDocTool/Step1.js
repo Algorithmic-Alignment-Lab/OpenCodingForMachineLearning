@@ -40,10 +40,15 @@ import LinearProgress from "@material-ui/core/LinearProgress";
 const progress = 0;
 
 function Step1Content(props) {
-	console.log(props);
 	const [anchorEl, setAnchorEl] = React.useState(null);
 
-	const [textInput, setTextInput] = React.useState(null);
+	const [urlInput, setUrlInput] = React.useState(null);
+    const [trainEndpointInput, setTrainEndpointInput] = React.useState(null);
+    const [predictEndpointInput, setPredictEndpointInput] = React.useState(null);
+    
+    var enteredUrl = false;
+    var enteredTrainEndpoint = false;
+    var enteredPredictEndpoint = false;
 
 	const handleClick = (event) => {
 		setAnchorEl(event.currentTarget);
@@ -53,29 +58,36 @@ function Step1Content(props) {
 		setAnchorEl(null);
 	};
 
-	const handleText = (event) => {
-		setTextInput(event.target.value);
-		Model.apiLink = textInput;
-	};
+	// const handleText = (event) => {
+	// 	setTextInput(event.target.value);
+	// 	Model.apiLink = textInput;
+	// };
 
 	const handleUrlText = (event) => {
-		setTextInput(event.target.value);
-		this.props.setUserModelLink(textInput);
-	};
-
-	const handlePortText = (event) => {
-		setTextInput(event.target.value);
-		this.props.setUserModelPort(textInput);
+		setUrlInput(event.target.value);
+        enteredUrl = false;
+        if (event.key === "Enter") {
+            enteredUrl = true;
+            props.setUserModelLink(urlInput);
+        }
 	};
 
 	const handleTrainEndpointText = (event) => {
-		setTextInput(event.target.value);
-		this.props.setUserModelTrainEndpoint(textInput);
+		setTrainEndpointInput(event.target.value);
+        enteredTrainEndpoint = false;
+        if (event.key === "Enter") {
+            enteredTrainEndpoint = true;
+            props.setUserModelTrainEndpoint(trainEndpointInput);
+        }
 	};
 
 	const handlePredictEndpointText = (event) => {
-		setTextInput(event.target.value);
-		this.props.setUserModelPredictEndpoint(textInput);
+		setPredictEndpointInput(event.target.value);
+        enteredPredictEndpoint = false;
+		if (event.key === "Enter") {
+            enteredPredictEndpoint = true;
+            props.setUserModelPredictEndpoint(predictEndpointInput);
+        }
 	};
 
 	const open = Boolean(anchorEl);
@@ -182,14 +194,16 @@ function Step1Content(props) {
 						<Typography paragraph>
 							Additionally, only generative NLP models are supported
 						</Typography>
-
+                        {/* // todo: add error={} functions for when we try and ping */}
 						<TextField
 							id="URL"
 							label="URL Link"
 							variant="filled"
+                            required
 							fullWidth
 							defaultValue={props.getUserModelLink()}
-							onChange={handleUrlText}
+							onKeyPress={handleUrlText} // check if they're done entering
+                            onChange={handleUrlText} // update the value from useState
 						/>
 						<TextField
 							id="TRAIN"
@@ -197,7 +211,8 @@ function Step1Content(props) {
 							variant="filled"
 							fullWidth
 							defaultValue={props.getUserModelTrainEndpoint()}
-							onChange={handleTrainEndpointText}
+							onKeyPress={handleTrainEndpointText} // check if they're done entering
+                            onChange={handleTrainEndpointText} // update the value from useState
 						/>
 						<TextField
 							id="PREDICT"
@@ -205,7 +220,8 @@ function Step1Content(props) {
 							variant="filled"
 							fullWidth
 							defaultValue={props.getUserModelPredictEndpoint()}
-							onChange={handlePredictEndpointText}
+							onKeyPress={handlePredictEndpointText} // check if they're done entering
+                            onChange={handlePredictEndpointText} // update the value from useState
 						/>
 						{/* Considered using radio buttons instead of text box, 
                 but this is more effort than its worth. Gonna go back to just using text boxes instead.

@@ -28,6 +28,9 @@ const fetch = require("node-fetch");
 class App extends Component {
 	constructor(props) {
 		super(props);
+        this.DEFAULT_USER_MODEL_LINK = "http://localhost:PORT";
+        this.DEFAULT_USER_MODEL_TRAIN_ENDPOINT = "/train";
+        this.DEFAULT_USER_MODEL_PREDICT_ENDPOINT = "/predict";
 		this.state = {
 			pageState: states.introduction,
 			optionID: null,
@@ -42,9 +45,9 @@ class App extends Component {
             // todo: consider if this would need to be structured different
             // if they were using a website instead of localhost
             user_model_to_document: {
-                link:"http://localhost:PORT", // have them specify everything here
-                train_endpoint: "/train",
-                predict_endpoint: "/predict",
+                link: this.DEFAULT_USER_MODEL_LINK, // have them specify everything here
+                train_endpoint: this.DEFAULT_USER_MODEL_TRAIN_ENDPOINT,
+                predict_endpoint: this.DEFAULT_USER_MODEL_PREDICT_ENDPOINT,
             },
 		};
 	}
@@ -148,7 +151,7 @@ class App extends Component {
 
     setUserModelLink = (link) => {
         const updated_user_model_to_document = this.getUserModelToDocument();
-        
+        console.log(`Setting user Model Link to ${link}`);
         // todo: ping the link they say and try to see if that works :0
         
         updated_user_model_to_document.link = link;
@@ -159,6 +162,7 @@ class App extends Component {
 
     setUserModelTrainEndpoint = (trainEndpoint) => {
         const updated_user_model_to_document = this.getUserModelToDocument();
+        console.log(`Setting user Model trainEndpoint to ${trainEndpoint}`);
         
         // todo: ping the link they say and try to see if that works :0
         
@@ -170,7 +174,7 @@ class App extends Component {
 
     setUserModelPredictEndpoint = (predictEndpoint) => {
         const updated_user_model_to_document = this.getUserModelToDocument();
-        
+        console.log(`Setting user Model predictEndpoint to ${predictEndpoint}`);
         // todo: ping the link they say and try to see if that works :0
         
         updated_user_model_to_document.predict_endpoint = predictEndpoint;
@@ -397,7 +401,7 @@ class App extends Component {
 
 	renderDocStep1() {
         console.log('In renderDocStep1()');
-		return <Step1
+		return (<Step1
             updateState={this.updateState}
             getOptionID={this.getOptionID}
             getDataWithParams={this.getDataWithParams}
@@ -412,10 +416,11 @@ class App extends Component {
 
             getUserModelPredictEndpoint={this.getUserModelPredictEndpoint}
             setUserModelPredictEndpoint={this.setUserModelPredictEndpoint}
-        />
+        />);
 	}
 
     renderDocStep2() {
+        console.log(this.state.user_model_to_document);
         console.log('In renderDocStep2()');
 		return <Step2
             updateState={this.updateState}
