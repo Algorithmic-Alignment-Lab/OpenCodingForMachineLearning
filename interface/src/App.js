@@ -149,11 +149,38 @@ class App extends Component {
         };
     }
 
+    async testGetLink(link, params={id: this.getOptionID()}) {
+        const response = await this.getDataWithParams(link, params);
+        if (!response.ok) {
+            if ("msg" in Object.keys(response)) {
+                throw Error(response.msg);
+            } else if ("statusText" in Object.keys(response)) {
+                throw Error(response.statusText);
+            }
+        } else {
+            console.log(`Successfully pinged (GET) link = "${link}"`);
+        }
+    }
+
+    async testPostLink(link, params={id: this.getOptionID()}) {
+        const response = await this.postData(link, params);
+        if (!response.ok) {
+            if ("msg" in Object.keys(response)) {
+                throw Error(response.msg);
+            } else if ("statusText" in Object.keys(response)) {
+                throw Error(response.statusText);
+            }
+        } else {
+            console.log(`Successfully pinged (POST) link = "${link}"`);
+        }
+    }
+
     setUserModelLink = (link) => {
         const updated_user_model_to_document = this.getUserModelToDocument();
         console.log(`Setting user Model Link to ${link}`);
         // todo: ping the link they say and try to see if that works :0
         
+
         updated_user_model_to_document.link = link;
         this.setState({
             user_model_to_document: updated_user_model_to_document,
@@ -416,6 +443,9 @@ class App extends Component {
 
             getUserModelPredictEndpoint={this.getUserModelPredictEndpoint}
             setUserModelPredictEndpoint={this.setUserModelPredictEndpoint}
+
+            testGetLink={this.testGetLink}
+            testPostLink={this.testPostLInk}
         />);
 	}
 

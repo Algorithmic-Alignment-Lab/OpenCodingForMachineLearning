@@ -26,6 +26,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import FormLabel from "@mui/material/FormLabel";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
+import {List, ListItem} from "@mui/material/";
 import { useRadioGroup } from "@mui/material/RadioGroup";
 
 import Model from "./Model.js";
@@ -68,7 +69,6 @@ function Step1Content(props) {
         enteredUrl = false;
         if (event.key === "Enter") {
             enteredUrl = true;
-            props.setUserModelLink(urlInput);
         }
 	};
 
@@ -148,6 +148,9 @@ function Step1Content(props) {
 								Note: At this time, only models that are hosted locally are
 								supported.
 							</Typography>
+                            <Typography paragraph>
+                                Additionally, only generative NLP models are supported
+                            </Typography>
 						</Box>
 
 						<Button
@@ -185,15 +188,19 @@ function Step1Content(props) {
 						sx={{ paddingTop: 5, paddingRight: 5, paddingLeft: 5 }}
 					>
 						<Typography variant="h6">
-							Select a Model to Link From Hugging Face
+							Enter the following information about your model
 						</Typography>
-
-						<Typography paragraph>
-							Note: Please make sure you put the model API
-						</Typography>
-						<Typography paragraph>
-							Additionally, only generative NLP models are supported
-						</Typography>
+                        <ul>
+                            <li>
+                                Link for your model i.e., "https://localhost:5000"
+                            </li>
+                            <li>
+                               Train endpoint i.e., "/train"
+                            </li>
+                            <li sx={{display: 'list-item'}}>
+                               Predict endpoint i.e., "/predict"
+                            </li>
+                        </ul>
                         {/* // todo: add error={} functions for when we try and ping */}
 						<TextField
 							id="URL"
@@ -201,7 +208,7 @@ function Step1Content(props) {
 							variant="filled"
                             required
 							fullWidth
-							defaultValue={props.getUserModelLink()}
+							// defaultValue={props.getUserModelLink()}
 							onKeyPress={handleUrlText} // check if they're done entering
                             onChange={handleUrlText} // update the value from useState
 						/>
@@ -209,8 +216,9 @@ function Step1Content(props) {
 							id="TRAIN"
 							label="Train endpoint"
 							variant="filled"
+                            required
 							fullWidth
-							defaultValue={props.getUserModelTrainEndpoint()}
+							// defaultValue={props.getUserModelTrainEndpoint()}
 							onKeyPress={handleTrainEndpointText} // check if they're done entering
                             onChange={handleTrainEndpointText} // update the value from useState
 						/>
@@ -218,8 +226,9 @@ function Step1Content(props) {
 							id="PREDICT"
 							label="Predict endpoint"
 							variant="filled"
+                            required
 							fullWidth
-							defaultValue={props.getUserModelPredictEndpoint()}
+							// defaultValue={props.getUserModelPredictEndpoint()}
 							onKeyPress={handlePredictEndpointText} // check if they're done entering
                             onChange={handlePredictEndpointText} // update the value from useState
 						/>
@@ -281,13 +290,19 @@ class Step1 extends Component {
 				getOptionID={this.props.getOptionID}
 				getDataWithParams={this.props.getDataWithParams}
 				postData={this.props.postData}
+
 				getUserModelToDocument={this.props.getUserModelToDocument}
 				getUserModelLink={this.props.getUserModelLink}
 				setUserModelLink={this.props.setUserModelLink}
-				getUserModelTrainEndpoint={this.props.getUserModelTrainEndpoint}
+				
+                getUserModelTrainEndpoint={this.props.getUserModelTrainEndpoint}
 				setUserModelTrainEndpoint={this.props.setUserModelTrainEndpoint}
-				getUserModelPredictEndpoint={this.props.getUserModelPredictEndpoint}
+				
+                getUserModelPredictEndpoint={this.props.getUserModelPredictEndpoint}
 				setUserModelPredictEndpoint={this.props.setUserModelPredictEndpoint}
+
+                testGetLink={this.props.testGetLink}
+                testPostLink={this.props.testPostLInk}
 			/>
 		);
 	}
