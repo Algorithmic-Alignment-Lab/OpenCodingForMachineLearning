@@ -150,20 +150,25 @@ class App extends Component {
     }
 
     async testGetLink(link) { // , params={id: this.getOptionID()}) {
+        link = "/api/"; // todo: figure out how to access proxies from setupProxy
         console.log(`Testing get link with link="${link}"...`);
-        const response = await this.getDataWithParams(link);
-        if (!response.ok) {
-            alert(`Try again! (get link = ${link} FAILED)`);
-            if ("msg" in Object.keys(response)) {
-                throw Error(response.msg);
-                // console.log("Error!", response.msg);
-                // todo: add state for if they errored, have popup appear if so
-            } else if ("statusText" in Object.keys(response)) {
-                throw Error(response.statusText);
-                //console.log("Error!", response.statusText);
+        try {
+            const response = await this.getDataWithParams(link);
+            if (!response.ok) {
+                alert(`Try again! (get link = ${link} FAILED)`);
+                if ("msg" in Object.keys(response)) {
+                    // throw Error(response.msg);
+                    console.log("Error!", response.msg);
+                    // todo: add state for if they errored, have popup appear if so
+                } else if ("statusText" in Object.keys(response)) {
+                    // throw Error(response.statusText);
+                    console.log("Error!", response.statusText);
+                }
+            } else {
+                console.log(`Successfully pinged (GET) link = "${link}"`);
             }
-        } else {
-            console.log(`Successfully pinged (GET) link = "${link}"`);
+        } catch (error) {
+            console.log(`Unable to run getDataWithParams(${link})`);
         }
     }
 
