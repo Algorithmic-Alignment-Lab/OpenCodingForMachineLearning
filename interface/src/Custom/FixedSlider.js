@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import "./../../Custom/styles.css"
+import "./styles.css"
 
 /**
 * Fixed length and width slider.

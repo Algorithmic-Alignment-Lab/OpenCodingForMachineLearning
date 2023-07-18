@@ -70,7 +70,8 @@ function Step1Content(props) {
         if (event.key === "Enter") {
             enteredUrl = true;
             try {
-                props.testGetLink(urlInput);
+                //todo: come back and validate link once we figure out proxies
+                //props.testGetLink(urlInput);
                 props.setUserModelLink(urlInput);
             } catch (error) {
                 console.log("Something went wrong :0");

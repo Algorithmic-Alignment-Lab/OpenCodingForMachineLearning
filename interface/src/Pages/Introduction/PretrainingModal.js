@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import FixedSlider from './FixedSlider';
+import FixedSlider from '../../Custom/FixedSlider';
 import CallbackKeyEventButton from '../../Custom/CallbackKeyEventButton';
 import Loading from '../../Custom/Loading';
 

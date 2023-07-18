@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import FixedSlider from '../../Custom/FixedSlider'
+
 import CssBaseline from "@mui/material/CssBaseline";
 import Grid from "@mui/material/Grid";
 import Container from "@mui/material/Container";
@@ -47,7 +49,10 @@ class Step2 extends Component {
 			nameO: "",
 			typeO: "",
 			outputIndex: 1,
-			sectionComplete: true, // todo: come back and change it so this is only available later
+
+            // todo: add state variables (and corresponding handler methods) to control the sliders
+
+			sectionComplete: true, 
 		};
 	}
 
@@ -114,10 +119,77 @@ class Step2 extends Component {
 							justifyContent="center"
 							alignItems="center"
 							spacing={2}
-							sx={{ paddingTop: 10, paddingRight: 5, paddingLeft: 5 }}
+							sx={{ paddingTop: 10, paddingRight: 5, paddingLeft: 5, alignItems: 'left'}}
 						>
-							<h2>Step 2: Add the Rules </h2>
-							<Typography variant="h6">
+							<h2>Step 2: Add the Training Parameters </h2>
+                            <div style = {{alignItems: 'left', marginBottom: '10px'}}>
+                                
+                                <div style = {{alignItems: 'center', marginBottom: '10px'}}>
+                                    {"How many text samples would you like to annotate?"}
+                                    <b style = {{marginLeft: '5px'}}>
+                                        {this.state.numAnnotate}
+                                    </b> 
+                                </div>
+                                <div style = {{ marginBottom: '20px'}}>
+                                    <FixedSlider 
+                                        name='Annotation Samples'
+                                        width={'90vw'}
+                                        startValue={10}
+                                        endValue={300}
+                                        defaultValue={100}
+                                        updateValue={(value) => {this.setState({numAnnotate: value})}}
+                                    />
+                                </div>
+                                <div style = {{alignItems: 'center', marginBottom: '10px'}}>
+                                    {"How many predictions should the model make during each verification round?"}
+                                    <b style = {{marginLeft: '5px'}}>
+                                        {this.state.numVerify}
+                                    </b> 
+                                </div>
+                                <div style = {{ marginBottom: '20px'}}>
+                                    <FixedSlider 
+                                        name='Annotation Samples'
+                                        width={'90vw'}
+                                        startValue={10}
+                                        endValue={300}
+                                        defaultValue={100}
+                                        updateValue={(value) => {this.setState({numVerify: value})}}
+                                    />
+                                </div>
+                                <div style = {{alignItems: 'center', marginBottom: '10px'}}>
+                                    {"What batch size should the model be finetuned with?"}
+                                    <b style = {{marginLeft: '5px'}}>
+                                        {this.state.batchSize}
+                                    </b> 
+                                </div>
+                                <div style = {{ marginBottom: '20px'}}>
+                                    <FixedSlider 
+                                        name='Batch Size'
+                                        width={'29.5vw'}
+                                        startValue={1}
+                                        endValue={100}
+                                        defaultValue={50}
+                                        updateValue={(value) => {this.setState({numVerify: value})}}
+                                    />
+                                </div>
+                                <div style = {{alignItems: 'center', marginBottom: '10px'}}>
+                                    {"How many epochs should the model be finetuned with?"}
+                                    <b style = {{marginLeft: '5px'}}>
+                                        {this.state.numEpochs}
+                                    </b> 
+                                </div>
+                                <div style = {{ marginBottom: '20px'}}>
+                                    <FixedSlider 
+                                        name='Number of Epochs'
+                                        width={'10vw'}
+                                        startValue={1}
+                                        endValue={15}
+                                        defaultValue={1}
+                                        updateValue={(value) => this.setState({})}
+                                    />
+                                </div>
+                            </div>
+							{/* <Typography variant="h6">
 								Specify how to run the prediction{" "}
 							</Typography>
 							<Box component="div" sx={{ display: "inline" }}>
@@ -240,7 +312,7 @@ class Step2 extends Component {
 								>
 									<CheckCircleIcon />
 								</IconButton>
-							</Box>
+							</Box> */}
 							{/* <LinkButton to="/NLPDocTool/step3" variant="contained"
                   onClick={
                     () => {
