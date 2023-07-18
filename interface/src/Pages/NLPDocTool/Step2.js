@@ -36,6 +36,14 @@ import LinearProgress from "@material-ui/core/LinearProgress";
 
 const progress = 20;
 
+const BATCH_SIZE_SLIDER_MIN_VALUE = 10;
+const BATCH_SIZE_SLIDER_MAX_VALUE = 300;
+const BATCH_SIZE_SLIDER_DEFAULT = 100; 
+
+const NUM_EPOCHS_SLIDER_MIN_VALUE = 1;
+const NUM_EPOCHS_SLIDER_MAX_VALUE = 15;
+const NUM_EPOCHS_SLIDER_DEFAULT = 1;
+
 class Step2 extends Component {
 	constructor(props) {
 		super(props);
@@ -51,12 +59,16 @@ class Step2 extends Component {
 			outputIndex: 1,
 
             // todo: add state variables (and corresponding handler methods) to control the sliders
+            batchSize: BATCH_SIZE_SLIDER_DEFAULT,
+            numEpochs: NUM_EPOCHS_SLIDER_DEFAULT,
 
 			sectionComplete: true, 
 		};
 	}
 
 	onNextSubmit = () => {
+        this.props.setUserModelTrainBatchSize(this.state.batchSize);
+        this.props.setUserModelTrainNumEpochs(this.state.numEpochs)
 		this.props.updateState(states.docStep3);
 	};
 
@@ -125,39 +137,7 @@ class Step2 extends Component {
                             <div style = {{alignItems: 'left', marginBottom: '10px'}}>
                                 
                                 <div style = {{alignItems: 'center', marginBottom: '10px'}}>
-                                    {"How many text samples would you like to annotate?"}
-                                    <b style = {{marginLeft: '5px'}}>
-                                        {this.state.numAnnotate}
-                                    </b> 
-                                </div>
-                                <div style = {{ marginBottom: '20px'}}>
-                                    <FixedSlider 
-                                        name='Annotation Samples'
-                                        width={'90vw'}
-                                        startValue={10}
-                                        endValue={300}
-                                        defaultValue={100}
-                                        updateValue={(value) => {this.setState({numAnnotate: value})}}
-                                    />
-                                </div>
-                                <div style = {{alignItems: 'center', marginBottom: '10px'}}>
-                                    {"How many predictions should the model make during each verification round?"}
-                                    <b style = {{marginLeft: '5px'}}>
-                                        {this.state.numVerify}
-                                    </b> 
-                                </div>
-                                <div style = {{ marginBottom: '20px'}}>
-                                    <FixedSlider 
-                                        name='Annotation Samples'
-                                        width={'90vw'}
-                                        startValue={10}
-                                        endValue={300}
-                                        defaultValue={100}
-                                        updateValue={(value) => {this.setState({numVerify: value})}}
-                                    />
-                                </div>
-                                <div style = {{alignItems: 'center', marginBottom: '10px'}}>
-                                    {"What batch size should the model be finetuned with?"}
+                                    {"How many text samples would you like to be sent for each train epoch (batch size)?"}
                                     <b style = {{marginLeft: '5px'}}>
                                         {this.state.batchSize}
                                     </b> 
@@ -166,14 +146,14 @@ class Step2 extends Component {
                                     <FixedSlider 
                                         name='Batch Size'
                                         width={'29.5vw'}
-                                        startValue={1}
-                                        endValue={100}
-                                        defaultValue={50}
-                                        updateValue={(value) => {this.setState({numVerify: value})}}
+                                        startValue={BATCH_SIZE_SLIDER_MIN_VALUE}
+                                        endValue={BATCH_SIZE_SLIDER_MAX_VALUE}
+                                        defaultValue={BATCH_SIZE_SLIDER_DEFAULT}
+                                        updateValue={(value) => {this.setState({batchSize: value})}}
                                     />
                                 </div>
                                 <div style = {{alignItems: 'center', marginBottom: '10px'}}>
-                                    {"How many epochs should the model be finetuned with?"}
+                                    {"How many epochs should the model be trained with?"}
                                     <b style = {{marginLeft: '5px'}}>
                                         {this.state.numEpochs}
                                     </b> 
@@ -182,10 +162,10 @@ class Step2 extends Component {
                                     <FixedSlider 
                                         name='Number of Epochs'
                                         width={'10vw'}
-                                        startValue={1}
-                                        endValue={15}
-                                        defaultValue={1}
-                                        updateValue={(value) => this.setState({})}
+                                        startValue={NUM_EPOCHS_SLIDER_MIN_VALUE}
+                                        endValue={NUM_EPOCHS_SLIDER_MAX_VALUE}
+                                        defaultValue={NUM_EPOCHS_SLIDER_DEFAULT}
+                                        updateValue={(value) => this.setState({numEpochs: value})}
                                     />
                                 </div>
                             </div>

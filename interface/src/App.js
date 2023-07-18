@@ -48,6 +48,12 @@ class App extends Component {
                 link: this.DEFAULT_USER_MODEL_LINK, // have them specify everything here
                 train_endpoint: this.DEFAULT_USER_MODEL_TRAIN_ENDPOINT,
                 predict_endpoint: this.DEFAULT_USER_MODEL_PREDICT_ENDPOINT,
+                // I'm assuming the user will give me a train method to 
+                train_batch_size: 0, // = how many texts to send to their model to train on
+                // todo: ^ maybe update naming (figure out what we're really asking for)
+                train_num_epochs: 0, // = how many times to run train
+                // didn't prompt for predict, because our interface seems to be more like a one at a time situation
+                // but if we want to we can add that here and a corresponding slider in Step2.js
             },
 		};
 	}
@@ -215,6 +221,26 @@ class App extends Component {
         // todo: ping the link they say and try to see if that works :0
         
         updated_user_model_to_document.predict_endpoint = predictEndpoint;
+        this.setState({
+            user_model_to_document: updated_user_model_to_document,
+        });
+    }
+
+    setUserModelTrainBatchSize = (trainBatchSize) => {
+        const updated_user_model_to_document = this.getUserModelToDocument();
+        console.log(`Setting User Model trainBatchSize to ${trainBatchSize}`);
+
+        updated_user_model_to_document.train_batch_size = trainBatchSize;
+        this.setState({
+            user_model_to_document: updated_user_model_to_document,
+        });
+    }
+
+    setUserModelTrainNumEpochs = (trainNumEpochs) => {
+        const updated_user_model_to_document = this.getUserModelToDocument();
+        console.log(`Setting User Model trainNumEpochs to ${trainNumEpochs}`);
+
+        updated_user_model_to_document.train_num_epochs = trainNumEpochs;
         this.setState({
             user_model_to_document: updated_user_model_to_document,
         });
@@ -467,6 +493,9 @@ class App extends Component {
             getOptionID={this.getOptionID}
             getDataWithParams={this.getDataWithParams}
             postData={this.postData}
+
+            setUserModelTrainBatchSize={this.setUserModelTrainBatchSize}
+            setUserModelTrainNumEpochs={this.setUserModelTrainNumEpochs}
         />
 	}
 
