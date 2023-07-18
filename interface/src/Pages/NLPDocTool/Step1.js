@@ -69,6 +69,13 @@ function Step1Content(props) {
         enteredUrl = false;
         if (event.key === "Enter") {
             enteredUrl = true;
+            try {
+                props.testGetLink(urlInput);
+                props.setUserModelLink(urlInput);
+            } catch (error) {
+                console.log("Something went wrong :0");
+                console.log(error);
+            }
         }
 	};
 
@@ -200,6 +207,7 @@ function Step1Content(props) {
                             <li sx={{display: 'list-item'}}>
                                Predict endpoint i.e., "/predict"
                             </li>
+                            <b>Press ENTER when you are done typing each selection.</b>
                         </ul>
                         {/* // todo: add error={} functions for when we try and ping */}
 						<TextField

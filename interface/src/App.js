@@ -149,13 +149,18 @@ class App extends Component {
         };
     }
 
-    async testGetLink(link, params={id: this.getOptionID()}) {
-        const response = await this.getDataWithParams(link, params);
+    async testGetLink(link) { // , params={id: this.getOptionID()}) {
+        console.log(`Testing get link with link="${link}"...`);
+        const response = await this.getDataWithParams(link);
         if (!response.ok) {
+            alert(`Try again! (get link = ${link} FAILED)`);
             if ("msg" in Object.keys(response)) {
                 throw Error(response.msg);
+                // console.log("Error!", response.msg);
+                // todo: add state for if they errored, have popup appear if so
             } else if ("statusText" in Object.keys(response)) {
                 throw Error(response.statusText);
+                //console.log("Error!", response.statusText);
             }
         } else {
             console.log(`Successfully pinged (GET) link = "${link}"`);
