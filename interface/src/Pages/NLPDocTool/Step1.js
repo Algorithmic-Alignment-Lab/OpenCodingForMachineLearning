@@ -115,6 +115,7 @@ function Step1Content(props) {
 
         try {
             props.testGetLink(props.getUserModelLink() + trainEndpointInput);
+            pingPredictSuccess = true;
         } catch (err) {
             alert("Unable to ping your predict endpoint. Please re-input.");
         }

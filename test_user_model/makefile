@@ -2,7 +2,7 @@ SHELL = /bin/bash
 
 VENV = venv
 PIP = $(VENV)/bin/pip
-PYTHON = $(VENV)/venv/bin/python3
+PYTHON = $(VENV)/bin/python3
 
 # note: source doesn't work in makefile, use . instead
 venv/bin/activate: requirements.txt
