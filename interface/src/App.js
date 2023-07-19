@@ -28,7 +28,7 @@ const fetch = require("node-fetch");
 class App extends Component {
 	constructor(props) {
 		super(props);
-        this.DEFAULT_USER_MODEL_LINK = "http://localhost:PORT";
+        this.DEFAULT_USER_MODEL_LINK = "/user_model"; // we set up the proxy as this in package.json
         this.DEFAULT_USER_MODEL_TRAIN_ENDPOINT = "/train";
         this.DEFAULT_USER_MODEL_PREDICT_ENDPOINT = "/predict";
 		this.state = {
@@ -156,7 +156,7 @@ class App extends Component {
     }
 
     async testGetLink(link) { // , params={id: this.getOptionID()}) {
-        link = "/api/"; // todo: figure out how to access proxies from setupProxy
+        // link = "/api/"; // todo: figure out how to access proxies from setupProxy
         console.log(`Testing get link with link="${link}"...`);
         try {
             const response = await this.getDataWithParams(link);
@@ -195,7 +195,13 @@ class App extends Component {
         const updated_user_model_to_document = this.getUserModelToDocument();
         console.log(`Setting user Model Link to ${link}`);
         // todo: ping the link they say and try to see if that works :0
-        
+
+        link = link.concat('/user_model');
+        try {
+            this.testGetLink(link);
+        } catch (err) {
+            console.log(err.toString());
+        }
 
         updated_user_model_to_document.link = link;
         this.setState({

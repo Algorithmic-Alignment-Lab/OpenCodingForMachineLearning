@@ -64,21 +64,21 @@ function Step1Content(props) {
 	// 	Model.apiLink = textInput;
 	// };
 
-	const handleUrlText = (event) => {
-		setUrlInput(event.target.value);
-        enteredUrl = false;
-        if (event.key === "Enter") {
-            enteredUrl = true;
-            try {
-                //todo: come back and validate link once we figure out proxies
-                //props.testGetLink(urlInput);
-                props.setUserModelLink(urlInput);
-            } catch (error) {
-                console.log("Something went wrong :0");
-                console.log(error);
-            }
-        }
-	};
+	// const handleUrlText = (event) => {
+	// 	setUrlInput(event.target.value);
+    //     enteredUrl = false;
+    //     if (event.key === "Enter") {
+    //         enteredUrl = true;
+    //         try {
+    //             //todo: come back and validate link once we figure out proxies
+    //             //props.testGetLink(urlInput);
+    //             props.setUserModelLink(urlInput);
+    //         } catch (error) {
+    //             console.log("Something went wrong :0");
+    //             console.log(error);
+    //         }
+    //     }
+	// };
 
 	const handleTrainEndpointText = (event) => {
 		setTrainEndpointInput(event.target.value);
@@ -102,9 +102,27 @@ function Step1Content(props) {
 	const id = open ? "simple-popover" : undefined;
 
 	const onNextSubmit = () => {
-		console.log(props);
-		props.updateState(states.docStep2);
-		// pass in states.{something}
+		// console.log(props);
+        // validate their endpoint inputs
+        let pingTrainSuccess = false;
+        let pingPredictSuccess = false;
+        try { 
+            props.testGetLink(props.getUserModelLink() + trainEndpointInput);
+            pingTrainSuccess = true;
+        } catch (err) {
+            alert("Unable to ping your train endpoint. Please re-input.");
+        }
+
+        try {
+            props.testGetLink(props.getUserModelLink() + trainEndpointInput);
+        } catch (err) {
+            alert("Unable to ping your predict endpoint. Please re-input.");
+        }
+
+        if (pingTrainSuccess && pingPredictSuccess) {
+            props.updateState(states.docStep2);
+        }
+		
 	};
 
 	/**
@@ -199,9 +217,9 @@ function Step1Content(props) {
 							Enter the following information about your model
 						</Typography>
                         <ul>
-                            <li>
+                            {/* <li>
                                 Link for your model i.e., "https://localhost:5000"
-                            </li>
+                            </li> */}
                             <li>
                                Train endpoint i.e., "/train"
                             </li>
@@ -211,7 +229,7 @@ function Step1Content(props) {
                             <b>Press ENTER when you are done typing each selection.</b>
                         </ul>
                         {/* // todo: add error={} functions for when we try and ping */}
-						<TextField
+						{/* <TextField
 							id="URL"
 							label="URL Link"
 							variant="filled"
@@ -220,7 +238,7 @@ function Step1Content(props) {
 							// defaultValue={props.getUserModelLink()}
 							onKeyPress={handleUrlText} // check if they're done entering
                             onChange={handleUrlText} // update the value from useState
-						/>
+						/> */}
 						<TextField
 							id="TRAIN"
 							label="Train endpoint"

@@ -2,7 +2,15 @@
   "name": "interface",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:8000",
+  "proxy": {
+    "/user_model/.*": {
+      "target": "http://localhost:5555/"
+    },
+    "/.*": {
+      "target": "http://localhost:8000",
+      "changeOrigin": true
+    }
+  },
   "dependencies": {
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
