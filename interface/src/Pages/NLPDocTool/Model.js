@@ -2,7 +2,7 @@ import React, { Component } from "react";
 
 
 const Model = {
-    backendUrl: "http://petrichor.csail.mit.edu",
+    backendUrl: "/NLPDocTool", // "http://petrichor.csail.mit.edu",
     huggingFace: undefined,
     apiLink: "",
     endpoint: "",

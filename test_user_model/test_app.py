@@ -13,6 +13,8 @@ def home():
     add_options(response)
     return response
 
+# for now, I'm assuming the user will have dealt with training on their own.
+# i.e. taking the labels from results csv and training on that
 @app.route("/user_model/train")
 def train():
     response = {"body": "<p>Welcome to the train page! Nothing is set up yet.</p>"}

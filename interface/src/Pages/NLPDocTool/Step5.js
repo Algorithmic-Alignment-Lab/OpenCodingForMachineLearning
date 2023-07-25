@@ -316,6 +316,9 @@ class Step5 extends Component {
 									);
 									data.append("inputName", Model.parameters[0].name);
 									data.append("outputName", Model.outputs[0].name);
+                                    // todo: come back here and replace this with the a post to the user's /predict endpoint
+                                    // we can even write a function in our app to do this and send it through as a prop
+                                    // so we can easily show the user what we expect from them.
 									axios({
 										method: "post",
 										url: Model.backendUrl + "/runPrediction",
