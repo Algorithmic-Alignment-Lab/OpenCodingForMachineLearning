@@ -126,24 +126,30 @@ class Step3 extends Component {
 										// axios.post(Model.backendUrl+"/processFile", data, {
 
 										// })
+                                        try {
+                                            axios({
+                                                method: "post",
+                                                url: Model.backendUrl + "/processFile",
+                                                data: data,
+                                                headers: { "Content-Type": "multipart/form-data" },
+                                            }).then((res) => {
+                                                // then print response status
+                                                console.log(res.statusText);
 
-										axios({
-											method: "post",
-											url: Model.backendUrl + "/processFile",
-											data: data,
-											headers: { "Content-Type": "multipart/form-data" },
-										}).then((res) => {
-											// then print response status
-											console.log(res.statusText);
-
-											this.setState({
-												objectArray: res.data,
-											});
-											let fieldNumber = res.data.length; //SET THIS
-											console.log(fieldNumber);
-											console.log(res.data);
-											this.initalizeFileArray(fieldNumber);
-										});
+                                                this.setState({
+                                                    objectArray: res.data,
+                                                });
+                                                let fieldNumber = res.data.length; //SET THIS
+                                                console.log(fieldNumber);
+                                                console.log(res.data);
+                                                this.initalizeFileArray(fieldNumber);
+                                            });
+                                        } catch (err) {
+                                            console.error("Error response from post(/NLPDocTool/api/processFile):");
+                                            console.error(err.response.data);    // ***
+                                            console.error(err.response.status);  // ***
+                                            console.error(err.response.headers)
+                                        }
 									}}
 								/>
 							</Button>

@@ -9,5 +9,5 @@ module.exports = function(app) {
     // below is the beginning of what I'm considering to temporarily link this application
     // to NLPDocTool's backend. 
     // Ideally, I'd be converting her express backend to flask, but alas, time...
-    app.use('/NLPDocTool', createProxyMiddleware({target: 'http://petrichor.csail.mit.edu/', changeOrigin: true}));
+    app.use('/NLPDocTool/api', createProxyMiddleware({target: 'http://localhost:3030/', changeOrigin: true}));
 }

@@ -30,6 +30,9 @@ filename: function (req, file, cb) {
 })
 var upload = multer({ storage: storage }).single('file')
 
+// originally thought i'd have to change the routes here,
+// but just changing them in NLPDocTool_Backend/app.js indexRouter works :D
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });

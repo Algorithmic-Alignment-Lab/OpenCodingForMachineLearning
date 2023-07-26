@@ -1,8 +1,8 @@
 {
-  "name": "mldoctool-backend",
+  "name": "nlpdoctool-backend",
   "version": "0.0.0",
   "private": true,
-  "proxy": "http://petrichor.csail.mit.edu:3030",
+  "proxy": "http://localhost:3030",
   "scripts": {
     "start": "node ./bin/www"
   },
