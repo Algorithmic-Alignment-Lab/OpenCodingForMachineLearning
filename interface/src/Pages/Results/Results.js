@@ -2,15 +2,9 @@
 // for now lets try one annotation per group
 // todo: figure out how to load in the groups, how they're stored.
 
-import React, {Component} from 'react';
-import { GridColDef } from '@mui/x-data-grid';
-import Box from '@mui/material/Box';
+import { Component } from 'react';
 import Grid from '@mui/material/Grid';
-import Stack from '@mui/material/Stack';
-import { sizing } from '@mui/system';
 import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
-import ButtonGroup from '@mui/material/ButtonGroup';
 
 import states from './../../Constants/States';
 // import progress from './../../Constants/States';

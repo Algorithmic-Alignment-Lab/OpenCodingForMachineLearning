@@ -1,6 +1,3 @@
-import React, { Component } from "react";
-
-
 const Model = {
     backendUrl: "/NLPDocTool/api", // "http://petrichor.csail.mit.edu",
     huggingFace: undefined,

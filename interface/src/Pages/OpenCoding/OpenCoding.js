@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import { Component } from 'react';
 
 import states from '../../Constants/States';
 // import progress from './../../Constants/States';
