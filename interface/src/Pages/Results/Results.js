@@ -12,7 +12,7 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import CallbackKeyEventButton from '../../Custom/CallbackKeyEventButton';
 import Loading from '../../Custom/Loading';
 
-import DataTable from './DataTable'
+import DataTable from '../../Custom/DataTable'
 
 const progress = 100;
 const ID_INDEX = 0;

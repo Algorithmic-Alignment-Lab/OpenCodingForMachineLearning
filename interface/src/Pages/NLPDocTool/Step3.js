@@ -20,6 +20,8 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 
+import DataTable from "./../../Custom/DataTable"
+
 // import App from './App.js';
 import states from "./../../Constants/States";
 
@@ -38,6 +40,16 @@ class Step3 extends Component {
 			objectArray: [],
 			sectionComplete: true, // todo: come back and change it so this is only available later
 		};
+        this.example_context_table_columns = [
+            {field: "context", headerName: "(Context)", minWidth: 150}, //flex: 1}, //
+            {field: "input", headerName: "(JSON Input for Representative Case)", minWidth: 400}
+        ];
+        // todo: make sure to tell the user that the json just needs to have the keys they utilize in their /predict
+        this.example_context_table_rows = [
+            {id:1, context: "informal greeting", input: '{"text": "Hi!"}'},
+            {id:2, context: "formal greeting", input: '{"text": "Hello."}'},
+            {id:3, context: "question", input: '{"text": "How are you?"}'}
+        ];
 	}
 
 	onNextSubmit = () => {
@@ -88,8 +100,9 @@ class Step3 extends Component {
 							sx={{ paddingTop: 10, paddingRight: 5, paddingLeft: 5 }}
 						>
 							<h2>Step 3: Upload Your Contexts </h2>
-							<Typography paragraph>A Context is: BLAH BLAH BLAH</Typography>
-							<Typography paragraph>
+							<Typography paragraph>A context is a category of prompts for your model</Typography>
+							<Typography paragraph></Typography>
+                            <Typography paragraph>
 								The CSV should follow this format:
 							</Typography>
 							<ul>
@@ -98,6 +111,13 @@ class Step3 extends Component {
 								<li>Comma deliminator</li>
 								<li>Surround text with double quotes</li>
 							</ul>
+                            <DataTable
+                                title={"Example (your's wouldn't have the header)"}
+                                columns={this.example_context_table_columns}
+                                rows={this.example_context_table_rows}
+                                height={300}
+                                width={"100%"}
+                            />
 							<Button variant="contained" component="label">
 								Upload
 								<input
@@ -144,71 +164,7 @@ class Step3 extends Component {
 									}}
 								/>
 							</Button>
-							<Typography variant="h6">
-								Please match the fields in your context CSV to your prediction
-								parameters
-							</Typography>
-							<Box
-								sx={{
-									width: "100%",
-									maxWidth: 600,
-									bgcolor: "background.paper",
-								}}
-							>
-								<List>
-									<ListItem
-										key={0}
-										component="div"
-										divider
-										sx={{ paddingTop: 4, paddingBottom: 4 }}
-									>
-										<ListItemText primary={"Field 0"} />
-										<ListItemText primary={"Context Name"} />
-									</ListItem>
-									{this.state.fieldArray.slice(1).map((value) => (
-										<ListItem
-											key={value.id}
-											component="div"
-											divider
-											sx={{ paddingTop: 4, paddingBottom: 4 }}
-											secondaryAction={
-												<Box sx={{ width: 300, bgcolor: "background.paper" }}>
-													<FormControl fullWidth>
-														<InputLabel
-															id={"demo-simple-select-label" + value.id}
-														>
-															Parameter
-														</InputLabel>
-														<Select
-															labelId={"demo-simple-select-label" + value.id}
-															id={value.name}
-															defaultValue=""
-															label="Parameter"
-															onChange={(event) => {
-																// console.log(Model.parameters);
-																this.state.fieldParameters[value.id] =
-																	event.target.value;
-
-																console.log(this.state.fieldParameters);
-															}}
-														>
-															{Model.parameters.map((x) => (
-																<MenuItem value={x.id}>{x.name}</MenuItem>
-															))}
-															<MenuItem value={"IGNORE"}>
-																No Parameter/Ignore
-															</MenuItem>
-														</Select>
-													</FormControl>
-												</Box>
-											}
-										>
-											<ListItemText primary={value.name} />
-										</ListItem>
-									))}
-								</List>
-							</Box>
-
+							{/* Removed the table to select field parameters */}
 							{/* <LinkButton to="/NLPDocTool/step4" variant="contained"
                 onClick={
                     () => {
