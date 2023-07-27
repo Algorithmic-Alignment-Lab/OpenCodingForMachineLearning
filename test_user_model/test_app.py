@@ -1,11 +1,14 @@
 from flask import Flask, request
-from transformers import GPT2Tokenizer, GPT2Model
+from transformers import AutoTokenizer, AutoModelForCausalLM
 
 app = Flask(__name__)
 TEST_PORT_NUMBER = 5555
 
-tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
-model = GPT2Model.from_pretrained("gpt2")
+tokenizer = AutoTokenizer.from_pretrained("gpt2")
+model = AutoModelForCausalLM.from_pretrained("gpt2")
+
+PREDICTION_INPUT_KEY = "text"
+PREDICTION_OUTPUT_KEY = "output"
 
 @app.route("/user_model")
 def home():
@@ -26,12 +29,13 @@ def predict():
     response = {"body": "<p>Welcome to the predict page! Nothing is set up yet.</p>"}
     
     try:
-        input_text = request.args.get("text")
+        input_text = request.args.get(PREDICTION_INPUT_KEY)
+        print(f"Input text = {input_text} w/ type {type(input_text)}")
         encoded_input = tokenizer(input_text, return_tensors="pt")
-        encoded_output = model(**encoded_input)
-        string_output = tokenizer.decode(encoded_output, skip_special_tokens=True)
+        encoded_output = model.generate(**encoded_input, max_new_tokens=15)
+        string_output = tokenizer.decode(encoded_output[0])
         print(string_output)
-        response["output"] = string_output
+        response[PREDICTION_OUTPUT_KEY] = string_output
         add_options(response)
     except Exception as e:
         response["ok"] = False
