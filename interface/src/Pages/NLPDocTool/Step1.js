@@ -16,17 +16,19 @@ import TextField from "@mui/material/TextField";
 import states from "./../../Constants/States";
 import CallbackKeyEventButton from "./../../Custom/CallbackKeyEventButton";
 
+import Model from './Model';
+
 const progress = 0;
 
 function Step1Content(props) {
 	const [anchorEl, setAnchorEl] = React.useState(null);
 
 	const [urlInput, setUrlInput] = React.useState(null);
-    const [trainEndpointInput, setTrainEndpointInput] = React.useState(null);
+    const [finetuneEndpointInput, setFinetuneEndpointInput] = React.useState(null);
     const [predictEndpointInput, setPredictEndpointInput] = React.useState(null);
     
     var enteredUrl = false;
-    var enteredTrainEndpoint = false;
+    var enteredFinetuneEndpoint = false;
     var enteredPredictEndpoint = false;
 
 	const handleClick = (event) => {
@@ -58,12 +60,21 @@ function Step1Content(props) {
     //     }
 	// };
 
-	const handleTrainEndpointText = (event) => {
-		setTrainEndpointInput(event.target.value);
-        enteredTrainEndpoint = false;
+	const handleFinetuneEndpointText = (event) => {
+		setFinetuneEndpointInput(event.target.value);
+        enteredFinetuneEndpoint = false;
         if (event.key === "Enter") {
-            enteredTrainEndpoint = true;
-            props.setUserModelTrainEndpoint(trainEndpointInput);
+            enteredFinetuneEndpoint = true;
+            // props.setUserModelFinetuneEndpoint(finetuneEndpointInput);
+            let confirmedInput = true;
+            if (Model.finetuneEndpoint === finetuneEndpointInput) {
+                console.log(`Keeping finetuneEndpoint the same: ${finetuneEndpointInput}`);
+            } else if (Model.finetuneEndpoint !== "") {
+                confirmedInput = window.confirm(`Are you sure you want to change finetuneEndpoint from\n${Model.finetuneEndpoint} => ${finetuneEndpointInput}`);
+            } else if (confirmedInput) {
+                console.log(`Setting finetuneEndpoint to ${finetuneEndpointInput}`)
+                Model.finetuneEndpoint = finetuneEndpointInput;
+            }
         }
 	};
 
@@ -72,7 +83,16 @@ function Step1Content(props) {
         enteredPredictEndpoint = false;
 		if (event.key === "Enter") {
             enteredPredictEndpoint = true;
-            props.setUserModelPredictEndpoint(predictEndpointInput);
+            // props.setUserModelFinetuneEndpoint(finetuneEndpointInput);
+            let confirmedInput = true;
+            if (Model.predictEndpoint === predictEndpointInput) {
+                console.log(`Keeping predictEndpoint the same: ${predictEndpointInput}`);
+            } else if (Model.predictEndpoint !== "") {
+                confirmedInput = window.confirm(`Are you sure you want to change predictEndpoint from\n${Model.predictEndpoint} => ${predictEndpointInput}`);
+            } else if (confirmedInput) {
+                console.log(`Setting predictEndpoint to ${predictEndpointInput}`)
+                Model.predictEndpoint = finetuneEndpointInput;
+            }
         }
 	};
 
@@ -82,23 +102,23 @@ function Step1Content(props) {
 	const onNextSubmit = () => {
 		// console.log(props);
         // validate their endpoint inputs
-        let pingTrainSuccess = false;
+        let pingFinetuneSuccess = false;
         let pingPredictSuccess = false;
         try { 
-            props.testGetLink(props.getUserModelLink() + trainEndpointInput);
-            pingTrainSuccess = true;
+            props.testGetLink(props.getUserModelLink() + finetuneEndpointInput);
+            pingFinetuneSuccess = true;
         } catch (err) {
-            alert("Unable to ping your train endpoint. Please re-input.");
+            alert("Unable to ping your finetune endpoint. Please re-input.");
         }
 
         try {
-            props.testGetLink(props.getUserModelLink() + trainEndpointInput);
+            props.testGetLink(props.getUserModelLink() + finetuneEndpointInput);
             pingPredictSuccess = true;
         } catch (err) {
             alert("Unable to ping your predict endpoint. Please re-input.");
         }
 
-        if (pingTrainSuccess && pingPredictSuccess) {
+        if (pingFinetuneSuccess && pingPredictSuccess) {
             props.updateState(states.docStep2);
         }
 		
@@ -163,7 +183,7 @@ function Step1Content(props) {
 							onClick={handleClick}
 							aria-describedby={id}
 						>
-							Select a Model
+							Enter the endpoints for your model:
 						</Button>
 					</Stack>
 				</main>
@@ -200,7 +220,7 @@ function Step1Content(props) {
                                 Link for your model i.e., "https://localhost:5000"
                             </li> */}
                             <li>
-                               Train endpoint i.e., "/train"
+                               Finetune endpoint i.e., "/finetune"
                             </li>
                             <li sx={{display: 'list-item'}}>
                                Predict endpoint i.e., "/predict"
@@ -220,13 +240,13 @@ function Step1Content(props) {
 						/> */}
 						<TextField
 							id="TRAIN"
-							label="Train endpoint"
+							label="Finetune endpoint"
 							variant="filled"
                             required
 							fullWidth
-							// defaultValue={props.getUserModelTrainEndpoint()}
-							onKeyPress={handleTrainEndpointText} // check if they're done entering
-                            onChange={handleTrainEndpointText} // update the value from useState
+							// defaultValue={props.getUserModelFinetuneEndpoint()}
+							onKeyPress={handleFinetuneEndpointText} // check if they're done entering
+                            onChange={handleFinetuneEndpointText} // update the value from useState
 						/>
 						<TextField
 							id="PREDICT"
@@ -296,19 +316,6 @@ class Step1 extends Component {
 				getOptionID={this.props.getOptionID}
 				getDataWithParams={this.props.getDataWithParams}
 				postData={this.props.postData}
-
-				getUserModelToDocument={this.props.getUserModelToDocument}
-				getUserModelLink={this.props.getUserModelLink}
-				setUserModelLink={this.props.setUserModelLink}
-				
-                getUserModelTrainEndpoint={this.props.getUserModelTrainEndpoint}
-				setUserModelTrainEndpoint={this.props.setUserModelTrainEndpoint}
-				
-                getUserModelPredictEndpoint={this.props.getUserModelPredictEndpoint}
-				setUserModelPredictEndpoint={this.props.setUserModelPredictEndpoint}
-
-                testGetLink={this.props.testGetLink}
-                testPostLink={this.props.testPostLInk}
 			/>
 		);
 	}

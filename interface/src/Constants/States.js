@@ -1,5 +1,5 @@
-// page states for the interface; App.js uses these to determine which
-// ui to show
+// page states for the interface; 
+// App.js uses these to determine which ui to show
 // let's just have the numbers go in order for ease of understanding
 const states = {
     introduction: 0,

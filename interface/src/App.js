@@ -41,20 +41,21 @@ class App extends Component {
 			constants: null,
 			verificationAccuracies: [],
 			prepDataDone: false,
-            // Remember user's model hosting information
-            // todo: consider if this would need to be structured different
-            // if they were using a website instead of localhost
-            user_model_to_document: {
-                link: this.DEFAULT_USER_MODEL_LINK, // have them specify everything here
-                train_endpoint: this.DEFAULT_USER_MODEL_TRAIN_ENDPOINT,
-                predict_endpoint: this.DEFAULT_USER_MODEL_PREDICT_ENDPOINT,
-                // I'm assuming the user will give me a train method to 
-                train_batch_size: 0, // = how many texts to send to their model to train on
-                // todo: ^ maybe update naming (figure out what we're really asking for)
-                train_num_epochs: 0, // = how many times to run train
-                // didn't prompt for predict, because our interface seems to be more like a one at a time situation
-                // but if we want to we can add that here and a corresponding slider in Step2.js
-            },
+            // moved this to Pages/NLPDocTool/Model.js
+            // // Remember user's model hosting information
+            // // todo: consider if this would need to be structured different
+            // // if they were using a website instead of localhost
+            // user_model_to_document: {
+            //     link: this.DEFAULT_USER_MODEL_LINK, // have them specify everything here
+            //     train_endpoint: this.DEFAULT_USER_MODEL_TRAIN_ENDPOINT,
+            //     predict_endpoint: this.DEFAULT_USER_MODEL_PREDICT_ENDPOINT,
+            //     // I'm assuming the user will give me a train method to 
+            //     train_batch_size: 0, // = how many texts to send to their model to train on
+            //     // todo: ^ maybe update naming (figure out what we're really asking for)
+            //     train_num_epochs: 0, // = how many times to run train
+            //     // didn't prompt for predict, because our interface seems to be more like a one at a time situation
+            //     // but if we want to we can add that here and a corresponding slider in Step2.js
+            // },
 		};
 	}
 
@@ -133,125 +134,6 @@ class App extends Component {
 			console.log(error);
 		}
 	}
-
-    getUserModelLink = () => {
-        return this.state.user_model_to_document.link;
-    }
-
-    getUserModelTrainEndpoint = () => {
-        return this.state.user_model_to_document.train_endpoint;
-    }
-
-    getUserModelPredictEndpoint = () => {
-        return this.state.user_model_to_document.predict_endpoint;
-    }
-
-    // get a copy we can manipulate before doing set state
-    getUserModelToDocument = () => {
-        return {
-            link: this.getUserModelLink(),
-            train_endpoint: this.getUserModelTrainEndpoint(),
-            predict_endpoint: this.getUserModelPredictEndpoint(),
-        };
-    }
-
-    async testGetLink(link) { // , params={id: this.getOptionID()}) {
-        // link = "/api/"; // todo: figure out how to access proxies from setupProxy
-        console.log(`Testing get link with link="${link}"...`);
-        try {
-            const response = await this.getDataWithParams(link);
-            if (!response.ok) {
-                alert(`Try again! (get link = ${link} FAILED)`);
-                if ("msg" in Object.keys(response)) {
-                    // throw Error(response.msg);
-                    console.log("Error!", response.msg);
-                    // todo: add state for if they errored, have popup appear if so
-                } else if ("statusText" in Object.keys(response)) {
-                    // throw Error(response.statusText);
-                    console.log("Error!", response.statusText);
-                }
-            } else {
-                console.log(`Successfully pinged (GET) link = "${link}"`);
-            }
-        } catch (error) {
-            console.log(`Unable to run getDataWithParams(${link})`);
-        }
-    }
-
-    async testPostLink(link, params={id: this.getOptionID()}) {
-        const response = await this.postData(link, params);
-        if (!response.ok) {
-            if ("msg" in Object.keys(response)) {
-                throw Error(response.msg);
-            } else if ("statusText" in Object.keys(response)) {
-                throw Error(response.statusText);
-            }
-        } else {
-            console.log(`Successfully pinged (POST) link = "${link}"`);
-        }
-    }
-
-    setUserModelLink = (link) => {
-        const updated_user_model_to_document = this.getUserModelToDocument();
-        console.log(`Setting user Model Link to ${link}`);
-        // todo: ping the link they say and try to see if that works :0
-
-        link = link.concat('/user_model');
-        try {
-            this.testGetLink(link);
-        } catch (err) {
-            console.log(err.toString());
-        }
-
-        updated_user_model_to_document.link = link;
-        this.setState({
-            user_model_to_document: updated_user_model_to_document,
-        });
-    }
-
-    setUserModelTrainEndpoint = (trainEndpoint) => {
-        const updated_user_model_to_document = this.getUserModelToDocument();
-        console.log(`Setting user Model trainEndpoint to ${trainEndpoint}`);
-        
-        // todo: ping the link they say and try to see if that works :0
-        
-        updated_user_model_to_document.train_endpoint = trainEndpoint;
-        this.setState({
-            user_model_to_document: updated_user_model_to_document,
-        });
-    }
-
-    setUserModelPredictEndpoint = (predictEndpoint) => {
-        const updated_user_model_to_document = this.getUserModelToDocument();
-        console.log(`Setting user Model predictEndpoint to ${predictEndpoint}`);
-        // todo: ping the link they say and try to see if that works :0
-        
-        updated_user_model_to_document.predict_endpoint = predictEndpoint;
-        this.setState({
-            user_model_to_document: updated_user_model_to_document,
-        });
-    }
-
-    setUserModelTrainBatchSize = (trainBatchSize) => {
-        const updated_user_model_to_document = this.getUserModelToDocument();
-        console.log(`Setting User Model trainBatchSize to ${trainBatchSize}`);
-
-        updated_user_model_to_document.train_batch_size = trainBatchSize;
-        this.setState({
-            user_model_to_document: updated_user_model_to_document,
-        });
-    }
-
-    setUserModelTrainNumEpochs = (trainNumEpochs) => {
-        const updated_user_model_to_document = this.getUserModelToDocument();
-        console.log(`Setting User Model trainNumEpochs to ${trainNumEpochs}`);
-
-        updated_user_model_to_document.train_num_epochs = trainNumEpochs;
-        this.setState({
-            user_model_to_document: updated_user_model_to_document,
-        });
-    }
-
 
 	// data rows are an array of {id: uid, text: string}
 	setDataRows = (rows) => {
@@ -475,19 +357,6 @@ class App extends Component {
             getOptionID={this.getOptionID}
             getDataWithParams={this.getDataWithParams}
             postData={this.postData}
-            getUserModelToDocument={this.getUserModelToDocument}
-            
-            getUserModelLink={this.getUserModelLink}
-            setUserModelLink={this.setUserModelLink}
-           
-            getUserModelTrainEndpoint={this.getUserModelTrainEndpoint}
-            setUserModelTrainEndpoint={this.setUserModelTrainEndpoint}
-
-            getUserModelPredictEndpoint={this.getUserModelPredictEndpoint}
-            setUserModelPredictEndpoint={this.setUserModelPredictEndpoint}
-
-            testGetLink={this.testGetLink}
-            testPostLink={this.testPostLInk}
         />);
 	}
 
@@ -499,9 +368,6 @@ class App extends Component {
             getOptionID={this.getOptionID}
             getDataWithParams={this.getDataWithParams}
             postData={this.postData}
-
-            setUserModelTrainBatchSize={this.setUserModelTrainBatchSize}
-            setUserModelTrainNumEpochs={this.setUserModelTrainNumEpochs}
         />
 	}
 
