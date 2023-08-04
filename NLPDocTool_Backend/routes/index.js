@@ -76,6 +76,7 @@ router.post('/processFile', async function (req, res) {
 });
 
 
+// note: this probably won't be run, we'll be trying to just use /user_model/predict
 router.post('/runPrediction', async function (req, res) {
 
   var API_TOKEN="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";
@@ -110,6 +111,7 @@ router.post('/runPrediction', async function (req, res) {
  
 });
 
+// I, Jess, do plan on this staying in use for the hypothesis comparison
 router.post('/getSimilarity', async function (req, res) {
 
   var API_TOKEN="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";

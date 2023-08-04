@@ -105,17 +105,19 @@ function Step1Content(props) {
         let pingFinetuneSuccess = false;
         let pingPredictSuccess = false;
         try { 
-            props.testGetLink(props.getUserModelLink() + finetuneEndpointInput);
+            props.getDataWithParams(Model.apiLink + finetuneEndpointInput, {text: "hello, this is a test"});
             pingFinetuneSuccess = true;
         } catch (err) {
             alert("Unable to ping your finetune endpoint. Please re-input.");
+            console.log(err.toString())
         }
 
         try {
-            props.testGetLink(props.getUserModelLink() + finetuneEndpointInput);
+            props.getDataWithParams(Model.apiLink  + predictEndpointInput, {text: "hello, this is a test"});
             pingPredictSuccess = true;
         } catch (err) {
             alert("Unable to ping your predict endpoint. Please re-input.");
+            console.log(err.toString())
         }
 
         if (pingFinetuneSuccess && pingPredictSuccess) {
