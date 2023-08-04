@@ -1,21 +1,25 @@
 My todo
-- Now that we clarified with Dylan what we are actually doing, here is a note about how I'll do those changes in another branch:
-/* what I thought we wanted to do (as you can see by the current page ordering in this branch) is obtain training data and documentation at the same time.
-*/
-- What we actually want to do with our experiment: 
-- our conditions: 
-    - control group: unstructured interaction with the data
-    - experimental group: structured interaction with the data using open coding
-        - have openCoding be a tool for developers/ to interact with the unlabeled texts
-    - clarifying questions: *Are we trying to say they are interacting with the model or that they are interacting with the prompts?* 
-        - My current understanding is that the users will be interacting with the data.
-    - // note to self, *still need to clarify* if we'll train the model to be documented (which is separate) with the same labeled data in both experimental conditions.
-    - 
+- finish updating user model parameter saving and access from App state -> Model.js
+- finish frontend call to `/user_model/predict`
 
-- What we want to do in development
-    - consider how we will deal with the NLPDocTool backend methods.
-    - add call to /user_model/predict
+Leftover todo:
+- write out explanation for how user should finetune their model or finetune endpoint
+(tell them that we are assuming they'll have pretrained it, 
+i'm using a dummy pretrained model anyway)
+-- if they should finetune their model on their own
+---- => just note where the final open coding labels were stored so they can do that
+-- if we will finetune for them 
+---- => think how we want to pass batches of the results 
+to the users app for processing
+or if we'd want to send them all of the data at once
+---- I think for this one, the most feasible thing would still be to just have 
+the file path as well as the key/header names maybe.
+be the thing we send in our http request to the user app backend 
 
 Errors to resolve:
-- deal with calling /processFile (404) from petrichor or translate it into our flask backend
-    - i.e. try our NLPDocTool proxy
+
+Resolved errors:
+[X] deal with calling /processFile (404) from petrichor or translate it into our flask backend
+    [X] i.e. try our NLPDocTool proxy (didn't work)
+    - what did work was just copying the NLPDocTool backend to this repo and 
+    having it run on port 3030
