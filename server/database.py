@@ -7,6 +7,8 @@ from sqlite3 import Error
 from xml.etree.ElementPath import prepare_predicate
 import os
 
+# TODO: pass username variable to functions that call db file
+
 # sourced from https://www.sqlitetutorial.net/sqlite-python/create-tables/
 def create_connection(db_file):
     """ create a database connection to the SQLite database
@@ -53,7 +55,7 @@ def delete_table(conn, delete_table_sql):
         print(e)
 
 
-def instantiate_tables(data_dict):
+def instantiate_tables(data_dict, username = "username"):
     '''
     Instatiates options, pretrained_models, and option_id table for every csv file (id) in ./data that was able to be parsed. Each
     csv file within ./data is a separate dataset option for the user.
@@ -75,7 +77,7 @@ def instantiate_tables(data_dict):
         }
     OUTPUTS: None
     '''
-    database = "./database/data_options.db"
+    database = "./database/" + username + "/data_options.db"
 
     sql_data_options_table = """CREATE TABLE IF NOT EXISTS options(
                                         id INTEGER PRIMARY KEY,
@@ -134,7 +136,7 @@ def instantiate_tables(data_dict):
     conn.close()
 
 
-def fill_tables(data_dict):
+def fill_tables(data_dict, username = "username"):
     '''
     Fills in the tables instantiated by instantiate_tables with the csv file's text values and empty annotations
     
@@ -155,7 +157,7 @@ def fill_tables(data_dict):
         }
     OUTPUTS: None
     '''
-    database = "./database/data_options.db"
+    database = "./database/" + username + "/data_options.db"
     conn = create_connection(database)
 
     if conn is not None:
@@ -183,7 +185,7 @@ def fill_tables(data_dict):
         print("Cannot establish database connection for fill_tables")
 
 
-def get_options():
+def get_options(username = "username"):
     '''
     Returns dictionary of dataset options available.
 
@@ -196,7 +198,7 @@ def get_options():
                 }
             }
     '''
-    database = "./database/data_options.db"
+    database = "./database/" + username + "/data_options.db"
     conn = create_connection(database)
 
     d = {}
@@ -225,14 +227,14 @@ def get_options():
     return d
 
 
-def get_option(option_id):
+def get_option(option_id, username = "username"):
     '''
     Returns the name of current option selected.
 
     INPUTS: int
     OUTPUTS: string
     '''
-    database = "./database/data_options.db"
+    database = "./database/" + username + "/data_options.db"
     conn = create_connection(database)
 
     name = None
@@ -249,7 +251,7 @@ def get_option(option_id):
     return name
 
 
-def get_option_data(option_id):
+def get_option_data(option_id, username = "username"):
     '''
     Returns dictionary of row content for a particular option_id.
 
@@ -262,7 +264,7 @@ def get_option_data(option_id):
                 }
             }
     '''
-    database = "./database/data_options.db"
+    database = "./database/" + username + "/data_options.db"
     conn = create_connection(database)
     d = {}
 
@@ -283,14 +285,14 @@ def get_option_data(option_id):
     return d
 
 
-def create_constants():
+def create_constants(username = "username"):
     '''
     Deletes and then creates a constants_{option_id} table for that particular option_id's data.
 
     INPUTS: None
     OUTPUTS: None
     '''
-    database = "./database/data_options.db"
+    database = "./database/" + username + "/data_options.db"
     conn = create_connection(database)
 
     if conn is not None:
@@ -311,7 +313,7 @@ def create_constants():
         print("Could not establish connection for create_constants")
 
 
-def set_constants(constants, model):
+def set_constants(constants, model, username = "username"):
     '''
     Adds in information to the constants_{option_id} table. Since the constants_{option_id} will only
     ever have one row, this overwrites pre-exising information. 
@@ -323,7 +325,7 @@ def set_constants(constants, model):
     OUTPUTS:
         None
     '''
-    database = "./database/data_options.db"
+    database = "./database/" + username + "/data_options.db"
     conn = create_connection(database)
 
     if conn is not None:
@@ -338,14 +340,14 @@ def set_constants(constants, model):
         print("Cannot establish database connection for set_constants")
 
 
-def get_constant(constant_name):
+def get_constant(constant_name, username = "username"):
     '''
     Returns the value of a constant in the constants table, row 0
 
     INPUTS: string
     OUTPUTS: integer or string
     '''
-    database = "./database/data_options.db"
+    database = "./database/" + username + "/data_options.db"
     conn = create_connection(database)
     res = 0
 
@@ -364,7 +366,7 @@ def get_constant(constant_name):
     return res
 
 
-def create_labels(option_id):
+def create_labels(option_id, username = "username"):
     '''
     Deletes and then creates a labels_{option_id} table for that particular option_id's data.
 
@@ -373,7 +375,7 @@ def create_labels(option_id):
     INPUTS: int
     OUTPUTS: None
     '''
-    database = "./database/data_options.db"
+    database = "./database/" + username + "/data_options.db"
     conn = create_connection(database)
 
     if conn is not None:
@@ -396,7 +398,7 @@ def create_labels(option_id):
         print("Could not establish connection while creating labels")
 
 
-def add_labels(option_id, labels):
+def add_labels(option_id, labels, username = "username"):
     '''
     Adds in information to the labels_{option_id} table.
 
@@ -410,7 +412,7 @@ def add_labels(option_id, labels):
     OUTPUTS:
         None
     '''
-    database = "./database/data_options.db"
+    database = "./database/" + username + "/data_options.db"
     conn = create_connection(database)
 
     if conn is not None:
@@ -451,14 +453,14 @@ def add_labels(option_id, labels):
         print("Cannot establish database connection for add_labels")
 
 
-def get_label_set(option_id):
+def get_label_set(option_id, username = "username"):
     '''
     Returns set of unique label texts.
 
     INPUTS: integer
     OUTPUTS: set of strings
     '''
-    database = "./database/data_options.db"
+    database = "./database/" + username + "/data_options.db"
     conn = create_connection(database)
     labels = []
 
@@ -477,14 +479,14 @@ def get_label_set(option_id):
     return labels
 
 
-def get_label_set_data(option_id):
+def get_label_set_data(option_id, username = "username"):
     '''
     Returns mapping of list of tuples of (id, label) in label_set_{option_id}
 
     INPUTS: integer
     OUTPUTS: list of tuples of (id: integer, label: string)
     '''
-    database = "./database/data_options.db"
+    database = "./database/" + username + "/data_options.db"
     conn = create_connection(database)
     labels = []
 
@@ -502,14 +504,14 @@ def get_label_set_data(option_id):
     return labels
 
 
-def get_labeled_data(option_id):
+def get_labeled_data(option_id, username = "username"):
     '''
     Returns array of labeled text objects.
 
     INPUTS: integer
     OUTPUTS: array of {text: string, label: string, id: integer} objects
     '''
-    database = "./database/data_options.db"
+    database = "./database/" + username + "/data_options.db"
     conn = create_connection(database)
     labeled_data = []
 
@@ -536,14 +538,14 @@ def get_labeled_data(option_id):
     return labeled_data
 
 
-def get_unlabeled_data(option_id):
+def get_unlabeled_data(option_id, username = "username"):
     '''
     Returns array of unlabeled text objects.
 
     INPUTS: option_id: integer
     OUTPUTS: array of {text: string, id: integer} objects
     '''
-    database = "./database/data_options.db"
+    database = "./database/" + username + "/data_options.db"
     conn = create_connection(database)
     unlabeled_data = []
 
@@ -573,7 +575,7 @@ def get_unlabeled_data(option_id):
     return unlabeled_data
 
 
-def set_annotation_data(option_id, rows):
+def set_annotation_data(option_id, rows, username = "username"):
     '''
     Sets annotations for a particular group of rows.
 
@@ -583,7 +585,7 @@ def set_annotation_data(option_id, rows):
 
     OUTPUTS: None
     '''
-    database = "./database/data_options.db"
+    database = "./database/" + username + "/data_options.db"
     conn = create_connection(database)
 
     if conn is not None:
@@ -599,7 +601,7 @@ def set_annotation_data(option_id, rows):
         print("Cannot establish database connection for set_annotation_data")
 
 
-def get_annotation_data(option_id):
+def get_annotation_data(option_id, username = "username"):
     '''
     Returns a dictionary representing annotation data for any row of data under 
     option_{option_id} with a non-empty annotation field.
@@ -614,7 +616,7 @@ def get_annotation_data(option_id):
             }
         } for all entries where annotation != ""
     '''
-    database = "./database/data_options.db"
+    database = "./database/" + username + "/data_options.db"
     conn = create_connection(database)
     d = {}
 
@@ -636,7 +638,7 @@ def get_annotation_data(option_id):
     return d
 
 
-def get_table_rows(option_id, row_ids):
+def get_table_rows(option_id, row_ids, username = "username"):
     '''
     Returns a dictionary representing annotation data for all rows of row_ids under 
     option_{option_id} with a non-empty annotation field.
@@ -652,7 +654,7 @@ def get_table_rows(option_id, row_ids):
             }
         } for all entries where annotation != ""
     '''
-    database = "./database/data_options.db"
+    database = "./database/" + username + "/data_options.db"
     conn = create_connection(database)
     d = {}
 
@@ -675,7 +677,7 @@ def get_table_rows(option_id, row_ids):
     return d
 
 
-def get_table_rows_full(option_id, row_ids):
+def get_table_rows_full(option_id, row_ids, username = "username"):
     '''
     Returns a dictionary representing annotation data for all rows of row_ids under 
     option_{option_id}.
@@ -691,7 +693,7 @@ def get_table_rows_full(option_id, row_ids):
             }
         } for all entries
     '''
-    database = "./database/data_options.db"
+    database = "./database/" + username + "/data_options.db"
     conn = create_connection(database)
     d = {}
 

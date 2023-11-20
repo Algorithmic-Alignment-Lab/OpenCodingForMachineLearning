@@ -177,7 +177,7 @@ def select_some(data_arr, percent_select, number_select=None):
     return [data_arr[i] for i in chosen]
                 
 
-def save_to_csv(output_filename, objects):
+def save_to_csv(output_filename, objects, username = "username"):
     '''
     Takes the given labeled objects and writes them to a csv file.
 
@@ -188,7 +188,7 @@ def save_to_csv(output_filename, objects):
         None
     '''
 
-    path = './../results/'
+    path = './../results/' + username + '/'
 
     with open(path + output_filename + '.csv', 'a+') as f:
         csv_writer = csv.writer(f)
@@ -201,7 +201,7 @@ def save_to_csv(output_filename, objects):
     return 'Finished Writing to CSV'
 
 
-def write_to_csv(output_filename, objects, first_line = True):
+def write_to_csv(output_filename, objects, username = "username", first_line = True):
     '''
     Takes the given labeled objects and writes them to a csv file.
 
@@ -213,7 +213,7 @@ def write_to_csv(output_filename, objects, first_line = True):
         None
     '''
 
-    path = './../results/'
+    path = './../results/' + username + '/'
 
     with open(path + output_filename + '.csv', 'a+') as f:
         csv_writer = csv.writer(f)
@@ -227,7 +227,7 @@ def write_to_csv(output_filename, objects, first_line = True):
     return 'Finished Writing to CSV'
 
 
-def write_to_csv_annotations(output_filename, objects):
+def write_to_csv_annotations(output_filename, objects, username = "username"):
     '''
     Takes the given annotated objects and writes them to a csv file.
 
@@ -238,7 +238,7 @@ def write_to_csv_annotations(output_filename, objects):
         None
     '''
 
-    path = './../results/'
+    path = './../results/' + username + '/'
 
     with open(path + output_filename + '.csv', 'a+') as f:
         csv_writer = csv.writer(f)
