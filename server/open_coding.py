@@ -321,7 +321,7 @@ def get_results(username):
     output_name = open_coding_finetune_model(model_name, label_id_mappings, ([d['text'] for d in data_rows], [d['label'] for d in data_rows]), percent_train, batch_size, num_epochs)
     name = get_option(option_id, username).replace(' ', '_')
 
-    write_to_csv(kerb + '_labeled_' + name, data_rows)
+    write_to_csv(kerb + '_labeled_' + name, data_rows, username)
 
     # gather all unlabeled texts, and predict
     unlabeled_data = get_unlabeled_data(option_id, username)
@@ -336,14 +336,14 @@ def get_results(username):
 
         # add all labels into the database and incrementally update results file
         add_labels(option_id, full_labels, username)
-        write_to_csv(kerb + '_labeled_' + name, predictions, False)
+        write_to_csv(kerb + '_labeled_' + name, predictions, username, False)
 
         unlabeled_data = get_unlabeled_data(option_id, username)
 
     # also save annotations
     annotations = get_annotation_data(option_id, username)
     
-    write_to_csv_annotations(kerb + '_annotations_' + name, annotations)
+    write_to_csv_annotations(kerb + '_annotations_' + name, annotations, username)
 
     response = {
         "saved": kerb + '_labeled_' + name,
