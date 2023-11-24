@@ -28,10 +28,11 @@ def test():
 
 
 @app.route('/data/prep_data', methods=['GET'])
-def prep_data(username):
+def prep_data():
     '''
     A request to grab all csv files, and load the information into the database
     '''
+    username = request.args.get("username")
     data_dict = parse_options_into_db()
     find_pretrained_models(data_dict)
 
@@ -47,10 +48,11 @@ def prep_data(username):
     
 
 @app.route('/data/get_all_data_options', methods=['GET'])
-def get_all_data_options(username):
+def get_all_data_options():
     '''
     A request to get all dataset options.
     '''
+    username = request.args.get("username")
     options = get_options(username)
     create_constants(username)
 
@@ -66,12 +68,13 @@ def get_all_data_options(username):
 
 # TODO: based on selected data option, might have to pre-train the model
 @app.route('/data/get_data_option', methods=['GET'])
-def get_data_option(username):
+def get_data_option():
     '''
     A request to get data for a particular dataset option. 
     '''
 
     option_id = request.args.get("id")
+    username = request.args.get("username")
     # in same order as defined constants table
     constants = request.args.get("constants").split(',')
     numeric_constants = tuple(map(lambda k: int(k), constants[:5]))
@@ -101,7 +104,7 @@ def get_data_option(username):
 
 
 @app.route('/data/save_annotations', methods=['POST'])
-def save_annotations(username):
+def save_annotations():
     '''
     Saves annotation rows for a particular dataset option.
     '''
@@ -113,6 +116,7 @@ def save_annotations(username):
 
         rows = json_data['rows']
         option_id = json_data['id']
+        username = json_data['username']
 
         set_annotation_data(option_id, rows, username)
         
@@ -125,11 +129,12 @@ def save_annotations(username):
 
 
 @app.route('/data/get_annotations', methods=['GET'])
-def get_annotations(username):
+def get_annotations():
     '''
     Gets annotation rows for a particular dataset option.
     '''
     option_id = request.args.get("id")
+    username = request.args.get("username")
     annotations = get_annotation_data(option_id, username)
 
     parsed_options = []
@@ -145,7 +150,7 @@ def get_annotations(username):
 
 # TODO: update rows to include prediction
 @app.route('/data/save_labels', methods=['POST'])
-def save_labels(username):
+def save_labels():
     '''
     Saves labels for a particular dataset option.
     '''
@@ -157,6 +162,7 @@ def save_labels(username):
 
         rows = json_data['rows']
         option_id = json_data['id']
+        username = json_data['username']
 
         add_labels(option_id, rows, username)
         response['msg'] = 'Success'
@@ -168,11 +174,12 @@ def save_labels(username):
 
 
 @app.route('/data/get_label_set', methods=['GET'])
-def get_label_set_req(username):
+def get_label_set_req():
     '''
     Gets the set of labels currently associated with a particular dataset option.
     '''
     option_id = request.args.get("id")
+    username = request.args.get("username")
     label_set = get_label_set(option_id, username)
 
     response = {
@@ -186,7 +193,7 @@ def get_label_set_req(username):
 
 
 @app.route('/data/pretrain_model', methods=['POST'])
-def pretrain_model(username):
+def pretrain_model():
     '''
     Pretrains a new model for the given data set option using the specifed parameters.
     The new model canbe found under ./training/models.
@@ -202,6 +209,8 @@ def pretrain_model(username):
         batch_size = json_data['batch_size']
         num_epochs = json_data['num_epochs']
         option_id = json_data['id']
+        username = json_data['username']
+
 
         # fetch desired dataset name from option_id
         input_filename = '_'.join(get_option(option_id, username).lower().split(' '))
@@ -220,7 +229,7 @@ def pretrain_model(username):
     return json.jsonify(response)
 
 @app.route('/data/train_and_predict', methods=['POST'])
-def train_and_predict(username):
+def train_and_predict():
     '''
     Initiates one loop of the train and predict feedback loop.
 
@@ -235,6 +244,7 @@ def train_and_predict(username):
 
         rows = json_data['rows']
         option_id = json_data['id']
+        username = json_data['username']
 
         # save the new labels
         add_labels(option_id, rows, username)
@@ -289,7 +299,7 @@ def train_and_predict(username):
 
 
 @app.route('/data/get_results', methods=['GET'])
-def get_results(username):
+def get_results():
     '''
     Performs the final fine-tuning round with the given labels, and then enters a 
     predictive loop, where predicted labels are written to the output file in groups
@@ -298,6 +308,7 @@ def get_results(username):
     Then, returns the output filename.
     '''
     option_id = request.args.get("id")
+    username = request.args.get("username")
     kerb = 'final'
 
     data_rows = get_labeled_data(option_id, username)
