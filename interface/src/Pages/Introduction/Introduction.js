@@ -182,8 +182,10 @@ class Introduction extends Component {
     */
     onNextSubmit = () => {
         this.props.setOptionID(this.state.selectedData.id);
+        this.props.setUsername(document.getElementById("uname").value)
         this.props.setConstants([this.state.numAnnotate, this.state.numVerify, this.state.numMinVerify, this.state.batchSize, this.state.numEpochs, this.state.selectedModel.model]);
         this.props.updateState(states.openCoding);
+        this.props.setName(this.state.selectedData.text)
     }
     
     /**
@@ -249,6 +251,11 @@ class Introduction extends Component {
                     <b>
                         Introduction
                     </b>
+                </div>
+                <div style={{ margin: '15px'}}>
+                    <label for="username">Username:   </label>
+                    <input type="text" id="uname" name="uname"></input>
+
                 </div>
                 <div style={{ overflow: 'scroll', height: "80vh", width: "95vw" }}>
                     <div style={{ margin: '15px', display: 'flex', height: '65vh', width: '91vw', justifyContent: 'flex-start', flexDirection: 'column'}}>

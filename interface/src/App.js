@@ -25,6 +25,7 @@ class App extends Component {
       constants: null,
       verificationAccuracies: [],
       prepDataDone: false,
+      username:""
     }
   }
 
@@ -122,6 +123,26 @@ class App extends Component {
   getOptionID = () => {
     return this.state.optionID;
   }
+
+  setUsername = (username) => {
+		this.setState({
+			username: username,
+		});
+	};
+
+	getUsername = () => {
+		return this.state.username;
+	};
+
+  setName = (name) => {
+		this.setState({
+			name: name,
+		});
+	};
+
+	getName = () => {
+		return this.state.name;
+	};
 
   setConstants = (constants) => {
     this.setState({
@@ -239,6 +260,8 @@ class App extends Component {
     if (page === states.introduction) {
       return <Introduction
         setOptionID = {this.setOptionID}
+        setUsername = {this.setUsername}
+        setName={this.setName}
         updateState = {this.updateState}
         setConstants = {this.setConstants}
         postData = {this.postData}
@@ -246,6 +269,8 @@ class App extends Component {
     } else if (page === states.openCoding) {
       return <OpenCoding
         getOptionID = {this.getOptionID}
+        getUsername = {this.getUsername}
+        getName={this.getName}
         getConstants = {this.getConstants}
         getDataWithParams = {this.getDataWithParams}
         setDataRows = {this.setDataRows}
@@ -260,6 +285,8 @@ class App extends Component {
         saveLabels = {this.saveLabels}
         updateState = {this.updateState}
         getOptionID = {this.getOptionID}
+        getUsername = {this.getUsername}
+        getName={this.getName}
         getDataWithParams = {this.getDataWithParams}
         saveLabelState = {this.saveLabelState}
         postData = {this.postData}
@@ -274,6 +301,8 @@ class App extends Component {
         getDataRows = {this.getDataRows}
         updateState = {this.updateState}
         getOptionID = {this.getOptionID}
+        getUsername = {this.getUsername}
+        getName={this.getName}
         getDataWithParams = {this.getDataWithParams}
         postData = {this.postData}
         saveAccuracy = {this.saveAccuracy}
@@ -282,6 +311,8 @@ class App extends Component {
       return <Results
         updateState = {this.updateState}
         getOptionID = {this.getOptionID}
+        getUsername = {this.getUsername}
+        getName={this.getName}
         getDataWithParams = {this.getDataWithParams}
         getAccuracy = {this.getAccuracy}
         />;
