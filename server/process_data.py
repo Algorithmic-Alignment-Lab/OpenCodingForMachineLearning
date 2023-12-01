@@ -8,6 +8,10 @@ import math
 class ProcessingError(Exception):
     pass
 
+def remove_suffix(input_string, suffix):
+    if suffix and input_string.endswith(suffix):
+        return input_string[:-len(suffix)]
+    return input_string
 
 def check_header_format(row):
     '''
@@ -188,9 +192,9 @@ def save_to_csv(output_filename, objects, username = "username"):
         None
     '''
     path = './../results/' + username + '/'
-    if not os.path.exists(path.removesuffix("/")):
-        os.makedirs(path.removesuffix("/"))
-        print("Made directory:" + path.removesuffix("/"))
+    if not os.path.exists(remove_suffix(path, "/")):
+        os.makedirs(remove_suffix(path, "/"))
+        print("Made directory:" + remove_suffix(path, "/"))
 
     with open(path + output_filename + '.csv', 'a+') as f:
         csv_writer = csv.writer(f)
