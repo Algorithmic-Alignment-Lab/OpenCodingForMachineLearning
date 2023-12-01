@@ -7,6 +7,11 @@ from sqlite3 import Error
 from xml.etree.ElementPath import prepare_predicate
 import os
 
+def remove_suffix(input_string, suffix):
+    if suffix and input_string.endswith(suffix):
+        return input_string[:-len(suffix)]
+    return input_string
+
 # sourced from https://www.sqlitetutorial.net/sqlite-python/create-tables/
 def create_connection(db_file):
     """ create a database connection to the SQLite database
@@ -15,9 +20,9 @@ def create_connection(db_file):
     :return: Connection object or None
     """
     conn = None
-    if not os.path.exists(db_file.removesuffix("/data_options.db")):
-        os.makedirs(db_file.removesuffix("/data_options.db"))
-        print("Made directory:" + db_file.removesuffix("/data_options.db"))
+    if not os.path.exists(remove_suffix(db_file, "/data_options.db")):
+        os.makedirs(remove_suffix(db_file, "/data_options.db"))
+        print("Made directory:" + remove_suffix(db_file, "/data_options.db"))
 
     try:
         conn = sqlite3.connect(db_file)

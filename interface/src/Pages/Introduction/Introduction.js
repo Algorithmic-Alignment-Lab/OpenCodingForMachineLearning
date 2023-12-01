@@ -273,11 +273,6 @@ class Introduction extends Component {
                         Introduction
                     </b>
                 </div>
-                <div style={{ margin: '15px'}}>
-                    <label for="username">Username:   </label>
-                    <input type="text" id="uname" name="uname" enabled="false"></input>
-                    <button onClick={this.confirmUsername}>OK</button>
-                </div>
                 <div style={{ overflow: 'scroll', height: "80vh", width: "95vw" }}>
                     <div style={{ margin: '15px', display: 'flex', height: '65vh', width: '91vw', justifyContent: 'flex-start', flexDirection: 'column'}}>
                         <div style = {{alignItems: 'center', marginBottom: '10px'}}>
