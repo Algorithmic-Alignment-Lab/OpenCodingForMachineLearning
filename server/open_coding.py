@@ -33,6 +33,7 @@ def prep_data():
     A request to grab all csv files, and load the information into the database
     '''
     username = request.args.get("username")
+    print(username)
     data_dict = parse_options_into_db()
     find_pretrained_models(data_dict)
 

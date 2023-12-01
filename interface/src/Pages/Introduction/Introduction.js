@@ -39,6 +39,7 @@ class Introduction extends Component {
             numMinVerify: 20,
             batchSize: 50,
             numEpochs: 1,
+            showIntro: false,
         }
     }
 
@@ -50,13 +51,25 @@ class Introduction extends Component {
     */
     async componentDidMount() {
         try {
-            const response = await fetch('/data/get_all_data_options');
+            
+            const prepData = await this.props.getDataWithParams('/data/prep_data',{"username": this.props.getUsername()});
+            // show 404 or 500 errors
+            if (!prepData.ok) {
+                throw Error(prepData.statusText);
+            }
+            await prepData
+            this.setState({
+                showIntro: true
+            });
+    
+
+            const response = await this.props.getDataWithParams('/data/get_all_data_options', {"username": this.props.getUsername()});
             
             if (!response.ok) {
                 throw Error(response.statusText);
             }
 
-            const data = await response.json();
+            const data = await response;
 
             let optionsFull = data.options;
 
@@ -140,8 +153,10 @@ class Introduction extends Component {
             pretrainingStarted: true,
         });
 
+        console.log(this.props.getUsername())
+
         try {
-            const response = await this.props.postData('/data/pretrain_model', {"id": dataOption, "batch_size": batchSize, "num_epochs": numEpochs});
+            const response = await this.props.postData('/data/pretrain_model', {"id": dataOption, "batch_size": batchSize, "num_epochs": numEpochs, "username": this.props.getUsername()});
             
             if (!response.ok) {
                 throw Error(response.statusText);
@@ -182,7 +197,6 @@ class Introduction extends Component {
     */
     onNextSubmit = () => {
         this.props.setOptionID(this.state.selectedData.id);
-        this.props.setUsername(document.getElementById("uname").value)
         this.props.setConstants([this.state.numAnnotate, this.state.numVerify, this.state.numMinVerify, this.state.batchSize, this.state.numEpochs, this.state.selectedModel.model]);
         this.props.updateState(states.openCoding);
         this.props.setName(this.state.selectedData.text)
@@ -243,8 +257,15 @@ class Introduction extends Component {
         this.setState({numEpochs: value});
     }
 
+    confirmUsername = () => {
+        var inputField = document.getElementById('uname');
+        inputField.disabled = true;
+        this.props.setUsername(document.getElementById("uname").value)
+    }
+    
 
     render() {
+        if(this.state.showIntro) {
         return (
             <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%'}}>
                 <div style={{ margin: '15px'}}>
@@ -254,8 +275,8 @@ class Introduction extends Component {
                 </div>
                 <div style={{ margin: '15px'}}>
                     <label for="username">Username:   </label>
-                    <input type="text" id="uname" name="uname"></input>
-
+                    <input type="text" id="uname" name="uname" enabled="false"></input>
+                    <button onClick={this.confirmUsername}>OK</button>
                 </div>
                 <div style={{ overflow: 'scroll', height: "80vh", width: "95vw" }}>
                     <div style={{ margin: '15px', display: 'flex', height: '65vh', width: '91vw', justifyContent: 'flex-start', flexDirection: 'column'}}>
@@ -389,7 +410,9 @@ class Introduction extends Component {
                 </div>
             </div>
 
-        );
+        ); } else {
+            return (<div></div>);
+        }
     }
 }
 

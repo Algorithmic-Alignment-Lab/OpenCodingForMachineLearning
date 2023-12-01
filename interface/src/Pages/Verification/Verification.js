@@ -60,7 +60,7 @@ class Verification extends Component {
      * Saves new labels by sending verified predictions to server, received new predictions back.
      */
     async train (predictedLabels, modelType) {
-        const data = await this.props.postData('/data/train_and_predict', {"rows": predictedLabels, "model": modelType, "id": this.props.getOptionID()});
+        const data = await this.props.postData('/data/train_and_predict', {"rows": predictedLabels, "model": modelType, "id": this.props.getOptionID(), "username": this.props.getUsername()});
         console.log('response ok:', data.ok);
         if (data.ok){
 
@@ -104,7 +104,7 @@ class Verification extends Component {
 
             await this.train(predictedLabels, 0);
 
-            const response = await this.props.getDataWithParams('/data/get_label_set', {"id": this.props.getOptionID()});
+            const response = await this.props.getDataWithParams('/data/get_label_set', {"id": this.props.getOptionID(), "username": this.props.getUsername()});
             
             if (!response.ok) {
                 throw Error(response.statusText);

@@ -24,7 +24,7 @@ class Results extends Component {
     */
     async componentDidMount () {
         try {
-            const data = await this.props.getDataWithParams('/data/get_results', {"id": this.props.getOptionID()});
+            const data = await this.props.getDataWithParams('/data/get_results', {"id": this.props.getOptionID(), "username": this.props.getUsername()});
 
             if (!data.ok) {
                 throw Error(data.statusText);

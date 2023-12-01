@@ -47,7 +47,7 @@ class AssistedGrouping extends Component {
         try {
             // save the annotations before we ask for them
             await this.props.postData('/data/save_annotations', {"rows": this.props.loadAnnotations(), "id": this.props.getOptionID()});
-            const data = await this.props.getDataWithParams('/data/get_annotations', {"id": this.props.getOptionID()});
+            const data = await this.props.getDataWithParams('/data/get_annotations', {"id": this.props.getOptionID(), "username": this.props.getUsername()});
             
             if (!data.ok) {
                 throw Error(data.statusText);

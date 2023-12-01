@@ -8,6 +8,7 @@ import OpenCoding from './Pages/OpenCoding/OpenCoding';
 import AssistedGrouping from './Pages/AssistedGrouping/AssistedGrouping';
 import Verification from './Pages/Verification/Verification';
 import Results from './Pages/Results/Results';
+import PrepData from './Pages/Introduction/PrepData';
 
 const fetch = require('node-fetch');
 
@@ -88,19 +89,19 @@ class App extends Component {
    * Before the component mounts, we ask the server to prep the data and reset the local databases. 
    */
   async componentWillMount() {
-    try {
-      const response = await fetch('/data/prep_data');
-      // show 404 or 500 errors
-      if (!response.ok) {
-          throw Error(response.statusText);
-      }
-      await response.json();
-      this.setState({
-        prepDataDone: true
-      });
-    } catch (error) {
-        console.log(error);
-    }
+    // try {
+    //   const response = await this.getDataWithParams('/data/prep_data',{"username": this.state.username});
+    //   // show 404 or 500 errors
+    //   if (!response.ok) {
+    //       throw Error(response.statusText);
+    //   }
+    //   await response
+    //   this.setState({
+    //     prepDataDone: false
+    //   });
+    // } catch (error) {
+    //     console.log(error);
+    // }
   }
 
   // data rows are an array of {id: uid, text: string}
@@ -190,7 +191,7 @@ class App extends Component {
       annotations: reducedAnnotations
     });
 
-    let res = this.postData('/data/save_annotations', {"rows": callAnnotations, "id": this.state.optionID});
+    let res = this.postData('/data/save_annotations', {"rows": callAnnotations, "id": this.state.optionID, "username": this.state.username});
     console.log(res);
   }
 
@@ -210,7 +211,7 @@ class App extends Component {
   // expects input array of {id: uid, true_label: string}
   // our labels array maps {id: uid, true_label: string}
   saveLabels = (labels) => {
-    this.postData('/data/save_labels', {"rows": labels, "id": this.state.optionID});
+    this.postData('/data/save_labels', {"rows": labels, "id": this.state.optionID, "username": this.state.username});
   }
 
   getLabels = () => {
@@ -251,6 +252,12 @@ class App extends Component {
     });
   }
 
+  setPrepDataDone = (prepData) => {
+    this.setState({
+      prepDataDone: prepData
+    });
+  }
+
   getAccuracy = () => {
     return this.state.verificationAccuracies;
   }
@@ -261,10 +268,12 @@ class App extends Component {
       return <Introduction
         setOptionID = {this.setOptionID}
         setUsername = {this.setUsername}
+        getUsername = {this.getUsername}
         setName={this.setName}
         updateState = {this.updateState}
         setConstants = {this.setConstants}
         postData = {this.postData}
+        getDataWithParams = {this.getDataWithParams}
         />;
     } else if (page === states.openCoding) {
       return <OpenCoding
@@ -320,7 +329,10 @@ class App extends Component {
       // default value if state transitions ever fail
       return <div/>;
     }} else {
-      return <div/>;
+      return <PrepData 
+        setPrepDataDone={this.setPrepDataDone}
+        setUsername={this.setUsername}>
+      </PrepData>
     }
   }
 

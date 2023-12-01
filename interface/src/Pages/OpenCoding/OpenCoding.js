@@ -34,7 +34,7 @@ class OpenCoding extends Component {
     */
     async componentDidMount () {
         try {
-            const data = await this.props.getDataWithParams('/data/get_data_option', {"id": this.props.getOptionID(), "constants": this.props.getConstants()});
+            const data = await this.props.getDataWithParams('/data/get_data_option', {"id": this.props.getOptionID(), "constants": this.props.getConstants(), "username": this.props.getUsername()});
             
             if (!data.ok) {
                 throw Error(data.statusText);
