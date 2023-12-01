@@ -7,8 +7,6 @@ from sqlite3 import Error
 from xml.etree.ElementPath import prepare_predicate
 import os
 
-# TODO: pass username variable to functions that call db file
-
 # sourced from https://www.sqlitetutorial.net/sqlite-python/create-tables/
 def create_connection(db_file):
     """ create a database connection to the SQLite database
@@ -17,6 +15,10 @@ def create_connection(db_file):
     :return: Connection object or None
     """
     conn = None
+    if not os.path.exists(db_file.removesuffix("/data_options.db")):
+        os.makedirs(db_file.removesuffix("/data_options.db"))
+        print("Made directory:" + db_file.removesuffix("/data_options.db"))
+
     try:
         conn = sqlite3.connect(db_file)
         return conn

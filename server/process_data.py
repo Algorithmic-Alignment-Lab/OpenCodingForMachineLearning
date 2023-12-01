@@ -187,8 +187,10 @@ def save_to_csv(output_filename, objects, username = "username"):
     OUTPUTS: 
         None
     '''
-
     path = './../results/' + username + '/'
+    if not os.path.exists(path.removesuffix("/")):
+        os.makedirs(path.removesuffix("/"))
+        print("Made directory:" + path.removesuffix("/"))
 
     with open(path + output_filename + '.csv', 'a+') as f:
         csv_writer = csv.writer(f)
@@ -214,6 +216,9 @@ def write_to_csv(output_filename, objects, username = "username", first_line = T
     '''
 
     path = './../results/' + username + '/'
+    if not os.path.exists(path.removesuffix("/")):
+        os.makedirs(path.removesuffix("/"))
+        print("Made directory:" + path.removesuffix("/"))
 
     with open(path + output_filename + '.csv', 'a+') as f:
         csv_writer = csv.writer(f)
@@ -239,6 +244,9 @@ def write_to_csv_annotations(output_filename, objects, username = "username"):
     '''
 
     path = './../results/' + username + '/'
+    if not os.path.exists(path.removesuffix("/")):
+        os.makedirs(path.removesuffix("/"))
+        print("Made directory:" + path.removesuffix("/"))
 
     with open(path + output_filename + '.csv', 'a+') as f:
         csv_writer = csv.writer(f)
