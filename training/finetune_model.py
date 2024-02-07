@@ -44,7 +44,8 @@ def open_coding_finetune_model(model_name, label_id_mappings, data_tuple, percen
     config_path = model_dir + model_name + '/config.json'
     model_path = model_dir + model_name + '/'
 
-    model = get_model('distilbert')(num_labels, config_path, model_path)
+    model_type = 'llama' # can be 'llama' or 'distilbert'
+    model = get_model(model_type)(num_labels, config_path, model_path)
     model.update_label_id_mapping(label_id_mappings)
     tokenizer = model.get_tokenizer()
 

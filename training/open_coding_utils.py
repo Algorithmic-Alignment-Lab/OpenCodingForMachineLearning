@@ -7,6 +7,7 @@
 from .open_coding_constants import model_options
 from . import open_coding_roberta
 from . import open_coding_distilbert
+from . import open_coding_llama
 
 def get_model(model_type):
     '''
@@ -21,5 +22,7 @@ def get_model(model_type):
     
     if model_type == 'roberta':
         return open_coding_roberta.OpenCodingModel
+    elif model_type == 'llama':
+        return open_coding_llama.OpenCodingModel
     else:
         return open_coding_distilbert.OpenCodingModel
