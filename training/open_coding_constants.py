@@ -30,7 +30,7 @@ forward_types = {
     'FINETUNE': 1
 } 
 
-model_options = {'distilbert', 'roberta'}
+model_options = {'distilbert', 'roberta', 'llama'}
 
 # NOTE: these are customizable!
 training_options = {'percent_pretrain': 1.0, 'percent_use': 1.0, 'mask_percentage': 0.15, 'max_length': 50, }
