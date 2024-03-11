@@ -5,8 +5,6 @@ import os
 
 import torch
 
-from transformers import DistilBertTokenizer, DistilBertModel, DistilBertConfig
-
 # uncomment these imports for local running
 # from open_coding_utils import get_model
 # from open_coding_constants import model_options, training_options
@@ -16,6 +14,7 @@ from transformers import DistilBertTokenizer, DistilBertModel, DistilBertConfig
 from .open_coding_utils import get_model
 from .open_coding_constants import model_options, training_options
 from .finetune import classification_finetune, get_data_rows, get_label_id_mappings, open_coding_classification_finetune
+from .embeddings import bge_classification_funetine
 
 os.environ["CUDA_VISIBLE_DEVICES"]="0"
 
@@ -41,10 +40,15 @@ def open_coding_finetune_model(model_name, label_id_mappings, data_tuple, percen
         output_filename = f'open_coding_finetuned_{batch_size}_{num_epochs}_{percent_train}_{model_name}'
 
     # load pre-trained model or already fine-tuned model
-    config_path = model_dir + model_name + '/config.json'
-    model_path = model_dir + model_name + '/'
+    config_path = model_dir + model_name + '/model/config.json'
+    model_path = model_dir + model_name + '/model/'
 
-    model_type = 'llama' # can be 'llama' or 'distilbert'
+    model_type = 'bge' # can be 'bge' or 'distilbert'
+
+    if model_type == 'bge':
+        bge_classification_funetine(num_labels, data_tuple, label_id_mappings, batch_size, num_epochs, model_dir + output_filename)
+        return output_filename
+
     model = get_model(model_type)(num_labels, config_path, model_path)
     model.update_label_id_mapping(label_id_mappings)
     tokenizer = model.get_tokenizer()

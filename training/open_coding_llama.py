@@ -21,9 +21,11 @@ from .open_coding_constants import forward_types
 class OpenCodingModel(LlamaPreTrainedModel):
 
     def __init__(self, num_labels, config_path = None, model_path = None, tokenizer = None):
+        self.token = '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'
         if config_path is None:
-            self.config = LlamaConfig.from_pretrained("meta-llama/Llama-2-7b")
+            self.config = LlamaConfig.from_pretrained("meta-llama/Llama-2-7b-hf", token=self.token)
         else:
+            print("config path is", config_path)
             self.config = LlamaConfig.from_pretrained(config_path)
 
         self.config.num_labels = num_labels
@@ -31,12 +33,14 @@ class OpenCodingModel(LlamaPreTrainedModel):
         super().__init__(self.config)
 
         if model_path is None:
-            self.model = LlamaModel.from_pretrained("meta-llama/Llama-2-7b")
+            self.model = LlamaModel.from_pretrained("meta-llama/Llama-2-7b-hf", token=self.token)
         else:
             self.model = LlamaModel.from_pretrained(model_path, config = self.config)
 
         if tokenizer is None:
-            tokenizer = LlamaTokenizer.from_pretrained("meta-llama/Llama-2-7b")
+            tokenizer = LlamaTokenizer.from_pretrained("meta-llama/Llama-2-7b-hf", token=self.token)
+        if '<pad>' not in tokenizer.get_vocab():
+            tokenizer.add_special_tokens({"pad_token":"<pad>"})
         self.tokenizer = tokenizer
 
         # for fine-tuning / label classification
