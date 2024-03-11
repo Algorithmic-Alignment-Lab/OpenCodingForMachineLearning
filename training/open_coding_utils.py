@@ -2,12 +2,15 @@
 # from open_coding_constants import model_options
 # import open_coding_roberta
 # import open_coding_distilbert
+# import open_coding_llama
+# import open_coding_embed_classifier
 
 # import style required by FLASK
 from .open_coding_constants import model_options
 from . import open_coding_roberta
 from . import open_coding_distilbert
 from . import open_coding_llama
+from . import open_coding_embed_classifier
 
 def get_model(model_type):
     '''
@@ -24,5 +27,7 @@ def get_model(model_type):
         return open_coding_roberta.OpenCodingModel
     elif model_type == 'llama':
         return open_coding_llama.OpenCodingModel
+    elif model_type == 'bge':
+        return open_coding_embed_classifier.OpenCodingModel
     else:
         return open_coding_distilbert.OpenCodingModel

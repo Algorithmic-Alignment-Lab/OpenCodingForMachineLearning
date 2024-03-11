@@ -151,14 +151,14 @@ def find_pretrained_models(data_dict):
 
     directories = os.listdir(path)
     for model_dir in directories:
-        if 'pretrained' in model_dir and 'finetuned' not in model_dir: # don't include intermediate training models which are finetuned
+        if ('pretrained' in model_dir or 'base' in model_dir) and 'finetuned' not in model_dir: # don't include intermediate training models which are finetuned
             pretrained_models.add(model_dir)
     for option in data_dict:
         data_dict[option]['pretrained_models'] = []
         formatted_name = '_'.join(str.lower(data_dict[option]['name']).split(' ')) # TODO: document required pre-trained model name format
 
         for pretrained_model in pretrained_models:
-            if formatted_name in pretrained_model:
+            if formatted_name in pretrained_model or 'base' in pretrained_model:
                 data_dict[option]['pretrained_models'].append(pretrained_model)
 
 
