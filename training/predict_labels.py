@@ -53,7 +53,7 @@ def call_predict(unlabeled_data, model_name, label_id_mapping):
     model_path = f'{model_dir}{model_name}/'
 
     # NOTE: currently assuming distilbert base model because this is used by Open Coding V1.
-    model_type = 'llama' # can be 'llama' or 'distilbert'
+    model_type = 'bge' # can be 'llama' or 'distilbert'
     model = get_model(model_type)(num_labels, config_path, model_path)
     model.update_label_id_mapping(label_id_mapping)
 
