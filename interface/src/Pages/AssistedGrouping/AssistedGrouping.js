@@ -6,8 +6,10 @@ import CallbackKeyEventButton  from '../../Custom/CallbackKeyEventButton';
 import SearchBar from 'material-ui-search-bar';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
+// import { Dialog, DialogContent, DialogTitle } from '@material-ui/core';
+
 import SearchResultTable from './PersistantSearchResultTable';
-import SelectionsTable from './SelectionsTable';
+// import SelectionsTable from './SelectionsTable';
 import GroupingsTable from './GroupingsTable';
 import { InputStyle } from '../../Constants/Styles';
 import Loading from '../../Custom/Loading';
@@ -23,17 +25,23 @@ class AssistedGrouping extends Component {
             value: "",
             originalRows: [], // all rows
             visibleRowIds: [], // ids of visible rows based on search criterion
-            selectedRowIds: [], // ids of annotations currently ready to be grouped
+            selectedRowIds: [], // ids of annotations currently ready to be grouped, note
+            //This is RELATIVE. It is for the table and does not actually track the real rows.
             selectedRows: [], // annotations ready to be grouped or already grouped
             unselectedRows: [], // annotations not yet grouped or not yet ready to be grouped
             groupRows: [], // all groups
             groupName: "",
-            allGroupedRows: new Set(), // annotations that have been formally grouped
+            selectedGroup: null,
+            // rowsInSelectedGroup: [],
+            // rowsSelectedAndUngrouped: [],
+            rowsUngrouped: [],
+            allGroupedRows: [], // annotations that have been formally grouped
             sectionComplete: false,
             readyToGroup: false,
             readyToNameGroup: false,
             selectAllOn: false,
             selectAllActive: true,
+            open: false,
         };
     }
     
@@ -65,12 +73,18 @@ class AssistedGrouping extends Component {
                 count += 1;
             }
 
+            console.log(adjusted_rows)
+
             this.setState({
                 originalRows: adjusted_rows,
+                rowsUngrouped: adjusted_rows,
                 unselectedRows: unselected_rows,
                 visibleRowIds: visible_rows,
                 isLoading: false
             });
+
+            window.scrollTo(0, 0);
+
         } catch (error) {
             console.log(error);
         }
@@ -85,11 +99,10 @@ class AssistedGrouping extends Component {
      * @param {int} id identifies row
      */
     reselectGroup = (id) => {
-
+        console.log("enteredReselected")
         let selected = [];
         let selectedIds = [];
-        let name = "";
-        let newSelected = new Set();
+        let group = null;
 
         // gather a list of the subrows for all groups but this one
         // add all of their ids to the new set of selected rows
@@ -98,30 +111,157 @@ class AssistedGrouping extends Component {
             // it is still considered 'selected' within the search view box
             // but its not a part of the grouped rows (required for section completion)
             if (String(s) === id) {
-                name = this.state.groupRows[s].text;
-                for (let i = 0; i < this.state.groupRows[s].depth; i++){
-                    selected.push(this.state.groupRows[s].subRows[i]);
-                    selectedIds.push(this.state.groupRows[s].subRows[i].id);
-                }
+                group = this.state.groupRows[s];
+                // for (let i = 0; i < this.state.groupRows[s].depth; i++){
+                //     selected.push(this.state.groupRows[s].subRows[i]);
+                //     selectedIds.push(this.state.groupRows[s].subRows[i].id);
+                // }
             } else {
-                for (let i = 0; i < this.state.groupRows[s].depth; i++){
-                    newSelected.add(this.state.groupRows[s].subRows[i].id);
-                }
+                // for (let i = 0; i < this.state.groupRows[s].depth; i++){
+                //     newSelected.add(this.state.groupRows[s].subRows[i].id);
+                // }
             }
 
         }
 
-        let completed = newSelected.size === this.state.originalRows.length;
+        // let completed = newSelected.size === this.state.originalRows.length;
 
+        console.log("reselected")
+        console.log(group)
+
+        
+        let newSelected = this.state.allGroupedRows
+
+        newSelected.push(99)
+        newSelected.pop()
+        let ungrouped = this.state.originalRows.filter(item => {
+            for (let elem of newSelected) {
+                if (elem.id === item.id) {
+                    return false;
+                }
+            }
+            return true;})
+
+        let visible = ungrouped.map(item => item.id)
+
+        console.log(ungrouped)
+        console.log(visible)
+        console.log(newSelected)
         this.setState({
             selectedRowIds: selectedIds,
             selectedRows: selected,
             readyToGroup: true,
-            groupName: name,
-            allGroupedRows: newSelected,
-            sectionComplete: completed,
-            readyToNameGroup: selected.length > 0
+            groupName: "",
+            selectedGroup: group,
+            visibleRowIds: visible,
+            rowsUngrouped: ungrouped
         });
+    }
+
+    createGroup = () => {
+
+        //SELECT FROM UNGROUPED SET TO NONE
+
+        
+        //DISPLAY IN SELECTED TO NONE
+
+        //MAKE THE groupname null after setting selected group
+
+        //CHECK THAT THE NAME DOES NOT ALREADY EXIST IN ALL GROUPS
+
+        let newGroupRows = this.state.groupRows;
+
+        for (let groupRow of newGroupRows){
+
+            if (groupRow.text === this.state.groupName){
+                this.setState({
+                    grouName: ""
+                })
+                alert("Group already exists")
+                return
+            }
+        }
+
+        let newGroup = {id: this.state.groupRows.length, text: this.state.groupName, expander: "", expanded: false, depth: 0, subRows: []}
+        
+        newGroupRows = newGroupRows.concat([
+            newGroup
+        ]);
+
+
+        this.setState({
+            selectedRows: [],
+            selectedRowIds: [],
+
+            groupRows: newGroupRows,
+            groupName: "",
+            selectedGroup: newGroup
+        })
+        
+    }
+
+    updateGroup = () => {
+
+        console.log(this.state.selectedRows)
+        
+        let newSelected = this.state.allGroupedRows;
+
+        for (let i = 0; i < this.state.selectedRows.length; i++){
+            newSelected.push(this.state.selectedRows[i]);
+        }
+
+        console.log(newSelected)
+
+        let completed = newSelected.length === this.state.originalRows.length;
+
+        // if the group name already exists, we need to update rather than create
+
+
+        let groupRow = this.state.selectedGroup
+
+        const selectedIdsSet = new Set(this.state.selectedRowIds);
+        
+        
+        const relevantSubRows = groupRow.subRows.concat(this.state.selectedRows);
+
+        groupRow.depth = relevantSubRows.length;
+        groupRow.subRows = relevantSubRows;
+        groupRow.expanded = false;
+        groupRow.expander =  "";
+
+        console.log(groupRow)
+
+        // let ungrouped = this.state.originalRows.filter(item => !newSelected.has(item.id));
+        console.log(newSelected)
+        let ungrouped = this.state.originalRows.filter(item => {
+            for (let elem of newSelected) {
+                if (elem.id === item.id) {
+                    return false;
+                }
+            }
+            return true;})
+
+        console.log(ungrouped)
+        
+        let oldVisible = this.state.visibleRowIds;
+
+        let visible = oldVisible.filter(num => !(newSelected.map(item => item.id)).includes(num));
+        console.log(visible)
+        
+        this.unselectAll()
+
+        this.setState({
+            selectedRowIds: [],
+            selectedRows: [],
+            allGroupedRows: newSelected,
+            groupName: "",
+            sectionComplete: completed,
+            rowsUngrouped: ungrouped,
+            visibleRowIds: visible,
+            // selectAllActive: this.selectAllCanChange(null, newSelected),
+            // selectAllOn: this.selectAllPersistance(null, newSelected)
+        });
+
     }
 
     /**
@@ -203,9 +343,10 @@ class AssistedGrouping extends Component {
      */
     deleteGroup = (id) => {
         // take advantage of the fact that group rows are always in order
-        let newSelected = new Set();
+        let newSelected = [];
         let newUnselected = this.state.unselectedRows;
 
+        let newSelectedGroup = this.state.selectedGroup
         // gather a list of the subrows for all groups and add all of their ids 
         // to the new set of selected rows unless the id matches this group -
         // if the id matches this group, it is a part of unselected rows
@@ -213,28 +354,95 @@ class AssistedGrouping extends Component {
 
             if (String(s) !== id) {
                 for (let i = 0; i < this.state.groupRows[s].depth; i++){
-                    newSelected.add(this.state.groupRows[s].subRows[i].id);
+                    newSelected.push(this.state.groupRows[s].subRows[i]);
                 }
             } else {
                 for (let i = 0; i < this.state.groupRows[s].depth; i++){
                     newUnselected.push(this.state.groupRows[s].subRows[i]);
+                }
+                if (this.state.groupRows[s].text === newSelectedGroup.text) {
+                    newSelectedGroup = null
                 }
             }
         }
 
         // NOTE: are we done? probably not, but will keep this check for
         // when we support multiple labels per text item
-        let completed = newSelected.size === this.state.originalRows.length;
+        let completed = newSelected.length === this.state.originalRows.length;
 
-        let newGroups = this.state.groupRows.slice(0, id).concat(this.state.groupRows.slice(id+1));
+        let newGroups = this.state.groupRows
 
+        newGroups.splice(id, 1)
+
+        console.log(newGroups)
+
+        console.log(newSelected)
+        let ungrouped = this.state.originalRows.filter(obj => !(newSelected.map(item => item.id)).includes(obj.id))
+        
+        console.log(ungrouped)
+
+        let visible = ungrouped.map(item => item.id)
         this.setState({
             allGroupedRows: newSelected,
             groupRows: newGroups,
             sectionComplete: completed,
             unselectedRows: newUnselected,
-            selectAllActive: this.selectAllCanChange(null, newSelected)
+            visibleRowIds: visible,
+            selectedGroup: newSelectedGroup,
+            rowsUngrouped: ungrouped,
+            // selectAllActive: this.selectAllCanChange(null, newSelected)
         });
+    }
+
+    /**
+     * Function for deleting a group.
+     * 
+     * Removes the group from groupRows and from allGroupedRows, and repopulates unselectedRows.
+     * 
+     * @param {int} id the group to delete
+     */
+    //TODO WHERE TO CHANGE THE GROUPS THAT ARE DELETED 
+    deleteSubRow = (id) => {
+        // take advantage of the fact that group rows are always in order
+        let newSelected = [];
+        let newUnselected = this.state.unselectedRows;
+
+        let newSelectedGroup = this.state.selectedGroup
+        // gather a list of the subrows for all groups and add all of their ids 
+        // to the new set of selected rows unless the id matches this group -
+        // if the id matches this group, it is a part of unselected rows
+        
+        let subRows = newSelectedGroup.subRows;
+
+        let removedRow = subRows.splice(id, 1)
+
+        console.log(subRows)
+        console.log(removedRow[0].id)
+        newSelected = this.state.allGroupedRows
+
+        newSelected = newSelected.filter(obj => obj.id != removedRow[0].id);
+        console.log(newSelected)
+        let ungrouped = this.state.originalRows.filter(obj => !(newSelected.map(item => item.id)).includes(obj.id))
+        
+        console.log(ungrouped)
+
+        let visible = ungrouped.map(item => item.id)
+
+        newSelectedGroup.subRows = subRows
+
+        console.log(subRows.length)
+        newSelectedGroup.depth = subRows.length
+
+        let completed = newSelected.length === this.state.originalRows.length;
+        this.setState({
+            allGroupedRows: newSelected,
+            unselectedRows: newUnselected,
+            visibleRowIds: visible,
+            selectedGroup: newSelectedGroup,
+            rowsUngrouped: ungrouped,
+            sectionComplete: completed,
+            // selectAllActive: this.selectAllCanChange(null, newSelected)
+       });
     }
 
     /**
@@ -268,9 +476,11 @@ class AssistedGrouping extends Component {
                 labeled.push({id: this.state.groupRows[j].subRows[i].trueid, true_label: this.state.groupRows[j].text, predicted_label: null});
             }
         }
+
         this.props.saveLabelState(labeled);
+        // this.props.saveLabels(labeled);
         this.props.updateState(states.verification);
-    }
+   }
 
     /**
      * Function for updating the search bar value
@@ -287,19 +497,53 @@ class AssistedGrouping extends Component {
      * Search is based on an exact lowercase text match based on the state.value and annotation value.
      */
     onSearch = () => {
-        let newVisibleIds = this.state.originalRows.map(row => row.id);
-        // we show a subset, or we show all
+        
+        let newVisibleIds = this.state.visibleRowIds;
+       // we show a subset, or we show all
         if (this.state.value !== "" && !this.state.isLoading) {
             // we update the visible row ids
-            let newRows = this.state.originalRows.filter(row => row.annotation.toLowerCase().includes(this.state.value.toLowerCase()));
+            let newRows = this.state.rowsUngrouped.filter(
+                row => row.annotation.toLowerCase().includes(this.state.value.toLowerCase()));
             newVisibleIds = newRows.map(row => row.id);
         }
 
         this.setState({
             visibleRowIds: newVisibleIds,
-            selectAllOn: this.selectAllPersistance(newVisibleIds, null),
-            selectAllActive: this.selectAllCanChange(newVisibleIds, null)
+            // selectAllOn: this.selectAllPersistance(newVisibleIds, null),
+            // selectAllActive: this.selectAllCanChange(newVisibleIds, null)
         });
+    }
+
+    onCancelSearch = () => {
+        let newVisibleIds = this.state.visibleRowIds
+
+        // let sortedArr1 = this.state.rowsUngrouped.map(row => row.id).slice().sort();
+        // let sortedArr2 = this.state.visibleRowIds.slice().sort();
+
+        // // Check if the sorted arrays are equal
+        // console.log("cancel search check")
+        // console.log(sortedArr1.length === sortedArr2.length && sortedArr1.every((value, index) => value === sortedArr2[index]))
+
+        console.log(this.state.allGroupedRows)
+        console.log(this.state.rowsUngrouped)
+        console.log(this.state.visibleRowIds)
+
+        let newSelected = []
+        newVisibleIds = this.state.rowsUngrouped.map(item => item.id)
+
+        this.unselectAll()
+
+        this.setState({
+            visibleRowIds: newVisibleIds,
+            selectedRows: newSelected,
+            selectedRowIds: []
+        })
+
+        // this.setState({
+        //     visibleRowIds: newVisibleIds,
+        //     selectAllOn: this.selectAllPersistance(newVisibleIds, null),
+        //     selectAllActive: this.selectAllCanChange(newVisibleIds, null)
+        // });
     }
 
     /**
@@ -314,12 +558,17 @@ class AssistedGrouping extends Component {
         let ids = this.state.selectedRowIds;
         ids.push(index);
         
-        let rowids = this.state.originalRows.map(row => row.id);
+        let rowids = this.state.rowsUngrouped.map(row => row.id);
 
+        console.log(rowids)
+        console.log(ids)
         // update the selected rows
         let sliceIndex = rowids.indexOf(index);
-        let newitems = this.state.originalRows.slice(sliceIndex, sliceIndex+1);
+        let newitems = this.state.rowsUngrouped.slice(sliceIndex, sliceIndex+1);
         let selected = this.state.selectedRows.concat(newitems);
+
+        console.log(selected)
+        console.log(newitems)
 
         // remove from unselected rows
         let unselected = this.state.unselectedRows.filter(row => row.id !== index);
@@ -335,9 +584,9 @@ class AssistedGrouping extends Component {
      * @param {int} index - the row to select
      */
     unselectIndex = (index) => {
-        if (this.state.allGroupedRows.has(index)){
-            return;
-        }
+        // if (this.state.allGroupedRows.has(index)){
+        //     return;
+        // }
 
         let rowids = this.state.originalRows.map(row => row.id);
 
@@ -377,7 +626,7 @@ class AssistedGrouping extends Component {
         const visibleIds = (vIds !== null) ? vIds : this.state.visibleRowIds;
         const groupRows = (gRows !== null) ? gRows : this.state.allGroupedRows;
         for (let id of visibleIds) {
-            if (!groupRows.has(id)){
+            if (!groupRows.some(item => item.id === id)){
                 return true;
             }
         }
@@ -396,7 +645,7 @@ class AssistedGrouping extends Component {
             // no group has the id and the id is not selected
             // means that we could still 'select all', and it
             // should be off
-            if (!groupRows.has(id) && !this.isSelected(id)){
+            if (!groupRows.some(item => item.id === id) && !this.isSelected(id)){
                 return false;
             }
         }
@@ -467,7 +716,7 @@ class AssistedGrouping extends Component {
     */
     isSelected = (index) => {
         // we can't remove selection if it's in a group
-        return this.state.allGroupedRows.has(index) || this.state.selectedRowIds.includes(index);
+        return this.state.selectedRowIds.includes(index);
     }
 
     /**
@@ -495,14 +744,21 @@ class AssistedGrouping extends Component {
         }
     };
 
+    handleOpen = () => {
+        this.setState({ open: true });
+    };
+
+    handleClose = () => {
+        this.setState({ open: false });
+    };
     
     render() {
         return (
         <div style={{display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
             <div style={{ marginTop: '15px', marginLeft: '15px'}}>
-                <b>
-                    Assisted Grouping
-                </b>
+                <h2>
+                    Grouping Stage
+                </h2>
             </div>
             <div style={{ margin: '15px'}}>
                 <div style={{ display: 'flex', height: '75vh'}}>
@@ -516,28 +772,6 @@ class AssistedGrouping extends Component {
                                     style={{width: '24vw'}}
                                     data={this.state.groupRows}
                                     columns={[
-                                        {
-                                            id: 'expander', // Make sure it has an ID
-                                            Header: ({ getToggleAllRowsExpandedProps, isAllRowsExpanded }) => (
-                                            <span {...getToggleAllRowsExpandedProps()}>
-                                                {isAllRowsExpanded ? '*' : '-'}
-                                            </span>
-                                            ), 
-                                            Cell: ({ row }) => (
-                                                <span
-                                                    {...row.getToggleRowExpandedProps({
-                                                        style: {
-                                                        // We can even use the row.depth property
-                                                        // and paddingLeft to indicate the depth
-                                                        // of the row
-                                                        paddingLeft: `${row.depth/2}rem`,
-                                                        },
-                                                    })}
-                                                    >  
-                                                    {row.isExpanded ? '*' : '-'}
-                                                </span>
-                                            )
-                                        },
                                         {   
                                             Header: 'Group',
                                             accessor: 'text',
@@ -572,17 +806,86 @@ class AssistedGrouping extends Component {
                                 />
                             </div>  
                         </div>
+                        <div style={{ marginTop: '15px', display: 'flex', flexShrink: 0, justifyContent: 'space-between', height: '20px', width: '100%' }}>
+                            <div style={{oberflow: 'auto', flexShrink: 0,  height: '100%', border: '2px solid black', padding: '2px', borderRadius: '10px', justifyContent: 'center', alignItems: 'center'}}>
+                                <InputStyle>
+                                    <input
+                                        style={{ height: '100%'}}
+                                        disabled={false}
+                                        placeholder="enter group name"
+                                        value={this.state.groupName}
+                                        onChange={this.updateGroupName}/>
+                                </InputStyle>
+                            </div>
+                            <CallbackKeyEventButton
+                                buttonAvailable={true}
+                                clickFunc={this.createGroup}
+                                
+                                text={'Create Group'}
+                            />
+                        </div>
                     </div>
                     <div style={{ flexGrow: 1, margin: '15px'}}>
                         <div style={{marginLeft: '10px', height: '2vh'}} >
-                            Search Annotations
+                            Input/Response in Selected Group
                         </div>
                         <div style = {{marginTop: '5px', padding: '5px', border: '2px solid black', borderRadius: '10px', height: "28vh", width: '60vw'}}>
+
+                                <div style={{ overflow: 'scroll', display: 'flex', position: 'relative', height: '23vh', width: "60vw"}}>
+                                    <GroupingsTable
+                                        style={{width: '60vw'}}
+                                        data={(this.state.selectedGroup == null)?
+                                            ([])
+                                            :
+                                            (this.state.selectedGroup.subRows)}
+                                        columns={[
+                                            {   
+                                                Header: () => 
+                                                        (<div style={{marginLeft: '10px', textAlign: 'left'}}>
+                                                            Annotation
+                                                        </div>),
+                                                accessor: 'annotation'
+                                            },
+                                            { 
+                                                Header: () => 
+                                                        (<div style={{marginLeft: '10px', textAlign: 'left'}}>
+                                                            Input/Response Pair
+                                                        </div>),
+                                                accessor: 'text',
+                                            },
+                                            {
+                                                Header: 'Delete',
+                                                accessor: 'delete',
+                                                Cell: ({ row }) => (
+                                                    (row.isExpanded) ? 
+                                                    null 
+                                                    :
+                                                    (
+                                                    <span>
+                                                        <div onClick={() => {this.deleteSubRow(row.id)}}>
+                                                            x
+                                                        </div>
+                                                    </span>
+                                                    )
+                                                )
+                                            }
+                                        
+                                        ]}
+                                    />
+
+                                </div>   
+                        </div>
+                        <div style={{ marginTop: '15px', marginLeft: '10px', height: '2vh'}} >
+                            UnGrouped Input Response Pairs
+                        </div>
+                        
+                        <div style = {{marginTop: '5px', padding: '5px', border: '2px solid black', borderRadius: '10px', height: "47vh", width: '60vw'}}>
                             <SearchBar
                                 style={{width: "60vw", height:'5vh'}}
                                 value={this.state.value}
                                 onChange={this.onChange}
                                 onRequestSearch={this.onSearch}
+                                onCancelSearch={this.onCancelSearch}
                             />
                             {
                                 (this.state.isLoading) ?
@@ -591,7 +894,7 @@ class AssistedGrouping extends Component {
                                         <Loading/>
                                     </div>
                                 ) : (
-                                <div style={{ overflow: 'scroll', display: 'flex', position: 'relative', height: '23vh', width: "60vw"}}>
+                                <div style={{ overflow: 'scroll', display: 'flex', position: 'relative', height: '40vh', width: "60vw"}}>
                                     <SearchResultTable
                                         data={this.state.originalRows}
                                         columns={[
@@ -623,55 +926,15 @@ class AssistedGrouping extends Component {
                                 </div>)
                             }
                         </div>
-                        <div style={{ marginTop: '15px', marginLeft: '10px', height: '2vh'}} >
-                            Selected Annotations
-                        </div>
-                        <div style={{ marginTop: '5px', padding: '5px', height: '13vh', width: '60vw', border: '2px solid black', borderRadius: '10px'}}>
-                            <div style={{ display: 'flex', position: 'relative',overflow: 'scroll', height: '13vh', width: '60vw'}}>
-                                <SelectionsTable
-                                    style={{width: "57vw"}}
-                                    data={this.state.selectedRows}
-                                    columns={[
-                                        {
-                                            accessor: 'annotation'
-                                        }
-                                    ]}
-                                />
-                            </div>
-                        </div>
-                        <div style={{marginTop: '15px', marginLeft: '10px', height: '2vh'}} >
-                            Unselected Annotations
-                        </div>
-                        <div style={{ marginTop: '5px', padding: '5px', height: '13vh', width: '60vw', border: '2px solid black', borderRadius: '10px'}}>
-                            <div style={{ display: 'flex', position: 'relative',overflow: 'scroll', height: '13vh', width: '60vw'}}>
-                                <SelectionsTable
-                                    style={{width: "57vw"}}
-                                    data={this.state.unselectedRows}
-                                    columns={[
-                                        {
-                                            accessor: 'annotation'
-                                        }
-                                        
-                                    ]}
-                                />
-                            </div>
-                        </div>
-                        <div style={{ marginTop: '15px', display: 'flex', justifyContent: 'space-between', height: '3vh', width: '100%' }}>
-                            <div style={{overflow: 'auto', height: '3vh', border: '2px solid black', padding: '5px', borderRadius: '10px', justifyContent: 'center'}}>
-                                <InputStyle>
-                                    <input
-                                        disabled={!this.state.readyToNameGroup}
-                                        placeholder="enter group name"
-                                        value={this.state.groupName}
-                                        onChange={this.updateGroupName}/>
-                                </InputStyle>
-                            </div>
-                            <CallbackKeyEventButton
+                        <div style={{ marginTop: '15px', display: 'flex', flexShrink: 0, justifyContent: 'space-between', height: '20px', width: '100%' }}>
+                            
+                             <CallbackKeyEventButton
                                 callBackFunc={this.handleCreateGroupKeyPress}
-                                buttonAvailable={this.state.readyToGroup}
-                                clickFunc={this.createOrUpdateGroup}
-                                text={'Create or Update Group (/)'}
-                            />
+                                buttonAvailable={this.state.selectedGroup != null && this.state.selectedRows.length != 0}
+                                clickFunc={this.updateGroup}
+                                
+                                text={'Add to Selected Group'}
+                           />
                         </div>
                     </div>   
                 </div>

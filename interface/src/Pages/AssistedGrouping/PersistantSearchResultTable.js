@@ -27,6 +27,8 @@ function SearchResultTable({ columns, data, selectIndex, unselectIndex, isSelect
         }, [initialValue]);
 
         const onClick = () => {
+          console.log(index)
+          console.log(original)
             if (isSelected(index)) {
                 unselectIndex(index);
             } else {
