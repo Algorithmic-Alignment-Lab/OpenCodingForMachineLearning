@@ -477,8 +477,8 @@ class AssistedGrouping extends Component {
             }
         }
 
-        this.props.saveLabelState(labeled);
-        // this.props.saveLabels(labeled);
+        // this.props.saveLabelState(labeled);
+        this.props.saveLabels(labeled);
         this.props.updateState(states.verification);
    }
 
@@ -827,7 +827,7 @@ class AssistedGrouping extends Component {
                     </div>
                     <div style={{ flexGrow: 1, margin: '15px'}}>
                         <div style={{marginLeft: '10px', height: '2vh'}} >
-                            Input/Response in Selected Group
+                            Text in Selected Group
                         </div>
                         <div style = {{marginTop: '5px', padding: '5px', border: '2px solid black', borderRadius: '10px', height: "28vh", width: '60vw'}}>
 
@@ -849,7 +849,7 @@ class AssistedGrouping extends Component {
                                             { 
                                                 Header: () => 
                                                         (<div style={{marginLeft: '10px', textAlign: 'left'}}>
-                                                            Input/Response Pair
+                                                            Chat Text
                                                         </div>),
                                                 accessor: 'text',
                                             },
@@ -876,7 +876,7 @@ class AssistedGrouping extends Component {
                                 </div>   
                         </div>
                         <div style={{ marginTop: '15px', marginLeft: '10px', height: '2vh'}} >
-                            UnGrouped Input Response Pairs
+                            UnGrouped Chat Text
                         </div>
                         
                         <div style = {{marginTop: '5px', padding: '5px', border: '2px solid black', borderRadius: '10px', height: "47vh", width: '60vw'}}>
