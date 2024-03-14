@@ -5,6 +5,7 @@ import sys
 from flask import Flask, json, request, jsonify
 from werkzeug.utils import secure_filename
 import os
+import pandas as pd
 
 app = Flask(__name__)
 
@@ -42,7 +43,6 @@ def upload_file():
     if 'file' not in request.files:
         return jsonify({"error": "No file part"}), 400
     file = request.files['file']
-    username = request.form['username']
     
     # If user does not select file, browser also
     # submit an empty part without filename
@@ -50,10 +50,18 @@ def upload_file():
         return jsonify({"error": "No selected file"}), 400
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
+        filepath = os.path.join(UPLOAD_FOLDER, filename)
+
         if not os.path.exists(UPLOAD_FOLDER):
             os.makedirs(UPLOAD_FOLDER)
-        file.save(os.path.join(UPLOAD_FOLDER, filename))
-        return jsonify({"message": f"File {filename} uploaded successfully"}), 200
+        
+        file.save(filepath)
+        df = pd.read_csv(filepath)
+        num_rows = len(df)
+
+        return jsonify({
+            "message": f"File {filename} uploaded successfully",
+            "numRows": num_rows - 1}), 200
 
     return jsonify({"error": "File type not allowed"}), 400
 

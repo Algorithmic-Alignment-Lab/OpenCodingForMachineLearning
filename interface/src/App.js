@@ -27,7 +27,8 @@ class App extends Component {
       verificationAccuracies: [],
       prepDataDone: false,
       username:"",
-      selectedFile:""
+      selectedFile:"",
+      numAnnotate: null,
     }
   }
 
@@ -144,6 +145,16 @@ class App extends Component {
 
 	getSelectedFile = () => {
 		return this.state.selectedFile;
+	};
+
+  setNumAnnotate = (numAnnotate) => {
+		this.setState({
+			numAnnotate: numAnnotate,
+		});
+	};
+
+	getNumAnnotate = () => {
+		return this.state.numAnnotate;
 	};
 
   setName = (name) => {
@@ -280,6 +291,7 @@ class App extends Component {
         setOptionID = {this.setOptionID}
         setUsername = {this.setUsername}
         getUsername = {this.getUsername}
+        getNumAnnotate = {this.getNumAnnotate}
         setName={this.setName}
         updateState = {this.updateState}
         setConstants = {this.setConstants}
@@ -343,7 +355,8 @@ class App extends Component {
       return <PrepData 
         setPrepDataDone={this.setPrepDataDone}
         setUsername={this.setUsername}
-        setSelectedFile={this.setSelectedFile}>
+        setSelectedFile={this.setSelectedFile}
+        setNumAnnotate={this.setNumAnnotate}>
       </PrepData>
     }
   }

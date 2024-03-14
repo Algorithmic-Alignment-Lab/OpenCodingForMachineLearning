@@ -58,10 +58,13 @@ class Introduction extends Component {
                 throw Error(prepData.statusText);
             }
             await prepData
+
             this.setState({
+                numAnnotate: this.props.getNumAnnotate(),
                 showIntro: true
             });
-    
+
+            console.log("NumAnnotate:", this.state.numAnnotate)
 
             const response = await this.props.getDataWithParams('/data/get_all_data_options', {"username": this.props.getUsername()});
             

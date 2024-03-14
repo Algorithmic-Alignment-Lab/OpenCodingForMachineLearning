@@ -19,6 +19,7 @@ class Introduction extends Component {
         super(props);
         this.state = {
             selectedFile: null,
+            numAnnotate: null,
         }
     }
 
@@ -41,13 +42,13 @@ class Introduction extends Component {
         var inputField = document.getElementById('uname');
         inputField.disabled = true;
         this.props.setUsername(document.getElementById("uname").value)
-        this.props.setSelectedFile(this.state.selectedFile.name)
         document.getElementById('continue').disabled = false
     }
 
     onFileChange = event => {
         // Update the state
         this.setState({ selectedFile: event.target.files[0] });
+
     };
 
     onFileUpload = () => {
@@ -75,6 +76,10 @@ class Introduction extends Component {
         .then(response => response.json()) // Assuming your backend responds with JSON
         .then(data => {
             console.log(data);
+            if (data.numRows !== undefined) {
+                this.setState({numAnnotate: data.numRows});
+                this.props.setNumAnnotate(data.numRows); // Call the method passed down from App.js to update the state there
+            }
         })
         .catch(error => {
             console.error(error);
