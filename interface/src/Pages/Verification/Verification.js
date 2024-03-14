@@ -99,7 +99,7 @@ class Verification extends Component {
     async componentDidMount () {
         try {
             const predictedLabels = this.props.getLabels();
-            
+            console.log('Predicted Labels', predictedLabels)
             // TODO: labeled dataset is empty
 
             await this.train(predictedLabels, 0);

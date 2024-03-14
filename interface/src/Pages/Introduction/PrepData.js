@@ -41,6 +41,7 @@ class Introduction extends Component {
         var inputField = document.getElementById('uname');
         inputField.disabled = true;
         this.props.setUsername(document.getElementById("uname").value)
+        this.props.setSelectedFile(this.state.selectedFile.name)
         document.getElementById('continue').disabled = false
     }
 
