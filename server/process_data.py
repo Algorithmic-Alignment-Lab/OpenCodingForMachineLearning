@@ -148,6 +148,7 @@ def find_pretrained_models(data_dict):
     # gather all of the model names
     path = './../training/models'
     pretrained_models = set()
+    pretrained_models.add('bge_classifier_base')
 
     directories = os.listdir(path)
     for model_dir in directories:
