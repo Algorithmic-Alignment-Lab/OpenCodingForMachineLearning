@@ -26,7 +26,8 @@ class App extends Component {
       constants: null,
       verificationAccuracies: [],
       prepDataDone: false,
-      username:""
+      username:"",
+      selectedFile:""
     }
   }
 
@@ -133,6 +134,16 @@ class App extends Component {
 
 	getUsername = () => {
 		return this.state.username;
+	};
+
+  setSelectedFile = (selectedFile) => {
+		this.setState({
+			selectedFile: selectedFile,
+		});
+	};
+
+	getSelectedFile = () => {
+		return this.state.selectedFile;
 	};
 
   setName = (name) => {
@@ -331,7 +342,8 @@ class App extends Component {
     }} else {
       return <PrepData 
         setPrepDataDone={this.setPrepDataDone}
-        setUsername={this.setUsername}>
+        setUsername={this.setUsername}
+        setSelectedFile={this.setSelectedFile}>
       </PrepData>
     }
   }

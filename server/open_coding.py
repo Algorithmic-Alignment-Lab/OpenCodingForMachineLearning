@@ -2,7 +2,9 @@ import sys
 
 [sys.path.append(i) for i in ['..']]
 
-from flask import Flask, json, request
+from flask import Flask, json, request, jsonify
+from werkzeug.utils import secure_filename
+import os
 
 app = Flask(__name__)
 
@@ -14,6 +16,14 @@ from training.finetune_model import open_coding_finetune_model
 from training.predict_labels import call_predict
 from training.generate_pretrained_model import call_pretrain_model_distilbert_local
 
+# Set constants for the uploads
+UPLOAD_FOLDER = '../data/'
+ALLOWED_EXTENSIONS = {'csv'}
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 @app.route('/', methods=['GET'])
@@ -26,6 +36,27 @@ def test():
     add_options(response)
     return json.jsonify(response)
 
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    # Check if the post request has the file part
+    if 'file' not in request.files:
+        return jsonify({"error": "No file part"}), 400
+    file = request.files['file']
+    username = request.form['username']
+    
+    # If user does not select file, browser also
+    # submit an empty part without filename
+    if file.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        if not os.path.exists(UPLOAD_FOLDER):
+            os.makedirs(UPLOAD_FOLDER)
+        file.save(os.path.join(UPLOAD_FOLDER, filename))
+        return jsonify({"message": f"File {filename} uploaded successfully"}), 200
+
+    return jsonify({"error": "File type not allowed"}), 400
+
 
 @app.route('/data/prep_data', methods=['GET'])
 def prep_data():
@@ -35,6 +66,7 @@ def prep_data():
     username = request.args.get("username")
     print(username)
     data_dict = parse_options_into_db()
+    print(data_dict)
     find_pretrained_models(data_dict)
 
     instantiate_tables(data_dict, username)
@@ -246,7 +278,7 @@ def train_and_predict():
         rows = json_data['rows']
         option_id = json_data['id']
         username = json_data['username']
-
+        print(json_data)
         # save the new labels
         add_labels(option_id, rows, username)
 

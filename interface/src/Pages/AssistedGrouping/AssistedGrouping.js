@@ -6,7 +6,7 @@ import CallbackKeyEventButton  from '../../Custom/CallbackKeyEventButton';
 import SearchBar from 'material-ui-search-bar';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
-// import { Dialog, DialogContent, DialogTitle } from '@material-ui/core';
+import { Dialog, DialogContent, DialogTitle } from '@material-ui/core';
 
 import SearchResultTable from './PersistantSearchResultTable';
 // import SelectionsTable from './SelectionsTable';
@@ -754,14 +754,62 @@ class AssistedGrouping extends Component {
     
     render() {
         return (
-        <div style={{display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
+            <div style={{display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
             <div style={{ marginTop: '15px', marginLeft: '15px'}}>
                 <h2>
                     Grouping Stage
                 </h2>
             </div>
             <div style={{ margin: '15px'}}>
-                <div style={{ display: 'flex', height: '75vh'}}>
+                    <b>
+                        What is a group?
+                    </b>
+                    <br></br>
+                        A group is a set of one or more annotation(s) that are all similar and should be "grouped" together to describe the overarching attribute.
+                    <br></br>
+                    <br></br>
+                    <b>
+                        Annotations can fall along a spectrum of an attribute. For example, two annotations could be referencing a similar underlying attribute (e.g. 'warm' and 'empathetic'), or be inverses of each other (e.g. 'warm' and 'cold'). The goal of the grouping stage is to group texts with annotations that relate to the same attribute (each attribute is our group) to create a cohesive and structured dataset of annotated chat responses.
+                    </b>
+                    
+
+
+                </div>
+                <div style={{ margin: '5px'}}>
+                    <h3 style={{ margin: '2px'}}>
+                        Your Task
+                    </h3>
+                    Please group the chat prompts and responses based off of your annotations. Use the interface below to search through the annotations and create a group name.
+                    <br></br>
+                </div>
+                <div style={{ margin: '5px'}}>
+                    <CallbackKeyEventButton text={'Click here to review the instructions for the grouping interface'} clickFunc={this.handleOpen} buttonAvailable={true}/>
+                    <Dialog open={this.state.open} onClose={this.handleClose}>
+                    <DialogTitle>How to Use the Grouping Interface</DialogTitle>
+                    <DialogContent>
+                        <br></br> The following numbers explain the coresponding part of the interface shown in the diagram.
+                        <br></br><b>1</b> The location where the groups you define will appear. You can click on a group in the view box to update it. You can click on the small "x" beside the group to delete it.
+                        <br></br><b>2</b> The interface to search through the annotations that you have written. You can also select/unselect the checkbox to add the prompt / response to a particular group. 
+                        <br></br><b>3</b> When a prompt / response is selected in interface 2, it's annotation will appear in this view box.
+                        <br></br><b>4</b> When a prompt / response is <b>not</b> selected in interface 2, it's annotation will appear in this view box.
+                        <br></br><b>5</b> When creating a group, box 5 is where you enter the group name. Note that at least one prompt / response must be selected.
+                        <br></br><b>6</b> The button to either create or update a group.
+
+                        <br></br><br></br>
+                    </DialogContent>
+            </Dialog>
+
+                </div>
+            <div style={{ margin: '15px'}}>
+                {(this.state.selectedGroup == null)?
+                (<h4 style={{marginBottom: '10px', height: '2vh', textAlign: 'center'}}>
+                    There is no selected group. Please select/create a group
+                </h4>)
+                :
+                (<h4 style={{marginBottom: '10px', height: '2vh', textAlign: 'center'}}>
+                    The selected group is: {this.state.selectedGroup.text}
+                </h4>)}
+                <div style={{ display: 'flex'}}>
                     <div style={{ flexGrow: 1, margin: '15px'}}>
                         <div style={{marginLeft: '10px', height: '2vh'}} >
                             Groups
@@ -827,7 +875,7 @@ class AssistedGrouping extends Component {
                     </div>
                     <div style={{ flexGrow: 1, margin: '15px'}}>
                         <div style={{marginLeft: '10px', height: '2vh'}} >
-                            Text in Selected Group
+                            Chat Prompts / Responses in Selected Group
                         </div>
                         <div style = {{marginTop: '5px', padding: '5px', border: '2px solid black', borderRadius: '10px', height: "28vh", width: '60vw'}}>
 
@@ -849,7 +897,7 @@ class AssistedGrouping extends Component {
                                             { 
                                                 Header: () => 
                                                         (<div style={{marginLeft: '10px', textAlign: 'left'}}>
-                                                            Chat Text
+                                                            Chat Prompts and Responses
                                                         </div>),
                                                 accessor: 'text',
                                             },
@@ -876,7 +924,7 @@ class AssistedGrouping extends Component {
                                 </div>   
                         </div>
                         <div style={{ marginTop: '15px', marginLeft: '10px', height: '2vh'}} >
-                            UnGrouped Chat Text
+                            UnGrouped Chat Prompts and Responses
                         </div>
                         
                         <div style = {{marginTop: '5px', padding: '5px', border: '2px solid black', borderRadius: '10px', height: "47vh", width: '60vw'}}>
@@ -912,7 +960,7 @@ class AssistedGrouping extends Component {
                                             { 
                                                 Header: () => 
                                                         (<div style={{marginLeft: '10px', textAlign: 'left'}}>
-                                                            Text
+                                                            Chat Prompt / Response
                                                         </div>),
                                                 accessor: 'text',
                                             }
@@ -928,15 +976,15 @@ class AssistedGrouping extends Component {
                         </div>
                         <div style={{ marginTop: '15px', display: 'flex', flexShrink: 0, justifyContent: 'space-between', height: '20px', width: '100%' }}>
                             
-                             <CallbackKeyEventButton
+                            <CallbackKeyEventButton
                                 callBackFunc={this.handleCreateGroupKeyPress}
                                 buttonAvailable={this.state.selectedGroup != null && this.state.selectedRows.length != 0}
                                 clickFunc={this.updateGroup}
                                 
                                 text={'Add to Selected Group'}
-                           />
+                            />
                         </div>
-                    </div>   
+                    </div>
                 </div>
             </div>
             <div style={{marginTop: '15px', width:'100%'}}>

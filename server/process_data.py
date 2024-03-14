@@ -120,7 +120,6 @@ def parse_options_into_db():
         except Exception as err:
             print(err)
             print(f"did not parse the following file: {csv_file}")         
-        
     return annotation_objects
 
 
@@ -154,10 +153,8 @@ def find_pretrained_models(data_dict):
     for model_dir in directories:
         if 'pretrained' in model_dir and 'finetuned' not in model_dir: # don't include intermediate training models which are finetuned
             pretrained_models.add(model_dir)
-
     for option in data_dict:
         data_dict[option]['pretrained_models'] = []
-
         formatted_name = '_'.join(str.lower(data_dict[option]['name']).split(' ')) # TODO: document required pre-trained model name format
 
         for pretrained_model in pretrained_models:
