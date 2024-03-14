@@ -11,21 +11,19 @@ import torch
 from torch import nn
 import json
 import replicate
-from replicate.client import Client
-from finetune import convert_labels
-from open_coding_embed_classifier import OpenCodingModel
+
 from torch.utils.data import DataLoader, TensorDataset
 from torch.optim import Adam
 from sklearn.model_selection import train_test_split
 from dataclasses import dataclass
 
-replicate = Client(api_token = os.getenv("REPLICATE_API_TOKEN"))
-
 # uncomment these imports for local running
-# from open_coding_constants import PredictionDataset
+# from finetune import convert_labels
+# from open_coding_embed_classifier import OpenCodingModel
 
 # import style required by FLASK
-from .open_coding_constants import PredictionDataset
+from .finetune import convert_labels
+from .open_coding_embed_classifier import OpenCodingModel
 
 # prevents automatic weights and biases logging
 os.environ["WANDB_DISABLED"] = "true"
@@ -64,7 +62,6 @@ def bge_classification_funetine(num_labels, data_tuple, label_id_mappings, batch
 
 def get_embeddings(data_tuple):
     texts, labels = data_tuple
-
     # Returns a list of length n, where n = len(texts), where each element is a list of len 1024 for the embedding
     embeddings = replicate.run("nateraw/bge-large-en-v1.5:9cf9f015a9cb9c61d1a2610659cdac4a4ca222f2d3707a68517b18c198a9add1",
     input={"texts": json.dumps(texts)})
