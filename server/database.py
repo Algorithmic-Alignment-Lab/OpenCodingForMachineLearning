@@ -423,8 +423,8 @@ def add_labels(option_id, labels, username = "username"):
     conn = create_connection(database)
 
     if conn is not None:
-        label_insert = f"INSERT INTO labels_{option_id}(id,true_label,predicted_label) VALUES(?,?,?)"
-        label_set_insert = f"INSERT INTO label_set_{option_id}(id,label) VALUES(?,?)"
+        label_insert = f"INSERT OR REPLACE INTO labels_{option_id}(id,true_label,predicted_label) VALUES(?,?,?)"
+        label_set_insert = f"INSERT OR REPLACE INTO label_set_{option_id}(id,label) VALUES(?,?)"
 
         # gather all labels already in label_set
         # get a counter of current highest id
