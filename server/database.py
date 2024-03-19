@@ -320,7 +320,7 @@ def create_constants(username = "username"):
         print("Could not establish connection for create_constants")
 
 
-def set_constants(constants, model, username = "username"):
+def set_constants(constants, username = "username"):
     '''
     Adds in information to the constants_{option_id} table. Since the constants_{option_id} will only
     ever have one row, this overwrites pre-exising information. 
@@ -336,10 +336,10 @@ def set_constants(constants, model, username = "username"):
     conn = create_connection(database)
 
     if conn is not None:
-        constants_update = f"UPDATE constants SET coding = ?, verification = ?, rounds = ?, batch_size = ?, num_epochs = ?, model = ? WHERE id = ?"
+        constants_update = f"UPDATE constants SET coding = ? WHERE id = ?"
 
         # id is always 0
-        conn.execute(constants_update, (*constants, model, 0))
+        conn.execute(constants_update, (*constants, 0))
         
         conn.commit()
         conn.close()

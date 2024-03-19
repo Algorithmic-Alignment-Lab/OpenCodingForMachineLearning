@@ -1,18 +1,8 @@
 import React, {Component} from 'react';
 
-import states from './../../Constants/States';
-
-import LinearProgress from '@material-ui/core/LinearProgress';
-import CallbackKeyEventButton from '../../Custom/CallbackKeyEventButton';
-import FixedSlider from './FixedSlider';
-
 import '../../Custom/styles.css';
 
 const fetch = require('node-fetch');
-
-const progress = 0;
-
-const pretrainNew = 'Pretrain New Model';
 
 class Introduction extends Component {
     constructor(props) {
@@ -91,8 +81,17 @@ class Introduction extends Component {
         <div style={{ margin: '15px'}}>
             <div style={{ margin: '15px'}}>
                     <b>
-                        Welcome To Open Coding! Please upload your chat csv file and enter your provided username. Do not forget to Confirm your username.
+                        Welcome To Open Coding! 
                     </b>
+                    <br></br>
+                    <br></br>
+                    <br></br>
+                    1. Please upload your chat csv file and click 'Upload'. 
+                    <br></br>
+                    2. Please enter your given username and click 'Confirm'.
+                    <br></br>
+                    <br></br>
+                    <br></br>
             </div>
             <div>
                 <input type="file" onChange={this.onFileChange} />

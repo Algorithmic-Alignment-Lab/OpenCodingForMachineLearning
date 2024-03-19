@@ -4,14 +4,14 @@ import states from './../../Constants/States';
 
 import LinearProgress from '@material-ui/core/LinearProgress';
 import CallbackKeyEventButton from '../../Custom/CallbackKeyEventButton';
-import FixedSlider from './FixedSlider';
-import PretrainingModal from './PretrainingModal';
+// import FixedSlider from './FixedSlider';
+// import PretrainingModal from './PretrainingModal';
 
 import DataOptions from './DataOptions';
 
 import '../../Custom/styles.css';
 
-const fetch = require('node-fetch');
+// const fetch = require('node-fetch');
 
 const progress = 0;
 
@@ -23,22 +23,10 @@ class Introduction extends Component {
         this.state = {
             dataOptions: null,
             dataOptionsFull: null,
-            pretrainedDropdown: [pretrainNew],
             selectedData: null,
-            selectedModel: null,
-            modelName: null,
             dataOptionSelected: false,
-            modelSelected: false,
-            showAdvanced: false,
-            pretrainingNew: false,
-            pretrainingStarted: false,
-            pretrainingComplete: false,
             sectionComplete: false,
             numAnnotate: 50,
-            numVerify: 50,
-            numMinVerify: 20,
-            batchSize: 50,
-            numEpochs: 1,
             showIntro: false,
         }
     }
@@ -106,6 +94,7 @@ class Introduction extends Component {
             pretrainedDropdown: selectedItem.models.concat([{model: pretrainNew}]),
             dataOptionSelected: true,
             selectedModel: null,
+            sectionComplete: true
         });
     }
 
@@ -122,77 +111,6 @@ class Introduction extends Component {
     }
 
     /**
-    * Dropdown model selection.
-    */
-    onSelectPretrainedModel = (_, selectedItem) => {
-        this.setState({
-            selectedModel: selectedItem,
-            modelName: selectedItem.model === pretrainNew ? null : selectedItem.model,
-            modelSelected: true,
-            pretrainingNew: selectedItem.model === pretrainNew,
-            sectionComplete: selectedItem.model !== pretrainNew
-        });
-    }
-
-    /**
-    * Dropdown model removal.
-    */
-    onRemovePretrainedModel = (_, __) => {
-        this.setState({
-            selectedModel: null, 
-            modelName: null,
-            modelSelected: false,
-            sectionComplete: false
-        });
-    }
-
-
-    pretrainNewModel = async (batchSize, numEpochs) => {
-        // get data option
-        const dataOption = this.state.selectedData.id;
-
-        // update state to show loading and disable additional pretraining submissions
-        this.setState({
-            pretrainingStarted: true,
-        });
-
-        console.log(this.props.getUsername())
-
-        try {
-            const response = await this.props.postData('/data/pretrain_model', {"id": dataOption, "batch_size": batchSize, "num_epochs": numEpochs, "username": this.props.getUsername()});
-            
-            if (!response.ok) {
-                throw Error(response.statusText);
-            }
-
-            if (response.model === null){
-                this.setState({
-                    selectedModel: {model: "Error pretraining model"},
-                    modelName: "Error pretraining model",
-                    pretrainingComplete: true,
-                    sectionComplete:  false
-                });
-            } else {
-                // now we're done loading, but still disable pressing pre-train again
-                this.setState({
-                    selectedModel: {model: response.model}, // no longer pretraining default
-                    modelName: response.model,
-                    pretrainingComplete: true,
-                    sectionComplete: true
-                });
-            }
-        } catch (error) {
-            console.log(error);
-            this.setState({
-                selectedModel: {model: "Error pretraining model"},
-                modelName: "Error pretraining model",
-                pretrainingComplete: true,
-                sectionComplete: false
-            });
-        }
-    }
-
-    /**
     * Next button submit action.
     * 
     * We set the option id, which indicates the dataset we are interacting with in all subsequent 
@@ -200,7 +118,7 @@ class Introduction extends Component {
     */
     onNextSubmit = () => {
         this.props.setOptionID(this.state.selectedData.id);
-        this.props.setConstants([this.state.numAnnotate, this.state.numVerify, this.state.numMinVerify, this.state.batchSize, this.state.numEpochs, this.state.selectedModel.model]);
+        this.props.setConstants([this.state.numAnnotate]);
         this.props.updateState(states.openCoding);
         this.props.setName(this.state.selectedData.text)
     }
@@ -213,52 +131,6 @@ class Introduction extends Component {
             this.onNextSubmit();
         }
     };
-
-    /**
-    * Advanced Settings button submit action.
-    */
-    onAdvancedSubmit = () => {
-        this.setState({
-            showAdvanced: !this.state.showAdvanced
-        });
-    }
-    
-    /**
-    * keyDownEvent for Advanced Settings button hotkey
-    */
-    handleAdvancedKeyPress = (event) => {
-        if (event.key === ';'){
-            this.onAdvancedSubmit();
-        }
-    };
-
-    /**
-     * Handles changing number of desired annotation samples.
-     */
-    handleAnnotationChange = (value) => {
-        this.setState({numAnnotate: value});
-    }
-
-    /**
-     * Handles changing number of desired prediction samples.
-     */
-    handleVerificationChange = (value) => {
-        this.setState({numVerify: value});
-    }
-
-    /**
-     * Handles changing desired batch size.
-     */
-    handleBatchSizeChange = (value) => {
-        this.setState({batchSize: value});
-    }
-
-    /**
-     * Handles desired number of epochs.
-     */
-    handleNumEpochsChange = (value) => {
-        this.setState({numEpochs: value});
-    }
 
     confirmUsername = () => {
         var inputField = document.getElementById('uname');
@@ -291,105 +163,6 @@ class Introduction extends Component {
                                 onRemove={this.onRemoveDataOption}
                             />
                         </div>
-                        <div style = {{alignItems: 'center', marginBottom: '10px'}}>
-                            Select a pre-existing pretrained model to use, or pretrain a new model.
-                        </div>
-                        <div style = {{ marginBottom: '20px'}}>
-                            <DataOptions
-                                disabled={!this.state.dataOptionSelected}
-                                dataOptions={this.state.pretrainedDropdown}
-                                displayValue={'model'}
-                                displayText={'Select pretrained model'}
-                                onSelect={this.onSelectPretrainedModel}
-                                onRemove={this.onRemovePretrainedModel}
-                            />
-                        </div>
-                        {/* visible if we have asked to pretrain, enabled if we haven't clicked the pretrain button, and loading
-                        until pretraining is complete */}
-                        <PretrainingModal
-                            modelName={this.state.modelName}
-                            showPretrainingModal={this.state.pretrainingNew}
-                            enablePretrainingModal={!this.state.pretrainingStarted}
-                            pretraining={this.state.pretrainingStarted && !this.state.pretrainingComplete}
-                            pretrainNewModel={this.pretrainNewModel}
-                        />
-                        <div style = {{marginBottom: '20px'}}>
-                            <CallbackKeyEventButton
-                                buttonAvailable={true}
-                                callBackFunc={this.handleAdvancedKeyPress}
-                                clickFunc={this.onAdvancedSubmit}
-                                text={'Advanced Settings (;)'}
-                                keyMatch={';'}
-                            />
-                        </div>
-                        {(this.state.showAdvanced) ?
-                            (<div>
-                                <div style = {{alignItems: 'center', marginBottom: '10px'}}>
-                                    {"How many text samples would you like to annotate?"}
-                                    <b style = {{marginLeft: '5px'}}>
-                                        {this.state.numAnnotate}
-                                    </b> 
-                                </div>
-                                <div style = {{ marginBottom: '20px'}}>
-                                    <FixedSlider 
-                                        name='Annotation Samples'
-                                        width={'90vw'}
-                                        startValue={10}
-                                        endValue={300}
-                                        defaultValue={100}
-                                        updateValue={this.handleAnnotationChange}
-                                    />
-                                </div>
-                                <div style = {{alignItems: 'center', marginBottom: '10px'}}>
-                                    {"How many predictions should the model make during each verification round?"}
-                                    <b style = {{marginLeft: '5px'}}>
-                                        {this.state.numVerify}
-                                    </b> 
-                                </div>
-                                <div style = {{ marginBottom: '20px'}}>
-                                    <FixedSlider 
-                                        name='Annotation Samples'
-                                        width={'90vw'}
-                                        startValue={10}
-                                        endValue={300}
-                                        defaultValue={100}
-                                        updateValue={this.handleVerificationChange}
-                                    />
-                                </div>
-                                <div style = {{alignItems: 'center', marginBottom: '10px'}}>
-                                    {"What batch size should the model be finetuned with?"}
-                                    <b style = {{marginLeft: '5px'}}>
-                                        {this.state.batchSize}
-                                    </b> 
-                                </div>
-                                <div style = {{ marginBottom: '20px'}}>
-                                    <FixedSlider 
-                                        name='Batch Size'
-                                        width={'29.5vw'}
-                                        startValue={1}
-                                        endValue={100}
-                                        defaultValue={50}
-                                        updateValue={this.handleBatchSizeChange}
-                                    />
-                                </div>
-                                <div style = {{alignItems: 'center', marginBottom: '10px'}}>
-                                    {"How many epochs should the model be finetuned with?"}
-                                    <b style = {{marginLeft: '5px'}}>
-                                        {this.state.numEpochs}
-                                    </b> 
-                                </div>
-                                <div style = {{ marginBottom: '20px'}}>
-                                    <FixedSlider 
-                                        name='Number of Epochs'
-                                        width={'10vw'}
-                                        startValue={1}
-                                        endValue={15}
-                                        defaultValue={1}
-                                        updateValue={this.handleNumEpochsChange}
-                                    />
-                                </div>
-                            </div>) :
-                            null}
                     </div>
                 </div>
                 <div style={{marginTop: '15px', width:'100%'}}>

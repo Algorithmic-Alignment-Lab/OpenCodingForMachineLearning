@@ -72,9 +72,9 @@ def prep_data():
     A request to grab all csv files, and load the information into the database
     '''
     username = request.args.get("username")
-    print(username)
+    print('prep_data ', username)
     data_dict = parse_options_into_db()
-    print(data_dict)
+    print('prep_data data_dict', username)
     find_pretrained_models(data_dict)
 
     instantiate_tables(data_dict, username)
@@ -85,6 +85,7 @@ def prep_data():
     }
 
     add_options(response)
+    print('prep_data_successful')
     return json.jsonify(response)
     
 
@@ -118,15 +119,14 @@ def get_data_option():
     username = request.args.get("username")
     # in same order as defined constants table
     constants = request.args.get("constants").split(',')
-    numeric_constants = tuple(map(lambda k: int(k), constants[:5]))
-    model = constants[5]
+    numeric_constants = tuple(map(lambda k: int(k), constants[:2]))
 
     max_request_size = numeric_constants[0] # NOTE: this constant adjusts the number of rows to annotate during open coding
     
     # get the selected data and initialize necessary tables
     options = get_option_data(option_id, username)
     create_labels(option_id, username)
-    set_constants(numeric_constants, model, username)
+    set_constants(numeric_constants, username)
     
     # choose a subset of rows to return at random
     option_ids = list(options.keys())

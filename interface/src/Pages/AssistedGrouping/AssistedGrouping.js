@@ -479,7 +479,7 @@ class AssistedGrouping extends Component {
 
         this.props.saveLabelState(labeled);
         this.props.saveLabels(labeled);
-        this.props.updateState(states.verification);
+        this.props.updateState(states.ending);
    }
 
     /**

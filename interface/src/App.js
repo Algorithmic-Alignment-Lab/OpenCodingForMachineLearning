@@ -9,6 +9,7 @@ import AssistedGrouping from './Pages/AssistedGrouping/AssistedGrouping';
 import Verification from './Pages/Verification/Verification';
 import Results from './Pages/Results/Results';
 import PrepData from './Pages/Introduction/PrepData';
+import Ending from './Pages/Ending';
 
 const fetch = require('node-fetch');
 
@@ -348,6 +349,8 @@ class App extends Component {
         getDataWithParams = {this.getDataWithParams}
         getAccuracy = {this.getAccuracy}
         />;
+    } else if (page === states.ending) {
+      return <Ending/>;
     } else {
       // default value if state transitions ever fail
       return <div/>;

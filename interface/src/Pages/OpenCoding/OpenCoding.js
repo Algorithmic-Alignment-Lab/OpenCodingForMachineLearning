@@ -40,12 +40,14 @@ class OpenCoding extends Component {
                 throw Error(data.statusText);
             }
 
+            const sortedRows = data.rows.sort((a, b) => a.id - b.id);
+
             this.setState({
-                rows: data.rows,
+                rows: sortedRows,
                 rowsLoaded: true
             });
 
-            this.props.setDataRows(data.rows); // cache result
+            this.props.setDataRows(sortedRows); // cache result
             
         } catch (error) {
             console.log(error);
