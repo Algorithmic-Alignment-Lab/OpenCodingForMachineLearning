@@ -91,17 +91,17 @@ class Introduction extends Component {
         <div style={{ margin: '15px'}}>
             <div style={{ margin: '15px'}}>
                     <b>
-                        Welcome To Open Coding!
+                        Welcome To Open Coding! Please upload your chat csv file and enter your provided username. Do not forget to Confirm your username.
                     </b>
             </div>
             <div>
                 <input type="file" onChange={this.onFileChange} />
-                <button onClick={this.onFileUpload}>Upload!</button>
+                <button onClick={this.onFileUpload}>Upload</button>
             </div>
             <br></br>
             <label for="username">Username:   </label>
             <input type="text" id="uname" name="uname" enabled="false"></input>
-            <button onClick={this.confirmUsername}>OK</button>
+            <button onClick={this.confirmUsername}>Confirm</button>
             <div style={{ margin: '15px'}}></div>
             <button id = "continue" onClick={this.onNextSubmit }>Continue</button>
         </div>

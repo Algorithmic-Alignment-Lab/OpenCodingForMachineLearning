@@ -76,7 +76,7 @@ def save_text_to_embeddings(data_tuple, embeddings, output_filename):
         # data_dump has [texts, labels, embeddings]
         data_dump = list(data_tuple) + [embeddings]
         # Open the file in binary write mode
-        with open(output_filename+"_embeddings", 'wb') as file:
+        with open(output_filename+"_embeddings", 'w') as file:
             # Use json to serialize the list of lists and save it to the file
             json.dump(data_dump, file)
             return output_filename+"_embeddings"
