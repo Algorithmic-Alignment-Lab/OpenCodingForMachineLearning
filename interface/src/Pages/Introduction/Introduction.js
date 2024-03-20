@@ -46,9 +46,16 @@ class Introduction extends Component {
                 throw Error(prepData.statusText);
             }
             await prepData
+            
+            const appendCSV = await this.props.getDataWithParams('/data/append_csv',{"username": this.props.getUsername()})
+            // show 404 or 500 errors
+            if (!appendCSV.ok) {
+                throw Error(appendCSV.statusText);
+            }
+            await appendCSV
 
             this.setState({
-                numAnnotate: this.props.getNumAnnotate(),
+                numAnnotate: appendCSV.numAnnotate,
                 showIntro: true
             });
 
@@ -151,7 +158,7 @@ class Introduction extends Component {
                 <div style={{ overflow: 'scroll', height: "80vh", width: "95vw" }}>
                     <div style={{ margin: '15px', display: 'flex', height: '65vh', width: '91vw', justifyContent: 'flex-start', flexDirection: 'column'}}>
                         <div style = {{alignItems: 'center', marginBottom: '10px'}}>
-                            Please select an existing database to work from. If your database is not available, please follow the given instructions to add the data to your local code base.
+                            Please select your uploaded chat from the dropdown menu: '{this.props.getUsername()} combined chat'.
                         </div>
                         <div style = {{ marginBottom: '20px'}}>
                             <DataOptions
@@ -162,6 +169,16 @@ class Introduction extends Component {
                                 onSelect={this.onSelectDataOption}
                                 onRemove={this.onRemoveDataOption}
                             />
+                        </div>
+                        <div>
+                        <br></br>
+                            You will now interact with your interactions with the model in 2 stages:
+                            <br></br>
+                            <br></br>
+                            &nbsp; &nbsp; &nbsp; &nbsp; 1. <b>Annotation Stage</b>: You will be asked to generate labels (value/quality) for the model’s responses. You can assign more than one label to an instance.
+                            <br></br>
+                            <br></br>
+                            &nbsp; &nbsp; &nbsp; &nbsp; 2. <b>Grouping Stage</b>: You will create a series of groups based on your annotations. Each instance can belong to only one group.
                         </div>
                     </div>
                 </div>

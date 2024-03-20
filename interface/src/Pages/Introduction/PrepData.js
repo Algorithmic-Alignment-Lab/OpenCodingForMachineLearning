@@ -81,27 +81,52 @@ class Introduction extends Component {
         <div style={{ margin: '15px'}}>
             <div style={{ margin: '15px'}}>
                     <b>
-                        Welcome To Open Coding! 
+                        Hello! Welcome to this session of OpenCodingForML! 
                     </b>
                     <br></br>
                     <br></br>
+                    In the following screens, you will begin interacting with an educational assistant designed for teenagers between the ages of 14-18 to supplement their education in History.
                     <br></br>
-                    1. Please upload your chat csv file and click 'Upload'. 
                     <br></br>
-                    2. Please enter your given username and click 'Confirm'.
+                    With this educational assistant, you could prompt questions about History from any period, from any part of the world but one that a typical high school student in India might pose. Avoid subjects you may be deeply opinionated/knowledgeable about, place yourselves in the shoes of high schoolers, and interact with the application with the curiosity of a teenager. 
                     <br></br>
+                    <br></br>
+                    <br></br>
+
+                    1. Go to <a href="https://aag-chat.vercel.app/" target="_blank" rel="noopener noreferrer">AAG Chat (aag-chat.vercel.app)</a>:
+                    <br></br>
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;a. Enter your username in the "Settings" panel
+                    <br></br>
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;b. Interact with the Language Model as described above
+                    <br></br>
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;c. Export your chat using "Export Chat"
+                    <br></br>
+                    <br></br>
+                    2. Please upload your chat csv file (username_chat.csv) and click 'Upload'. 
+                    <br></br>
+                    <br></br>
+                    3. Please enter your given username and click 'Confirm'.
                     <br></br>
                     <br></br>
             </div>
-            <div>
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                // flexDirection: 'column',
+                // height: '100vh'
+            }}>
                 <input type="file" onChange={this.onFileChange} />
                 <button onClick={this.onFileUpload}>Upload</button>
+                
+                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                
+                <label htmlFor="username">Username:   </label>
+                <input type="text" id="uname" name="uname" enabled="false"></input>
+                <button onClick={this.confirmUsername}>Confirm</button>
             </div>
-            <br></br>
-            <label for="username">Username:   </label>
-            <input type="text" id="uname" name="uname" enabled="false"></input>
-            <button onClick={this.confirmUsername}>Confirm</button>
             <div style={{ margin: '15px'}}></div>
+            
             <button id = "continue" onClick={this.onNextSubmit }>Continue</button>
         </div>
         );

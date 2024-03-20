@@ -2,6 +2,7 @@ import csv
 import os
 
 import numpy as np
+import pandas as pd
 
 import math
 
@@ -260,6 +261,33 @@ def write_to_csv_annotations(output_filename, objects, username = "username"):
 
     return 'Finished Writing to CSV'
 
+def append_baseline_csv(username):
+
+    path = "../data/"
+    baseline_csv_path = 'baseline.csv'
+    user_chat_csv_path = path + f'{username}_chat.csv'
+
+    if os.path.exists(baseline_csv_path) and os.path.exists(user_chat_csv_path):
+        baseline_df = pd.read_csv(baseline_csv_path)
+        baseline_df = baseline_df[1:]
+
+        user_chat_df = pd.read_csv(user_chat_csv_path)
+        user_chat_df['TEXT'][0] = username + ' combined chat'
+        user_chat_df_info = user_chat_df.iloc[:1]
+        user_chat_df_text = user_chat_df.iloc[1:]
 
 
+        # Assuming both CSV files have the same structure and you want to append user_chat_df to baseline_df
+        combined_df = pd.concat([user_chat_df_info, baseline_df, user_chat_df_text], ignore_index=True)
+        if 'ID' in combined_df.columns:
+            print('renumbering combined csv IDs')
+            combined_df['ID'] = range(len(combined_df))
+
+        combined_csv_path = path + f'{username}_combined_chat.csv'
+        combined_df.to_csv(combined_csv_path, index=False)
+
+        print('Data combined successfully')
+        return len(combined_df)
+    else:
+        print('One or both CSV files do not exist.')
 

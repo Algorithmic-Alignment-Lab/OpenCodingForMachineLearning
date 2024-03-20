@@ -9,7 +9,7 @@ import pandas as pd
 
 app = Flask(__name__)
 
-from process_data import parse_options_into_db, find_pretrained_models, select_some, save_to_csv, write_to_csv, write_to_csv_annotations
+from process_data import parse_options_into_db, find_pretrained_models, select_some, save_to_csv, write_to_csv, write_to_csv_annotations, append_baseline_csv
 from database import instantiate_tables, fill_tables, get_options, get_option, get_option_data, set_annotation_data, get_annotation_data, create_constants, set_constants, get_constant, add_labels, get_label_set, get_table_rows_full, get_table_rows, get_labeled_data, get_unlabeled_data, get_label_set_data, create_labels
 
 from training.finetune_model import open_coding_finetune_model
@@ -88,6 +88,20 @@ def prep_data():
     print('prep_data_successful')
     return json.jsonify(response)
     
+@app.route('/data/append_csv', methods=['GET'])
+def append_csv():
+
+    username = request.args.get("username")
+    num_annotate = append_baseline_csv(username)
+    response = {
+        "body": "ok",
+        "numAnnotate": num_annotate
+    }
+
+    add_options(response)
+    print('append_csv_successful')
+    return json.jsonify(response)
+
 
 @app.route('/data/get_all_data_options', methods=['GET'])
 def get_all_data_options():

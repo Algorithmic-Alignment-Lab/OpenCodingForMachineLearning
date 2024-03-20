@@ -5,7 +5,8 @@ const states = {
     openCoding: 1,
     assistedGrouping: 2,
     verification: 3,
-    results: 4
+    results: 4,
+    ending: 5
 }
 
 export default states;
