@@ -14,6 +14,14 @@ import GroupingsTable from './GroupingsTable';
 import { InputStyle } from '../../Constants/Styles';
 import Loading from '../../Custom/Loading';
 
+import AGInstructions from "../instructions/AssistedGrouping.jpg"
+
+const imgStyle = {
+    maxWidth: '100%',
+    height: 'auto', // To maintain the aspect ratio
+};
+
+
 const progress = 50;
 
 class AssistedGrouping extends Component {
@@ -784,21 +792,24 @@ class AssistedGrouping extends Component {
                 </div>
                 <div style={{ margin: '5px'}}>
                     <CallbackKeyEventButton text={'Click here to review the instructions for the grouping interface'} clickFunc={this.handleOpen} buttonAvailable={true}/>
-                    <Dialog open={this.state.open} onClose={this.handleClose}>
-                    <DialogTitle>How to Use the Grouping Interface</DialogTitle>
-                    <DialogContent>
-                        <br></br> The following numbers explain the coresponding part of the interface shown in the diagram.
-                        <br></br><b>1</b> The location where the groups you define will appear. You can click on a group in the view box to update it. You can click on the small "x" beside the group to delete it.
-                        <br></br><b>2</b> The interface to search through the annotations that you have written. You can also select/unselect the checkbox to add the prompt / response to a particular group. 
-                        <br></br><b>3</b> When a prompt / response is selected in interface 2, it's annotation will appear in this view box.
-                        <br></br><b>4</b> When a prompt / response is <b>not</b> selected in interface 2, it's annotation will appear in this view box.
-                        <br></br><b>5</b> When creating a group, box 5 is where you enter the group name. Note that at least one prompt / response must be selected.
-                        <br></br><b>6</b> The button to either create or update a group.
+                    <Dialog 
+                        open={this.state.open} 
+                        onClose={this.handleClose} 
+                        PaperProps={{
+                        style: {
+                            width: '60%', // Adjust width as needed
+                            maxWidth: 'none', // Remove max-width constraint if desired
+                            // You can also add other styling here as needed
+                        },
+                    }}>
+                        <DialogTitle>How to Use the Grouping Interface</DialogTitle>
+                        <DialogContent>
+                            <br></br>
+                            <img src={AGInstructions} alt="Assisted Grouping Example" style={imgStyle}></img>
 
-                        <br></br><br></br>
-                    </DialogContent>
-            </Dialog>
-
+                            <br></br><br></br>
+                        </DialogContent>
+                    </Dialog>
                 </div>
             <div style={{ margin: '15px'}}>
                 {(this.state.selectedGroup == null)?

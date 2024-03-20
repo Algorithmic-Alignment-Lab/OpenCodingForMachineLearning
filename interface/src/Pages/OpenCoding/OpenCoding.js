@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 
+import { Dialog, DialogContent, DialogTitle } from '@material-ui/core';
 import states from '../../Constants/States';
 // import progress from './../../Constants/States';
 import CallbackKeyEventButton from '../../Custom/CallbackKeyEventButton';
@@ -7,6 +8,15 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 
 import CustomAnnotationTable from './CustomAnnotationTable';
 import Loading from '../../Custom/Loading';
+
+import OCInstructions from "../instructions/OpenCoding.jpg"
+
+const imgStyle = {
+    maxWidth: '100%',
+    height: 'auto', // To maintain the aspect ratio
+};
+
+
 
 const progress = 25;
 
@@ -24,6 +34,7 @@ class OpenCoding extends Component {
             sectionComplete: false,
             editedRows: new Set(),
             nextPossible: false,
+            open: false,
         }
     }
 
@@ -113,6 +124,14 @@ class OpenCoding extends Component {
         this.props.updateState(states.assistedGrouping);
     }
 
+    handleOpen = () => {
+        this.setState({ open: true });
+    };
+
+    handleClose = () => {
+        this.setState({ open: false });
+    };
+
     render() {
         return (
             <div id = 'open_coding_page' style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
@@ -120,6 +139,32 @@ class OpenCoding extends Component {
                     <b>
                         Open Coding
                     </b>
+                </div>
+                <div style={{ margin: '15px'}}>
+                    <b>
+                        What is an Annotation?
+                    </b>
+                    <br></br>
+                    Data annotation is the process of labeling data tags that provide additional information about the data. These annotations describe the content or context of the data. You will be asked to generate labels for your prompts and the model’s responses. 
+                    <br></br>
+                    <br></br>
+                    <b>Your Task</b>
+                    <br></br>
+                    Please type your annotations on the fields on the left. 
+                    <br></br>
+                    You can assign more than one label to an instance. Note that multiple annotations are separated by a ";" e.g. "Label1; Label2; Label3"
+                    <br></br>
+                    Feel free to tag your prompts as ‘prompts’ or ‘input’ if you’d rather not annotate them.
+                </div>
+                <div style={{ margin: '5px'}}>
+                    <CallbackKeyEventButton text={'Click here to review the instructions for the annotation interface'} clickFunc={this.handleOpen} buttonAvailable={true}/>
+                    <Dialog open={this.state.open} onClose={this.handleClose}>
+                        <DialogTitle>How to Use the Annotation Interface</DialogTitle>
+                        <DialogContent>
+                        <img src={OCInstructions} alt="Open Coding Example" style={imgStyle}></img>
+                            <br></br><br></br>
+                        </DialogContent>
+                    </Dialog>
                 </div>
                 <div style={{ display: 'flex', padding: '5px', height: '75vh', width: '100vw', justifyContent: 'flex-start', alignItems: 'center', flexDirection: 'column'}}>
                         <div style={{ overflow: 'scroll', marginTop: '5px', height: "70vh", width: "80vw", border: '2px solid black', borderRadius: '10px' }}>
