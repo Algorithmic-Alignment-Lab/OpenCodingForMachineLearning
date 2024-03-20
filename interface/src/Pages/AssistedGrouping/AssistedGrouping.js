@@ -767,28 +767,30 @@ class AssistedGrouping extends Component {
                 <h2>
                     Grouping Stage
                 </h2>
+                <br></br>
+                This phase of the grounded theory coding process builds on your knowledge of the interaction set and previously defined annotations, facilitating their analysis, improvement, and re-grouping. This is an opportunity to analyze whether or not the categories are focused and representative of the interactions.
             </div>
             <div style={{ margin: '15px'}}>
                     <b>
                         What is a group?
                     </b>
                     <br></br>
-                        A group is a set of one or more annotation(s) that are all similar and should be "grouped" together to describe the overarching attribute.
+                    A group is a set of annotations that are similar in quality/context/description and can be ‘grouped’ together to describe the overarching attribute. 
+                    <br></br>
+                    In this stage, you will create a series of groups based on your annotations. 
                     <br></br>
                     <br></br>
                     <b>
-                        Annotations can fall along a spectrum of an attribute. For example, two annotations could be referencing a similar underlying attribute (e.g. 'warm' and 'empathetic'), or be inverses of each other (e.g. 'warm' and 'cold'). The goal of the grouping stage is to group texts with annotations that relate to the same attribute (each attribute is our group) to create a cohesive and structured dataset of annotated chat responses.
+                    Annotations could relate to your group in a variety of ways. For example, two annotations can be referring to the same underlying attribute (e.g. ‘warm’ and ‘empathetic’) or be inverses of each other (eg. ‘warm’ and ‘cold’). The goal of this stage is to identify and define the groups/attributes under which your annotations from the previous stage fall. This helps in eliciting the broad set of attributes that are featured in your interactions with the language model. 
                     </b>
-                    
-
-
                 </div>
-                <div style={{ margin: '5px'}}>
-                    <h3 style={{ margin: '2px'}}>
+                <div style={{ margin: '15px'}}>
+                    <h3>
                         Your Task
                     </h3>
-                    Please group the chat prompts and responses based off of your annotations. Use the interface below to search through the annotations and create a group name.
+                    - Please group the chat prompts and responses based off of your annotations. Use the interface below to search through the annotations and create a group name.
                     <br></br>
+                    - Each response can be assigned to only one group. Therefore, <i>interactions with multiple labels cannot be assigned to multiple groups</i>. Either assign them to the most relevant group or create a new group that better reflects the tagged annotations. 
                 </div>
                 <div style={{ margin: '5px'}}>
                     <CallbackKeyEventButton text={'Click here to review the instructions for the grouping interface'} clickFunc={this.handleOpen} buttonAvailable={true}/>

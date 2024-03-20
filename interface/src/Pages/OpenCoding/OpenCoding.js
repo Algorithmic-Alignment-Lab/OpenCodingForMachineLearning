@@ -145,20 +145,30 @@ class OpenCoding extends Component {
                         What is an Annotation?
                     </b>
                     <br></br>
-                    Data annotation is the process of labeling data tags that provide additional information about the data. These annotations describe the content or context of the data. You will be asked to generate labels for your prompts and the model’s responses. 
+                    Data annotation is the process of labeling data with tags that provide additional information about the data. These annotations describe the content or context of the data. You will be asked to generate labels for your prompts and the model’s responses. 
                     <br></br>
                     <br></br>
                     <b>Your Task</b>
                     <br></br>
-                    Please type your annotations on the fields on the left. 
+                    You will begin by annotating a baseline set of prompts and responses provided by the organizers, followed by your interactions with the assistant.
                     <br></br>
-                    You can assign more than one label to an instance. Note that multiple annotations are separated by a ";" e.g. "Label1; Label2; Label3"
+                    - Please type your annotations in the fields on the left. 
                     <br></br>
-                    Feel free to tag your prompts as ‘prompts’ or ‘input’ if you’d rather not annotate them.
+                    - You can assign more than one label to an instance. Note that multiple annotations are separated by a ";" e.g. "Label1; Label2; Label3"
+                    <br></br>
+                    - Please label your inputs to the LLM as ‘prompt’.
                 </div>
-                <div style={{ margin: '5px'}}>
+                <div style={{ margin: '15px'}}>
                     <CallbackKeyEventButton text={'Click here to review the instructions for the annotation interface'} clickFunc={this.handleOpen} buttonAvailable={true}/>
-                    <Dialog open={this.state.open} onClose={this.handleClose}>
+                    <Dialog 
+                        open={this.state.open} 
+                        onClose={this.handleClose}
+                        PaperProps={{
+                            style: {
+                                width: '60%', // Adjust width as needed
+                                maxWidth: 'none', // Remove max-width constraint if desired
+                                // You can also add other styling here as needed
+                            }}}>
                         <DialogTitle>How to Use the Annotation Interface</DialogTitle>
                         <DialogContent>
                         <img src={OCInstructions} alt="Open Coding Example" style={imgStyle}></img>

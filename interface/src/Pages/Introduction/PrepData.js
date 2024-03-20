@@ -81,28 +81,38 @@ class Introduction extends Component {
         <div style={{ margin: '15px'}}>
             <div style={{ margin: '15px'}}>
                     <b>
-                        Hello! Welcome to this session of OpenCodingForML! 
+                    Welcome to OpenCodingForML! 
                     </b>
                     <br></br>
                     <br></br>
-                    In the following screens, you will begin interacting with an educational assistant designed for teenagers between the ages of 14-18 to supplement their education in History.
+                    In this study, you will begin interacting with an educational assistant designed for high school students to supplement their education in History.
                     <br></br>
                     <br></br>
-                    With this educational assistant, you could prompt questions about History from any period, from any part of the world but one that a typical high school student in India might pose. Avoid subjects you may be deeply opinionated/knowledgeable about, place yourselves in the shoes of high schoolers, and interact with the application with the curiosity of a teenager. 
+                    Use this educational assistant to learn about History from any period. 
+                    If you are prompting on subjects you may be deeply opinionated or knowledgeable about, <i>make sure you are still approaching this exercise from the perspective of high schoolers</i>, and interact with the curiosity that they may bring to it. 
+
                     <br></br>
+                    <br></br>
+                    <b>Through this study, we are keen to understand the <i>values and qualities</i> that you see or would like to see in the context of this AI application.</b>
+                    <br></br>
+                    <br></br>
+                    <br></br>
+                    <b>NEXT STEPS:</b>
+                    <br></br>
+                    <i>You should have a username given to you by the organizers. Please use it for the remainder of the study.</i>
                     <br></br>
                     <br></br>
 
                     1. Go to <a href="https://aag-chat.vercel.app/" target="_blank" rel="noopener noreferrer">AAG Chat (aag-chat.vercel.app)</a>:
                     <br></br>
-                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;a. Enter your username in the "Settings" panel
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;a. Enter your given username in the "Settings" panel
                     <br></br>
                     &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;b. Interact with the Language Model as described above
                     <br></br>
-                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;c. Export your chat using "Export Chat"
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;c. After you have finished interacting with the model, click "Export Chat" (<i>only click Export Chat at the end</i>)
                     <br></br>
                     <br></br>
-                    2. Please upload your chat csv file (username_chat.csv) and click 'Upload'. 
+                    2. Please upload your chat csv file (username_chat.csv) below and click 'Upload'. 
                     <br></br>
                     <br></br>
                     3. Please enter your given username and click 'Confirm'.
