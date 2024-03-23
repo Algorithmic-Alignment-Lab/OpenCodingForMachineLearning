@@ -295,6 +295,6 @@ def append_baseline_csv(username):
             print('Baseline CSV file does not exist.')
             return len(user_chat_df)
     else:
-        print('Username CSV file does not exist.')
+        print(user_chat_csv_path, 'file does not exist.')
         return len(0)
 

@@ -29,6 +29,7 @@ class Introduction extends Component {
 
 
     confirmUsername = () => {
+        console.log("Confirm Clicked")
         var inputField = document.getElementById('uname');
         inputField.disabled = true;
         this.props.setUsername(document.getElementById("uname").value)
@@ -37,6 +38,7 @@ class Introduction extends Component {
 
     onFileChange = event => {
         // Update the state
+        console.log("File Upload Click")
         this.setState({ selectedFile: event.target.files[0] });
 
     };
