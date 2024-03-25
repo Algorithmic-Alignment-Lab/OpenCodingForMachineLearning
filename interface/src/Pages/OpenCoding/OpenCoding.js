@@ -159,22 +159,8 @@ class OpenCoding extends Component {
                     - Please label your inputs to the LLM as ‘prompt’.
                 </div>
                 <div style={{ margin: '15px'}}>
-                    <CallbackKeyEventButton text={'Click here to review the instructions for the annotation interface'} clickFunc={this.handleOpen} buttonAvailable={true}/>
-                    <Dialog 
-                        open={this.state.open} 
-                        onClose={this.handleClose}
-                        PaperProps={{
-                            style: {
-                                width: '60%', // Adjust width as needed
-                                maxWidth: 'none', // Remove max-width constraint if desired
-                                // You can also add other styling here as needed
-                            }}}>
-                        <DialogTitle>How to Use the Annotation Interface</DialogTitle>
-                        <DialogContent>
-                        <img src={OCInstructions} alt="Open Coding Example" style={imgStyle}></img>
-                            <br></br><br></br>
-                        </DialogContent>
-                    </Dialog>
+                    <img src={OCInstructions} alt="Open Coding Example" style={imgStyle}></img>
+                    <br></br><br></br>
                 </div>
                 <div style={{ display: 'flex', padding: '5px', height: '75vh', width: '100vw', justifyContent: 'flex-start', alignItems: 'center', flexDirection: 'column'}}>
                         <div style={{ overflow: 'scroll', marginTop: '5px', height: "70vh", width: "80vw", border: '2px solid black', borderRadius: '10px' }}>
