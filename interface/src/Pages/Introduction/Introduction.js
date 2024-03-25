@@ -40,19 +40,19 @@ class Introduction extends Component {
     async componentDidMount() {
         try {
             
-            const prepData = await this.props.getDataWithParams('/data/prep_data',{"username": this.props.getUsername()});
-            // show 404 or 500 errors
-            if (!prepData.ok) {
-                throw Error(prepData.statusText);
-            }
-            await prepData
-            
             const appendCSV = await this.props.getDataWithParams('/data/append_csv',{"username": this.props.getUsername()})
             // show 404 or 500 errors
             if (!appendCSV.ok) {
                 throw Error(appendCSV.statusText);
             }
             await appendCSV
+            
+            const prepData = await this.props.getDataWithParams('/data/prep_data',{"username": this.props.getUsername()});
+            // show 404 or 500 errors
+            if (!prepData.ok) {
+                throw Error(prepData.statusText);
+            }
+            await prepData
 
             this.setState({
                 numAnnotate: appendCSV.numAnnotate,

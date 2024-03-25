@@ -4,6 +4,7 @@ import os
 import numpy as np
 import pandas as pd
 
+import time
 import math
 
 class ProcessingError(Exception):
@@ -263,10 +264,12 @@ def write_to_csv_annotations(output_filename, objects, username = "username"):
 
 def append_baseline_csv(username):
 
-    path = "../data/"
+    path = "/home/prajna/OpenCodingForMachineLearning/data/"
     baseline_csv_path = 'baseline.csv'
-    user_chat_csv_path = path + f'{username.upper()}_chat.csv'
+    user_chat_csv_path = path + f'{username}_chat.csv'
 
+    time.sleep(10)
+    
     if os.path.exists(user_chat_csv_path):
         user_chat_df = pd.read_csv(user_chat_csv_path)
 
@@ -275,7 +278,7 @@ def append_baseline_csv(username):
             baseline_df = baseline_df[1:]
 
             user_chat_df = pd.read_csv(user_chat_csv_path)
-            user_chat_df['TEXT'][0] = username.upper() + ' COMBINED CHAT'
+            user_chat_df.loc[0, "TEXT"] = username.upper() + ' COMBINED CHAT'
             user_chat_df_info = user_chat_df.iloc[:1]
             user_chat_df_text = user_chat_df.iloc[1:]
 
@@ -296,5 +299,5 @@ def append_baseline_csv(username):
             return len(user_chat_df)
     else:
         print(user_chat_csv_path, 'file does not exist.')
-        return len(0)
+        return 0
 

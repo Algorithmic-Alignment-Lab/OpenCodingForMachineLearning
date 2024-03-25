@@ -53,7 +53,7 @@ class Introduction extends Component {
       
         // Update the formData object with the file and username
         formData.append("file", this.state.selectedFile, this.state.selectedFile.name);
-        formData.append("username", username); // Ensure the backend expects this field
+        formData.append("username", username.toLowerCase()); // Ensure the backend expects this field
       
         // Details of the uploaded file
         console.log(this.state.selectedFile);
