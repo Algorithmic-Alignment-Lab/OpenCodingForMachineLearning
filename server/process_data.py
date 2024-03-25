@@ -267,8 +267,6 @@ def append_baseline_csv(username):
     path = "/home/prajna/OpenCodingForMachineLearning/data/"
     baseline_csv_path = 'baseline.csv'
     user_chat_csv_path = path + f'{username}_chat.csv'
-
-    time.sleep(10)
     
     if os.path.exists(user_chat_csv_path):
         user_chat_df = pd.read_csv(user_chat_csv_path)

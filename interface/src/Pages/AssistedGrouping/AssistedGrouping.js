@@ -227,7 +227,7 @@ class AssistedGrouping extends Component {
 
         let groupRow = this.state.selectedGroup
 
-        const selectedIdsSet = new Set(this.state.selectedRowIds);
+        // const selectedIdsSet = new Set(this.state.selectedRowIds);
         
         
         const relevantSubRows = groupRow.subRows.concat(this.state.selectedRows);
